@@ -49,9 +49,8 @@ export default function ProfilePage() {
             className="space-y-6"
             noValidate
           >
-            {/* Foto de perfil */}
             <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200 border border-orange-300">
+              <div className="md:size-20 size-10 rounded-full overflow-hidden bg-gray-200 border border-orange-300">
                 {photo ? (
                   <img
                     src={photo}

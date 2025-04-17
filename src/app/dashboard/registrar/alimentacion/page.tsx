@@ -4,24 +4,28 @@ import { useForm } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
-interface AlimentacionFormData {
-  tipoAlimento: string;
-  cantidad: number;
-  fechaAlimentacion: string;
-}
+import { createAlimentacion } from "@/services/alimentacionService";
+import { AlimentacionRequest } from "@/types/alimentacion";
 
 export default function FormAlimentacion() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AlimentacionFormData>();
+  } = useForm<AlimentacionRequest>();
 
   const today = new Date().toISOString().split("T")[0];
 
-  const onSubmit = (data: AlimentacionFormData) => {
-    console.log("Alimentación registrada:", data);
+  const onSubmit = async (data: AlimentacionRequest) => {
+    try {
+      const response = await createAlimentacion(data);
+      console.log("Alimentación registrada:", response);
+      alert("Alimentación registrada correctamente");
+      window.location.href = "/dashboard/registrar/alimentacion";
+    } catch (error) {
+      console.error("Error al registrar la alimentación:", error);
+      alert("Error al registrar la alimentación. Intente nuevamente.");
+    }
   };
 
   return (
