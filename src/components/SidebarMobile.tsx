@@ -4,6 +4,13 @@ import { useState } from "react";
 import { IoMenu, IoClose } from "react-icons/io5";
 import SidebarContent from "./SidebarContent";
 import { Bell, UserCircle } from "lucide-react";
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from "./ui/menubar";
 
 export default function SidebarMobile() {
   const [open, setOpen] = useState(false);
@@ -16,7 +23,10 @@ export default function SidebarMobile() {
       setIsClosing(false);
     }, 300);
   };
-
+  const logout = () => {
+    document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    window.location.href = "/login";
+  };
   return (
     <>
       <div className="md:hidden flex items-center justify-between p-4 bg-primary text-white shadow">
@@ -32,8 +42,23 @@ export default function SidebarMobile() {
             </button>
 
             <div className="flex md:hidden items-center gap-2">
-              <UserCircle className="w-6 h-6 text-white" />
-              <span className="text-sm text-white">Usuario</span>
+              <Menubar className="border-none bg-trasnparent">
+                <MenubarMenu>
+                  <MenubarTrigger>
+                    <UserCircle className="w-6 h-6 text-white" />
+                  </MenubarTrigger>
+                  <MenubarContent>
+                    <MenubarItem
+                      onClick={() =>
+                        (window.location.href = "/dashboard/profile")
+                      }
+                    >
+                      Profile
+                    </MenubarItem>
+                    <MenubarItem onClick={logout}>Logout</MenubarItem>
+                  </MenubarContent>
+                </MenubarMenu>
+              </Menubar>
             </div>
           </div>
         </div>
