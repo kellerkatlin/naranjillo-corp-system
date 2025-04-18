@@ -13,3 +13,17 @@ export const createAlimentacion = (
     method: "POST",
     body: JSON.stringify(data),
   });
+
+export const updateAlimentacion = (
+  id: number,
+  data: AlimentacionRequest
+): Promise<Alimentacion> =>
+  apiFetch(`${BASE}/update/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+
+export const deleteAlimentacion = (id: number): Promise<void> =>
+  apiFetch(`${BASE}/delete/${id}`, {
+    method: "DELETE",
+  });

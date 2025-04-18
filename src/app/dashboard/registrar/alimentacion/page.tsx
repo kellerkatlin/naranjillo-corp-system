@@ -1,82 +1,103 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { createAlimentacion } from "@/services/alimentacionService";
-import { AlimentacionRequest } from "@/types/alimentacion";
+import {
+  createAlimentacion,
+  getAllAlimentaciones,
+  updateAlimentacion,
+} from "@/services/alimentacionService";
+import { Alimentacion, AlimentacionRequest } from "@/types/alimentacion";
+import { ColumnDef } from "@tanstack/react-table";
+import { Pencil, Trash2 } from "lucide-react";
+
+import { useEffect, useState } from "react";
+import AlimentacionDialog from "@/components/AlimentacionDialog";
+import { toast } from "sonner";
+import { CrudToolbar } from "@/components/shared/CrudToolbar";
+import { CrudTable } from "@/components/shared/CrudTable";
 
 export default function FormAlimentacion() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AlimentacionRequest>();
+  const [data, setData] = useState<Alimentacion[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Alimentacion | null>(null);
 
-  const today = new Date().toISOString().split("T")[0];
-
-  const onSubmit = async (data: AlimentacionRequest) => {
+  const loadData = async () => {
     try {
-      const response = await createAlimentacion(data);
-      console.log("Alimentación registrada:", response);
-      alert("Alimentación registrada correctamente");
-      window.location.href = "/dashboard/registrar/alimentacion";
-    } catch (error) {
-      console.error("Error al registrar la alimentación:", error);
-      alert("Error al registrar la alimentación. Intente nuevamente.");
+      const res = await getAllAlimentaciones();
+      setData(res);
+    } catch {
+      toast.error("Error al cargar datos");
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const columns: ColumnDef<Alimentacion>[] = [
+    { accessorKey: "tipoAlimento", header: "Tipo" },
+    { accessorKey: "cantidad", header: "Cantidad" },
+    {
+      accessorKey: "fechaAlimentacion",
+      header: "Fecha",
+      cell: ({ row }) =>
+        new Date(row.getValue("fechaAlimentacion")).toLocaleDateString(),
+    },
+    {
+      id: "acciones",
+      header: "Acciones",
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                setEditItem(item);
+                setDialogOpen(true);
+              }}
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
+            <Button size="sm" variant="destructive">
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const onSubmit = async (form: AlimentacionRequest) => {
+    try {
+      if (editItem) {
+        const updated = await updateAlimentacion(editItem.id, form);
+        setData((prev) =>
+          prev.map((item) => (item.id === editItem.id ? updated : item))
+        );
+        toast.success("Actualizado");
+      } else {
+        const created = await createAlimentacion(form);
+        setData((prev) => [...prev, created]);
+        toast.success("Registrado");
+      }
+      setDialogOpen(false);
+      setEditItem(null);
+    } catch {
+      toast.error("Error al guardar");
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className=" p-6 rounded  max-w-md w-full mx-auto"
-    >
-      <div className="grid grid-cols-1 gap-4 mb-6">
-        <div>
-          <Label className="mb-1 block">Tipo de Alimento</Label>
-          <Input
-            type="text"
-            placeholder="Ej: Alfalfa, Concentrado"
-            {...register("tipoAlimento", { required: true })}
-          />
-          {errors.tipoAlimento && (
-            <p className="text-red-500 text-sm mt-1">Este campo es requerido</p>
-          )}
-        </div>
-
-        <div>
-          <Label className="mb-1 block">Cantidad (kg)</Label>
-          <Input
-            type="number"
-            step="0.1"
-            placeholder="Cantidad suministrada"
-            {...register("cantidad", { required: true })}
-          />
-          {errors.cantidad && (
-            <p className="text-red-500 text-sm mt-1">Este campo es requerido</p>
-          )}
-        </div>
-
-        <div>
-          <Label className="mb-1 block">Fecha de Alimentación</Label>
-          <Input
-            defaultValue={today}
-            type="date"
-            {...register("fechaAlimentacion", { required: true })}
-          />
-          {errors.fechaAlimentacion && (
-            <p className="text-red-500 text-sm mt-1">Este campo es requerido</p>
-          )}
-        </div>
-      </div>
-
-      <div className="flex justify-end">
-        <Button type="submit" className="bg-primary hover:bg-orange-400">
-          Registrar
-        </Button>
-      </div>
-    </form>
+    <>
+      <AlimentacionDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSubmit={onSubmit}
+        alimentacion={editItem}
+      />
+      <CrudToolbar onCreate={() => setDialogOpen(true)} title="Alimentación" />
+      <CrudTable columns={columns} data={data} />
+    </>
   );
 }
