@@ -99,12 +99,39 @@ export default function CuyDialog({
 
           <div>
             <Label className="mb-1 block">Categoría</Label>
-            <Input
-              type="text"
-              placeholder="Ej: Engorde, Reproductor"
-              {...register("categoria", { required: true })}
-            />
+            <Select
+              onValueChange={(value) => setValue("categoria", value)}
+              defaultValue={watch("categoria")}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona un estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ENGORDE">ENGORDE</SelectItem>
+                <SelectItem value="REPRODUCTOR">REPRODUCTOR</SelectItem>
+              </SelectContent>
+            </Select>
             {errors.categoria && (
+              <p className="text-red-500 text-sm mt-1">
+                Este campo es requerido
+              </p>
+            )}
+          </div>
+          <div>
+            <Label className="mb-1 block">Sexo</Label>
+            <Select
+              onValueChange={(value) => setValue("sexo", value)}
+              defaultValue={watch("sexo")}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona un estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="MACHO">MACHO</SelectItem>
+                <SelectItem value="HEMBRA">HEMBRA</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.sexo && (
               <p className="text-red-500 text-sm mt-1">
                 Este campo es requerido
               </p>
