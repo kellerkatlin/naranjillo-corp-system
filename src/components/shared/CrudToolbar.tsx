@@ -10,7 +10,7 @@ export function CrudToolbar({ onCreate, title }: CrudToolbarProps) {
   return (
     <div className="flex items-center justify-between mb-4">
       <Button className="bg-primary hover:bg-orange-400" onClick={onCreate}>
-        Crear nuevo {title ? title : "Registro"}
+        Crear {title ? title : "Registro"}
       </Button>
     </div>
   );
