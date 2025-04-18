@@ -1,83 +1,143 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { Pencil, Trash2 } from "lucide-react";
+import { ColumnDef } from "@tanstack/react-table";
+import { toast } from "sonner";
 
-interface CuyFormData {
-  codigo: string;
-  fecha: string;
-  edad: number;
-  sexo: string;
-  categoria: string;
-  peso: number;
-}
+import {
+  createCuy,
+  deleteCuy,
+  getAllCuyes,
+  updateCuy,
+} from "@/services/cuyService";
+import { Cuy, CuyRequest } from "@/types/cuy";
+import { CrudToolbar } from "@/components/shared/CrudToolbar";
+import { CrudTable } from "@/components/shared/CrudTable";
+import ConfirmAlert from "@/components/shared/ComfirmAlert";
+import CuyDialog from "@/components/CuyDialog";
 
-export default function RegistrarCuyForm() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CuyFormData>();
+export default function FormCuy() {
+  const [data, setData] = useState<Cuy[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Cuy | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<Cuy | null>(null);
 
-  const onSubmit = (data: CuyFormData) => {
-    console.log("Cuy registrado:", data);
-    // Aquí puedes llamar a tu API
+  const loadData = async () => {
+    try {
+      const res = await getAllCuyes();
+      setData(res);
+    } catch {
+      toast.error("Error al cargar datos");
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const columns: ColumnDef<Cuy>[] = [
+    { accessorKey: "id", header: "ID" },
+
+    { accessorKey: "edad", header: "Edad (semanas)" },
+    { accessorKey: "categoria", header: "Categoría" },
+    { accessorKey: "estado", header: "Estado" },
+    {
+      accessorKey: "fechaRegistro",
+      header: "Fecha de Registro",
+      cell: ({ row }) =>
+        new Date(row.getValue("fechaRegistro")).toLocaleDateString(),
+    },
+    {
+      id: "acciones",
+      header: "Acciones",
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                setEditItem(item);
+                setDialogOpen(true);
+              }}
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => {
+                setItemToDelete(item);
+                setDeleteDialogOpen(true);
+              }}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const onSubmit = async (form: CuyRequest) => {
+    try {
+      if (editItem) {
+        const updated = await updateCuy(editItem.id, form);
+        setData((prev) =>
+          prev.map((item) => (item.id === editItem.id ? updated : item))
+        );
+        toast.success("Cuy actualizado");
+      } else {
+        const created = await createCuy(form);
+        setData((prev) => [...prev, created]);
+        toast.success("Cuy registrado");
+      }
+      setDialogOpen(false);
+      setEditItem(null);
+    } catch {
+      toast.error("Error al guardar");
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteCuy(id);
+      setData((prev) => prev.filter((item) => item.id !== id));
+      toast.success("Cuy eliminado");
+    } catch {
+      toast.error("Error al eliminar");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className=" pl-10 p-6  w-full ">
-      <div className="grid md:grid-cols-3 gap-4 items-center mb-4">
-        <Label className="col-span-1">Código</Label>
-        <Input
-          {...register("codigo", { required: true })}
-          className="col-span-2"
-        />
-
-        <Label className="col-span-1">Fecha</Label>
-        <Input
-          type="date"
-          {...register("fecha", { required: true })}
-          className="col-span-2"
-        />
-
-        <Label className="col-span-1">Edad</Label>
-        <Input
-          type="number"
-          {...register("edad", { required: true })}
-          className="col-span-2"
-        />
-
-        <Label className="col-span-1">Sexo</Label>
-        <Input
-          {...register("sexo", { required: true })}
-          className="col-span-2"
-        />
-
-        <Label className="col-span-1">Categoría</Label>
-        <Input
-          {...register("categoria", { required: true })}
-          className="col-span-2"
-        />
-
-        <Label className="col-span-1">Peso (kg)</Label>
-        <Input
-          type="number"
-          step="0.1"
-          {...register("peso", { required: true })}
-          className="col-span-2"
-        />
-        <div className="md:col-span-2 md:col-end-4 col-span-3  ">
-          <Button
-            type="submit"
-            className="bg-primary w-full hover:bg-orange-400"
-          >
-            Registrar
-          </Button>
-        </div>
-      </div>
-    </form>
+    <>
+      <CuyDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSubmit={onSubmit}
+        cuy={editItem}
+      />
+      <CrudToolbar onCreate={() => setDialogOpen(true)} title="Cuy" />
+      <CrudTable columns={columns} data={data} />
+      <ConfirmAlert
+        open={deleteDialogOpen}
+        title="Eliminar cuy"
+        message={`¿Deseas eliminar el cuy con categoría "${itemToDelete?.categoria}"?`}
+        onCancel={() => {
+          setDeleteDialogOpen(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={async () => {
+          if (itemToDelete) {
+            await handleDelete(itemToDelete.id);
+            setDeleteDialogOpen(false);
+            setItemToDelete(null);
+          }
+        }}
+      />
+    </>
   );
 }

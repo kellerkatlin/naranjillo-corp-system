@@ -1,147 +1,162 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-interface ReproduccionFormData {
-  padreCodigo: string;
-  padreCategoria: string;
-  padreEdad: number;
-  padrePeso: number;
-
-  madreCodigo: string;
-  madreCategoria: string;
-  madreEdad: number;
-  madrePeso: number;
-
-  fechaApareamiento: string;
-  fechaParto: string;
-
-  criasNacidas: number;
-  criasVivas: number;
-  criasMuertas: number;
-}
+import { useEffect, useState } from "react";
+import { Reproduccion, ReproduccionRequest } from "@/types/reproduccion";
+import {
+  createReproduccion,
+  deleteReproduccion,
+  getAllReproducciones,
+  updateReproduccion,
+} from "@/services/reproduccionService";
+import { toast } from "sonner";
+import { ColumnDef } from "@tanstack/react-table";
+import { Pencil, Trash2 } from "lucide-react";
+import ReproduccionDialog from "@/components/ReproduccionDialog";
+import { CrudToolbar } from "@/components/shared/CrudToolbar";
+import { CrudTable } from "@/components/shared/CrudTable";
+import ConfirmAlert from "@/components/shared/ComfirmAlert";
 
 export default function FormReproduccion() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ReproduccionFormData>();
+  const [data, setData] = useState<Reproduccion[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editItem, setEditItem] = useState<Reproduccion | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<Reproduccion | null>(null);
 
-  const onSubmit = (data: ReproduccionFormData) => {
-    console.log("Reproducción registrada:", data);
+  const loadData = async () => {
+    try {
+      const res = await getAllReproducciones();
+      setData(res);
+    } catch {
+      toast.error("Error al cargar datos");
+    }
   };
 
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const columns: ColumnDef<Reproduccion>[] = [
+    {
+      accessorKey: "cantidadHijos",
+      header: "Cantidad de Hijos",
+    },
+    {
+      accessorKey: "fechaReproduccion",
+      header: "Fecha Reproducción",
+      cell: ({ row }) =>
+        new Date(row.getValue("fechaReproduccion")).toLocaleDateString(),
+    },
+    {
+      accessorKey: "fechaParto",
+      header: "Fecha Parto",
+      cell: ({ row }) =>
+        new Date(row.getValue("fechaParto")).toLocaleDateString(),
+    },
+    {
+      accessorKey: "padre",
+      header: "Padre",
+      cell: ({ row }) => {
+        const padre = row.getValue("padre") as { id: number; codigo?: string };
+        return padre?.codigo || `ID ${padre?.id}`;
+      },
+    },
+    {
+      accessorKey: "madre",
+      header: "Madre",
+      cell: ({ row }) => {
+        const madre = row.getValue("madre") as { id: number; codigo?: string };
+        return madre?.codigo || `ID ${madre?.id}`;
+      },
+    },
+    {
+      id: "acciones",
+      header: "Acciones",
+      cell: ({ row }) => {
+        const item = row.original;
+        return (
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              onClick={() => {
+                setEditItem(item);
+                setDialogOpen(true);
+              }}
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => {
+                setItemToDelete(item);
+                setDeleteDialogOpen(true);
+              }}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const onSubmit = async (form: ReproduccionRequest) => {
+    try {
+      if (editItem) {
+        const updated = await updateReproduccion(editItem.id, form);
+        setData((prev) =>
+          prev.map((item) => (item.id === editItem.id ? updated : item))
+        );
+        toast.success("Actualizado");
+      } else {
+        const created = await createReproduccion(form);
+        setData((prev) => [...prev, created]);
+        toast.success("Registrado");
+      }
+      setDialogOpen(false);
+      setEditItem(null);
+    } catch {
+      toast.error("Error al guardar");
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteReproduccion(id);
+      setData((prev) => prev.filter((item) => item.id !== id));
+      toast.success("Eliminado");
+    } catch {
+      toast.error("Error al eliminar");
+    }
+  };
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className=" p-6 rounded max-w-4xl w-full mx-auto"
-    >
-      <fieldset className="mb-4">
-        <legend className="font-bold text-gray-700 mb-2">
-          Datos del padre
-        </legend>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Input
-            placeholder="Código"
-            {...register("padreCodigo", { required: true })}
-          />
-          <Input
-            placeholder="Categoría"
-            {...register("padreCategoria", { required: true })}
-          />
-          <Input
-            type="number"
-            placeholder="Edad (semanas)"
-            {...register("padreEdad", { required: true })}
-          />
-          <Input
-            type="number"
-            placeholder="Peso (kg)"
-            step="0.1"
-            {...register("padrePeso", { required: true })}
-          />
-        </div>
-      </fieldset>
-
-      <fieldset className="mb-4">
-        <legend className="font-bold text-gray-700 mb-2">
-          Datos de la madre
-        </legend>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Input
-            placeholder="Código"
-            {...register("madreCodigo", { required: true })}
-          />
-          <Input
-            placeholder="Categoría"
-            {...register("madreCategoria", { required: true })}
-          />
-          <Input
-            type="number"
-            placeholder="Edad (semanas)"
-            {...register("madreEdad", { required: true })}
-          />
-          <Input
-            type="number"
-            placeholder="Peso (kg)"
-            step="0.1"
-            {...register("madrePeso", { required: true })}
-          />
-        </div>
-      </fieldset>
-
-      <fieldset className="mb-4">
-        <legend className="font-bold text-gray-700 mb-2">
-          Datos de la reproducción
-        </legend>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            type="date"
-            placeholder="Fecha de apareamiento"
-            {...register("fechaApareamiento", { required: true })}
-          />
-          <Input
-            type="date"
-            placeholder="Fecha de parto"
-            {...register("fechaParto", { required: true })}
-          />
-        </div>
-      </fieldset>
-
-      <fieldset className="mb-6">
-        <legend className="font-bold text-gray-700 mb-2">
-          Datos de las crías
-        </legend>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Input
-            type="number"
-            placeholder="Número de crías nacidas"
-            {...register("criasNacidas", { required: true })}
-          />
-          <Input
-            type="number"
-            placeholder="Crías vivas"
-            {...register("criasVivas", { required: true })}
-          />
-          <Input
-            type="number"
-            placeholder="Crías muertas"
-            {...register("criasMuertas", { required: true })}
-          />
-        </div>
-      </fieldset>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Button
-          type="submit"
-          className="bg-primary col-span-2 col-end-4 hover:bg-orange-400"
-        >
-          Registrar
-        </Button>
-      </div>
-    </form>
+    <>
+      <ReproduccionDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onSubmit={onSubmit}
+        reproduccion={editItem}
+      />
+      <CrudToolbar onCreate={() => setDialogOpen(true)} title="Reproducción" />
+      <CrudTable columns={columns} data={data} />
+      <ConfirmAlert
+        open={deleteDialogOpen}
+        title="Eliminar registro"
+        message={`¿Deseas eliminar "${itemToDelete?.id}"?`}
+        onCancel={() => {
+          setDeleteDialogOpen(false);
+          setItemToDelete(null);
+        }}
+        onConfirm={async () => {
+          if (itemToDelete) {
+            await handleDelete(itemToDelete.id);
+            setDeleteDialogOpen(false);
+            setItemToDelete(null);
+          }
+        }}
+      />
+    </>
   );
 }
