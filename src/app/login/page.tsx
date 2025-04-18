@@ -43,7 +43,7 @@ export default function LoginPage() {
           <img src="/logo.png" alt="Naranjilo Corp" className="max-w-xs" />
         </div>
 
-        <div className="w-1/2 p-10 bg-[#fcfcfc] flex flex-col justify-center">
+        <div className="w-1/2 p-10 backdrop-blur-md bg-white/10 border-2 rounded-lg border-solid border-primary/30 flex flex-col justify-center">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <input
               type="text"

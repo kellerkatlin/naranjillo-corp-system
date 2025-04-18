@@ -7,6 +7,13 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 import { Cuy } from "@/types/cuy";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface CuyDialogProps {
   open: boolean;
@@ -25,6 +32,8 @@ export default function CuyDialog({
     register,
     handleSubmit,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<Omit<Cuy, "id">>();
 
@@ -104,11 +113,19 @@ export default function CuyDialog({
 
           <div>
             <Label className="mb-1 block">Estado</Label>
-            <Input
-              type="text"
-              placeholder="Ej: VIVO, MUERTO, VENDIDO"
-              {...register("estado", { required: true })}
-            />
+            <Select
+              onValueChange={(value) => setValue("estado", value)}
+              defaultValue={watch("estado")}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona un estado" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="VIVO">VIVO</SelectItem>
+                <SelectItem value="MUERTO">MUERTO</SelectItem>
+                <SelectItem value="VENDIDO">VENDIDO</SelectItem>
+              </SelectContent>
+            </Select>
             {errors.estado && (
               <p className="text-red-500 text-sm mt-1">
                 Este campo es requerido
@@ -117,7 +134,10 @@ export default function CuyDialog({
           </div>
 
           <div className="flex justify-end pt-4">
-            <Button type="submit" className="bg-primary hover:bg-orange-400">
+            <Button
+              type="submit"
+              className="bg-primary cursor-pointer hover:bg-orange-400"
+            >
               {cuy ? "Actualizar" : "Registrar"}
             </Button>
           </div>

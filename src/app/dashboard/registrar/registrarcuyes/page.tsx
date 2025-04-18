@@ -47,8 +47,15 @@ export default function FormCuy() {
     {
       accessorKey: "fechaRegistro",
       header: "Fecha de Registro",
-      cell: ({ row }) =>
-        new Date(row.getValue("fechaRegistro")).toLocaleDateString(),
+      cell: ({ row }) => {
+        const fechaStr = row.getValue("fechaRegistro") as string;
+        const [year, month, day] = fechaStr.split("-");
+        return new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day)
+        ).toLocaleDateString();
+      },
     },
     {
       id: "acciones",
@@ -109,6 +116,7 @@ export default function FormCuy() {
       await deleteCuy(id);
       setData((prev) => prev.filter((item) => item.id !== id));
       toast.success("Cuy eliminado");
+      await loadData();
     } catch {
       toast.error("Error al eliminar");
     }
