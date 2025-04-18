@@ -2,6 +2,8 @@ import Sidebar from "@/components/Sidebar";
 import "../globals.css";
 import DashboardHeader from "@/components/DashboardHeader";
 import SidebarMobile from "@/components/SidebarMobile";
+import { Toaster } from "sonner";
+
 export default function DashboardLayout({
   children,
 }: Readonly<{
@@ -16,6 +18,7 @@ export default function DashboardLayout({
         <DashboardHeader />
 
         <main className=" p-6">{children}</main>
+        <Toaster position="top-right" richColors />
       </div>
     </div>
   );
