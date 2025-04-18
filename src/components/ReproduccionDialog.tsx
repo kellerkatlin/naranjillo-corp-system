@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Reproduccion, ReproduccionRequest } from "@/types/reproduccion";
+import { getAllCuyes } from "@/services/cuyService";
+import { Cuy } from "@/types/cuy";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface ReproduccionDialogProps {
   open: boolean;
@@ -26,10 +35,13 @@ export default function ReproduccionDialog({
   onSubmit,
   reproduccion,
 }: ReproduccionDialogProps) {
+  const [cuyesPadres, setCuyesPadres] = useState<Cuy[]>([]);
+  const [cuyesMadres, setCuyesMadres] = useState<Cuy[]>([]);
   const {
     register,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<ReproduccionRequest>();
 
@@ -48,6 +60,23 @@ export default function ReproduccionDialog({
       }
     }
   }, [open, reproduccion, reset]);
+
+  const loadCuyes = async () => {
+    try {
+      const resPadres = await getAllCuyes();
+      const dataPadres = resPadres.filter((cuy) => cuy.sexo === "MACHO");
+      setCuyesPadres(dataPadres);
+      const resMadres = await getAllCuyes();
+      const dataMadres = resMadres.filter((cuy) => cuy.sexo === "HEMBRA");
+      setCuyesMadres(dataMadres);
+    } catch (error) {
+      console.error("Error loading cuyes:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadCuyes();
+  }, []);
 
   const handleFormSubmit = (data: ReproduccionRequest) => {
     onSubmit(data);
@@ -99,22 +128,52 @@ export default function ReproduccionDialog({
             </div>
 
             <div>
-              <Label className="block mb-1">ID Padre</Label>
-              <Input
-                type="number"
-                {...register("padre.id", { required: true })}
-              />
+              <Label className="block mb-1">Padre (Macho)</Label>
+              <Select
+                onValueChange={(value) => {
+                  const id = parseInt(value, 10);
+                  if (!isNaN(id)) {
+                    setValue("padre.id", id);
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un padre" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cuyesPadres.map((cuy) => (
+                    <SelectItem key={cuy.id} value={String(cuy.id)}>
+                      ID: {cuy.id} - {cuy.categoria}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {errors.padre?.id && (
                 <p className="text-red-500 text-sm mt-1">Campo requerido</p>
               )}
             </div>
 
             <div>
-              <Label className="block mb-1">ID Madre</Label>
-              <Input
-                type="number"
-                {...register("madre.id", { required: true })}
-              />
+              <Label className="block mb-1">Madre (Hembra)</Label>
+              <Select
+                onValueChange={(value) => {
+                  const id = parseInt(value, 10);
+                  if (!isNaN(id)) {
+                    setValue("madre.id", id);
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona una madre" />
+                </SelectTrigger>
+                <SelectContent>
+                  {cuyesMadres.map((cuy) => (
+                    <SelectItem key={cuy.id} value={String(cuy.id)}>
+                      ID: {cuy.id} - {cuy.categoria}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               {errors.madre?.id && (
                 <p className="text-red-500 text-sm mt-1">Campo requerido</p>
               )}
