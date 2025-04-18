@@ -58,6 +58,7 @@ export default function FormCuy() {
         return (
           <div className="flex gap-2">
             <Button
+              className="cursor-pointer"
               size="sm"
               onClick={() => {
                 setEditItem(item);
@@ -68,6 +69,7 @@ export default function FormCuy() {
             </Button>
             <Button
               size="sm"
+              className="cursor-pointer"
               variant="destructive"
               onClick={() => {
                 setItemToDelete(item);
