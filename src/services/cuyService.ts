@@ -21,7 +21,7 @@ export const updateCuy = (id: number, data: CuyRequest): Promise<Cuy> =>
     body: JSON.stringify(data),
   });
 
-export const deleteCuy = (id: number) =>
+export const deleteCuy = (id: number): Promise<void> =>
   apiFetch(`${CUY_BASE}/delete/${id}`, {
     method: "DELETE",
   });

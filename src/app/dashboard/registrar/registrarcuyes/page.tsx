@@ -115,6 +115,7 @@ export default function FormCuy() {
     try {
       await deleteCuy(id);
       setData((prev) => prev.filter((item) => item.id !== id));
+
       toast.success("Cuy eliminado");
       await loadData();
     } catch {
@@ -135,7 +136,7 @@ export default function FormCuy() {
       <ConfirmAlert
         open={deleteDialogOpen}
         title="Eliminar cuy"
-        message={`¿Deseas eliminar el cuy con categoría "${itemToDelete?.categoria}"?`}
+        message={`¿Deseas eliminar el cuy con categoría "${itemToDelete?.id}"?`}
         onCancel={() => {
           setDeleteDialogOpen(false);
           setItemToDelete(null);

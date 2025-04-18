@@ -11,10 +11,20 @@ export async function apiFetch<T>(
     ...options,
   });
 
+  const text = await res.text();
+
   if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Error en la solicitud");
+    let errorMessage = "Error en la solicitud";
+    try {
+      const json = JSON.parse(text);
+      errorMessage = json.message || errorMessage;
+    } catch {}
+    throw new Error(errorMessage);
   }
 
-  return res.json();
+  if (text === "") {
+    return undefined as T;
+  }
+
+  return JSON.parse(text);
 }
