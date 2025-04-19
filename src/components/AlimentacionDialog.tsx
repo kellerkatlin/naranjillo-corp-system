@@ -6,13 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-
-type Alimentacion = {
-  id?: number;
-  tipoAlimento: string;
-  cantidad: string;
-  fechaAlimentacion: string;
-};
+import { Alimentacion } from "@/types/alimentacion";
 
 interface AlimentacionDialogProps {
   open: boolean;

@@ -45,8 +45,15 @@ export default function FormAlimentacion() {
     {
       accessorKey: "fechaAlimentacion",
       header: "Fecha",
-      cell: ({ row }) =>
-        new Date(row.getValue("fechaAlimentacion")).toLocaleDateString(),
+      cell: ({ row }) => {
+        const fechaStr = row.getValue("fechaAlimentacion") as string;
+        const [year, month, day] = fechaStr.split("-");
+        return new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day)
+        ).toLocaleDateString();
+      },
     },
     {
       id: "acciones",

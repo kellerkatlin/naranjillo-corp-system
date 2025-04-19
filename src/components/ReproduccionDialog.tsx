@@ -41,6 +41,7 @@ export default function ReproduccionDialog({
     register,
     handleSubmit,
     reset,
+    watch,
     setValue,
     formState: { errors },
   } = useForm<ReproduccionRequest>();
@@ -136,8 +137,9 @@ export default function ReproduccionDialog({
                     setValue("padre.id", id);
                   }
                 }}
+                defaultValue={watch("padre.id")?.toString()}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona un padre" />
                 </SelectTrigger>
                 <SelectContent>

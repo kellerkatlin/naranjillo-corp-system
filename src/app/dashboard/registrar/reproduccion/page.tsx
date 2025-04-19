@@ -45,14 +45,28 @@ export default function FormReproduccion() {
     {
       accessorKey: "fechaReproduccion",
       header: "Fecha Reproducción",
-      cell: ({ row }) =>
-        new Date(row.getValue("fechaReproduccion")).toLocaleDateString(),
+      cell: ({ row }) => {
+        const fechaStr = row.getValue("fechaReproduccion") as string;
+        const [year, month, day] = fechaStr.split("-");
+        return new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day)
+        ).toLocaleDateString();
+      },
     },
     {
       accessorKey: "fechaParto",
       header: "Fecha Parto",
-      cell: ({ row }) =>
-        new Date(row.getValue("fechaParto")).toLocaleDateString(),
+      cell: ({ row }) => {
+        const fechaStr = row.getValue("fechaParto") as string;
+        const [year, month, day] = fechaStr.split("-");
+        return new Date(
+          Number(year),
+          Number(month) - 1,
+          Number(day)
+        ).toLocaleDateString();
+      },
     },
     {
       accessorKey: "padre",
