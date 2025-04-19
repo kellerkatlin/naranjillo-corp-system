@@ -1,25 +1,29 @@
 "use client";
 
-import { CrudTable } from "@/components/shared/CrudTable";
+// import { CrudTable } from "@/components/shared/CrudTable";
 import { getAllMonitoreo } from "@/services/monitoreoService";
 import { Monitoreo } from "@/types/monitoreo";
-import { ColumnDef } from "@tanstack/react-table";
+// import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-// import Deposito from "@/components/Deposito";
-// import { ThermometerIcon } from "lucide-react";
+import Deposito from "@/components/Deposito";
+import { ThermometerIcon } from "lucide-react";
 
 export default function MonitorDepositos() {
-  const [data, setData] = useState<Monitoreo[]>([]);
+  const [monitoreo, setMonitoreo] = useState<Monitoreo | null>(null);
 
   const loadData = async (showToast = false) => {
     try {
       const res = await getAllMonitoreo();
 
-      setData(res);
-      if (showToast) {
-        toast.success("Datos cargados correctamente");
+      if (res && res.length > 0) {
+        const ultimo = res[res.length - 1];
+        setMonitoreo(ultimo);
+
+        if (showToast) {
+          toast.success("Datos cargados correctamente");
+        }
       }
     } catch {
       if (showToast) {
@@ -32,51 +36,36 @@ export default function MonitorDepositos() {
     loadData(true);
     const interval = setInterval(() => {
       loadData();
-    }, 5000);
-
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    loadData();
-    const interval = setInterval(() => {
-      loadData();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-  useEffect(() => {
-    loadData();
-  }, []);
-  const columns: ColumnDef<Monitoreo>[] = [
-    { accessorKey: "id", header: "ID" },
-    { accessorKey: "hum1", header: "Humedad 1" },
-    { accessorKey: "hum2", header: "Humedad 2" },
-    { accessorKey: "hum3", header: "Humedad 3" },
-    { accessorKey: "hum4", header: "Humedad 4" },
-    { accessorKey: "temp5", header: "Temperatura" },
-    { accessorKey: "nombre_dispositivo", header: "Nombre Dispositivo" },
-  ];
-  // const datos = [
-  //   { porcentaje: 90, nombre: "Deposito 1" },
-  //   { porcentaje: 60, nombre: "Deposito 2" },
-  //   { porcentaje: 50, nombre: "Deposito 3" },
-  //   { porcentaje: 30, nombre: "Deposito 4" },
+  // const columns: ColumnDef<Monitoreo>[] = [
+  //   { accessorKey: "id", header: "ID" },
+  //   { accessorKey: "hum1", header: "Humedad 1" },
+  //   { accessorKey: "hum2", header: "Humedad 2" },
+  //   { accessorKey: "hum3", header: "Humedad 3" },
+  //   { accessorKey: "hum4", header: "Humedad 4" },
+  //   { accessorKey: "temp5", header: "Temperatura" },
+  //   { accessorKey: "nombre_dispositivo", header: "Nombre Dispositivo" },
   // ];
-
-  // const temperatura = 30;
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-start p-10 gap-10">
-      <CrudTable data={data} columns={columns} />
-      {/* <h2 className="text-gray-600 text-sm">
+      {/* <CrudTable data={data} columns={columns} /> */}
+      <h2 className="text-gray-600 text-sm">
         Sistema de monitoreo de los depositos de desecho de cuy
       </h2>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {datos.map((dep, i) => (
-          <Deposito key={i} porcentaje={dep.porcentaje} nombre={dep.nombre} />
-        ))}
+        {monitoreo && (
+          <>
+            <Deposito porcentaje={monitoreo.hum1} nombre="Humedad 1" />
+            <Deposito porcentaje={monitoreo.hum2} nombre="Humedad 2" />
+            <Deposito porcentaje={monitoreo.hum3} nombre="Humedad 3" />
+            <Deposito porcentaje={monitoreo.hum4} nombre="Humedad 4" />
+          </>
+        )}
       </div>
 
       <div className="flex flex-col items-center gap-2">
@@ -86,12 +75,15 @@ export default function MonitorDepositos() {
             strokeWidth={2.5}
             className="text-blue-500"
           />
-          <span className="text-4xl font-semibold">{temperatura}°</span>
+          <span className="text-4xl font-semibold">
+            {" "}
+            {monitoreo ? monitoreo.temp5 : "--"}°
+          </span>
         </div>
         <span className="uppercase text-sm text-gray-600 font-medium">
           Temperatura °C
         </span>
-      </div> */}
+      </div>
     </div>
   );
 }
