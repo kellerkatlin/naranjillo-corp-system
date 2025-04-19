@@ -132,16 +132,21 @@ export default function FormVentas() {
 
   return (
     <>
-      <div className="flex  gap-2  bg-gray-100 p-4">
+      <div className="bg-white rounded-lg shadow p-6 flex flex-col lg:flex-row gap-6 mx-auto max-w-7xl">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="bg-white p-6 rounded shadow max-w-md w-full mx-auto"
+          className="w-full lg:w-1/2 space-y-6"
         >
-          <h2 className="text-lg font-bold text-gray-700 mb-4">
-            Registrar Venta
-          </h2>
+          <div>
+            <h2 className="text-xl font-bold text-gray-800 mb-2">
+              Registrar Venta
+            </h2>
+            <p className="text-sm text-gray-500">
+              Completa el precio por cuy y selecciona los cuyes disponibles.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 gap-4 mb-6">
+          <div className="space-y-4">
             <div>
               <Label className="mb-1 block">Cantidad</Label>
               <Input value={cantidad} disabled />
@@ -169,16 +174,23 @@ export default function FormVentas() {
             <Button
               type="submit"
               disabled={cantidad === 0 || +precioPorCuy <= 0}
-              className="bg-primary hover:bg-orange-400"
+              className="bg-primary cursor-pointer hover:bg-orange-400"
             >
               Registrar
             </Button>
           </div>
         </form>
-        <div className="flex flex-col">
-          <CrudTable data={selectedCuyes} columns={columnsCuyesSelected} />
+
+        <div className="w-full lg:w-1/2 overflow-auto max-h-[400px] border border-gray-200 rounded">
+          <h3 className="text-base font-semibold text-gray-700 px-4 pt-4">
+            Cuyes seleccionados
+          </h3>
+          <div className="p-4">
+            <CrudTable data={selectedCuyes} columns={columnsCuyesSelected} />
+          </div>
         </div>
       </div>
+
       <CrudTable data={cuyes} columns={columsCuyes} />
     </>
   );
