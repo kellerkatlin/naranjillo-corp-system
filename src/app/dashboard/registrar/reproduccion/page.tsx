@@ -92,6 +92,7 @@ export default function FormReproduccion() {
         return (
           <div className="flex gap-2">
             <Button
+              className="cursor-pointer"
               size="sm"
               onClick={() => {
                 setEditItem(item);
@@ -101,6 +102,7 @@ export default function FormReproduccion() {
               <Pencil className="w-4 h-4" />
             </Button>
             <Button
+              className="cursor-pointer"
               size="sm"
               variant="destructive"
               onClick={() => {

@@ -6,6 +6,9 @@ const CUY_BASE = "/cuy";
 export const getAllCuyes = (): Promise<Cuy[]> =>
   apiFetch(`${CUY_BASE}/find/all`);
 
+export const getCuyAvailable = (): Promise<Cuy[]> =>
+  apiFetch(`${CUY_BASE}/find/available`);
+
 export const getCuyById = (id: number): Promise<Cuy> =>
   apiFetch(`${CUY_BASE}/find/${id}`);
 

@@ -183,7 +183,10 @@ export default function ReproduccionDialog({
           </div>
 
           <div className="flex justify-end pt-4">
-            <Button type="submit" className="bg-primary hover:bg-orange-400">
+            <Button
+              type="submit"
+              className="bg-primary cursor-pointer hover:bg-orange-400"
+            >
               {reproduccion ? "Actualizar" : "Registrar"}
             </Button>
           </div>

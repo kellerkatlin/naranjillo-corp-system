@@ -34,8 +34,12 @@ export default function ConfirmAlert({
           <AlertDialogDescription>{message}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Confirmar</AlertDialogAction>
+          <AlertDialogCancel className="cursor-pointer" onClick={onCancel}>
+            Cancelar
+          </AlertDialogCancel>
+          <AlertDialogAction className="cursor-pointer" onClick={onConfirm}>
+            Confirmar
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
