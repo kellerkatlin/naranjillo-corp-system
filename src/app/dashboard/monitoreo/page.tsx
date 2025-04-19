@@ -13,16 +13,38 @@ import { toast } from "sonner";
 export default function MonitorDepositos() {
   const [data, setData] = useState<Monitoreo[]>([]);
 
-  const loadData = async () => {
+  const loadData = async (showToast = false) => {
     try {
       const res = await getAllMonitoreo();
 
       setData(res);
-      toast.success("Datos cargados correctamente");
+      if (showToast) {
+        toast.success("Datos cargados correctamente");
+      }
     } catch {
-      toast.error("Error al cargar datos");
+      if (showToast) {
+        toast.error("Error al cargar datos");
+      }
     }
   };
+
+  useEffect(() => {
+    loadData(true);
+    const interval = setInterval(() => {
+      loadData();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    loadData();
+    const interval = setInterval(() => {
+      loadData();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
   useEffect(() => {
     loadData();
   }, []);
