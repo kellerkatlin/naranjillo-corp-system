@@ -5,12 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CrudTable } from "@/components/shared/CrudTable";
-import { getCuyAvailable } from "@/services/cuyService";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Cuy } from "@/types/cuy";
 import { Checkbox } from "@/components/ui/checkbox";
+import { VentasRequest } from "@/types/ventas";
+import { getCuyAvailable } from "@/services/cuyService";
 
 interface VentaFormData {
   cantidad: number;
@@ -20,9 +21,12 @@ interface VentaFormData {
 export default function FormVentas() {
   const [cuyes, setCuyes] = useState<Cuy[]>([]);
   const [selectedCuyes, setSelectedCuyes] = useState<Cuy[]>([]);
+  const [precioPorCuy, setPrecioPorCuy] = useState<string>("");
+  const precio = parseFloat(precioPorCuy);
+  const cantidad = selectedCuyes.length;
+  const total = !isNaN(precio) ? precio * cantidad : 0;
 
   const {
-    register,
     handleSubmit,
     formState: { errors },
   } = useForm<VentaFormData>();
@@ -80,7 +84,7 @@ export default function FormVentas() {
           <div className="flex items-center gap-2">
             <Checkbox
               checked={isSelected}
-              onChange={() => toggleCuySeleccion(item)}
+              onCheckedChange={() => toggleCuySeleccion(item)}
             />
           </div>
         );
@@ -109,9 +113,21 @@ export default function FormVentas() {
     },
   ];
 
-  const onSubmit = (data: VentaFormData) => {
-    console.log("Venta registrada:", data);
-    // Aquí puedes llamar a tu API para guardar la venta
+  const onSubmit = () => {
+    if (cantidad === 0 || isNaN(precio) || precio <= 0) {
+      toast.error("Selecciona cuyes y asigna un precio válido.");
+      return;
+    }
+
+    const venta: VentasRequest = {
+      cantidad,
+      total,
+      cuyes: { id: selectedCuyes.map((cuy) => cuy.id) },
+    };
+    console.log(venta);
+    toast.success("Venta registrada correctamente");
+    setSelectedCuyes([]);
+    setPrecioPorCuy("");
   };
 
   return (
@@ -128,38 +144,33 @@ export default function FormVentas() {
           <div className="grid grid-cols-1 gap-4 mb-6">
             <div>
               <Label className="mb-1 block">Cantidad</Label>
-              <Input
-                type="number"
-                min={1}
-                {...register("cantidad", { required: true })}
-                placeholder="Cantidad vendida"
-              />
-              {errors.cantidad && (
-                <p className="text-red-500 text-sm mt-1">
-                  Este campo es requerido
-                </p>
-              )}
+              <Input value={cantidad} disabled />
             </div>
 
             <div>
-              <Label className="mb-1 block">Total (S/)</Label>
+              <Label className="mb-1 block">Precio por cuy (S/)</Label>
               <Input
                 type="number"
                 step="0.01"
                 min={0}
-                {...register("total", { required: true })}
-                placeholder="Monto total de la venta"
+                value={precioPorCuy}
+                onChange={(e) => setPrecioPorCuy(e.target.value)}
+                placeholder="Ej: 10.50"
               />
-              {errors.total && (
-                <p className="text-red-500 text-sm mt-1">
-                  Este campo es requerido
-                </p>
-              )}
+            </div>
+
+            <div>
+              <Label className="mb-1 block">Total (S/)</Label>
+              <Input value={total.toFixed(2)} disabled />
             </div>
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit" className="bg-primary hover:bg-orange-400">
+            <Button
+              type="submit"
+              disabled={cantidad === 0 || +precioPorCuy <= 0}
+              className="bg-primary hover:bg-orange-400"
+            >
               Registrar
             </Button>
           </div>
