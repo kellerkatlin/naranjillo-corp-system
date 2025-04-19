@@ -18,6 +18,7 @@ export default function MonitorDepositos() {
       const res = await getAllMonitoreo();
 
       setData(res);
+      toast.success("Datos cargados correctamente");
     } catch {
       toast.error("Error al cargar datos");
     }
