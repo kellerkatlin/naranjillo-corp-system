@@ -40,7 +40,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-[url(/banner.jpg)] ">
       <div className="flex w-[900px] overflow-hidden">
         <div className="w-1/2 flex items-center justify-center p-8 relative">
-          <img src="/logo.png" alt="Naranjilo Corp" className="max-w-xs" />
+          <img src="/Logo.png" alt="Naranjilo Corp" className="max-w-xs" />
         </div>
 
         <div className="w-1/2 p-10 backdrop-blur-md bg-white/10 border-2 rounded-lg border-solid border-primary/30 flex flex-col justify-center">
