@@ -5,5 +5,5 @@ export type Ventas = VentasRequest & {
 export type VentasRequest = {
   cantidad: number;
   total: number;
-  cuyes: { id: number };
+  cuyes: { id: number[] };
 };
