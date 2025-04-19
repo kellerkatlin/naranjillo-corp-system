@@ -12,7 +12,8 @@ import {
 export default function DashboardHeader() {
   const pathname = usePathname();
   const breadcrumbMap: Record<string, string> = {
-    sales: "VENTAS",
+    sale: "VENTA",
+    allsales: "VENTAS",
     registrar: "REGISTRAR",
     registrarcuyes: "REGISTRAR CUYES",
     cuyes: "CUYES",

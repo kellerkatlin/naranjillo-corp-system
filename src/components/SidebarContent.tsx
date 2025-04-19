@@ -15,7 +15,8 @@ const links = [
     href: "/dashboard/registrar/",
     icon: <FaPaw />,
   },
-  { label: "Ventas", href: "/dashboard/sales", icon: "S/. " },
+  { label: "Venta", href: "/dashboard/sale", icon: "S/. " },
+  { label: "Ventas", href: "/dashboard/allsales", icon: "S/. " },
   { label: "Monitoreo", href: "/dashboard/monitoreo", icon: <MdMonitor /> },
   {
     label: "Capacitacion",

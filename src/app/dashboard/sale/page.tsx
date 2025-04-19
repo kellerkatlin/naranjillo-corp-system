@@ -18,7 +18,7 @@ interface VentaFormData {
   total: number;
 }
 
-export default function FormVentas() {
+export default function FormVenta() {
   const [cuyes, setCuyes] = useState<Cuy[]>([]);
   const [selectedCuyes, setSelectedCuyes] = useState<Cuy[]>([]);
   const [precioPorCuy, setPrecioPorCuy] = useState<string>("");
@@ -191,7 +191,9 @@ export default function FormVentas() {
         </div>
       </div>
 
-      <CrudTable data={cuyes} columns={columsCuyes} />
+      <div className="bg-white rounded-lg shadow p-6 mt-6 overflow-auto max-h-[400px] border border-gray-200">
+        <CrudTable data={cuyes} columns={columsCuyes} />
+      </div>
     </>
   );
 }

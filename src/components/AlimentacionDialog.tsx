@@ -11,7 +11,7 @@ import { Alimentacion } from "@/types/alimentacion";
 interface AlimentacionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: Alimentacion) => void;
+  onSubmit?: (data: Alimentacion) => void;
   alimentacion?: Alimentacion | null;
 }
 
