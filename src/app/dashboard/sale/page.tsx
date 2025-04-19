@@ -28,7 +28,7 @@ export default function FormVenta() {
 
   const {
     handleSubmit,
-    formState: { errors },
+    // formState: { errors },
   } = useForm<VentaFormData>();
 
   const loadData = async () => {

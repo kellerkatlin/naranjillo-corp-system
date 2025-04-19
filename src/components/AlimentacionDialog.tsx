@@ -43,7 +43,9 @@ export default function AlimentacionDialog({
   }, [open, alimentacion, reset]);
 
   const handleFormSubmit = (data: Alimentacion) => {
-    onSubmit(data);
+    if (onSubmit) {
+      onSubmit(data);
+    }
     onOpenChange(false);
   };
 

@@ -1,23 +1,23 @@
 "use client";
 
-import { deleteAlimentacion } from "@/services/alimentacionService";
-import { Alimentacion } from "@/types/alimentacion";
+// import { deleteAlimentacion } from "@/services/alimentacionService";
+// import { Alimentacion } from "@/types/alimentacion";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { useEffect, useState } from "react";
-import AlimentacionDialog from "@/components/AlimentacionDialog";
+// import AlimentacionDialog from "@/components/AlimentacionDialog";
 import { toast } from "sonner";
-import { CrudToolbar } from "@/components/shared/CrudToolbar";
+// import { CrudToolbar } from "@/components/shared/CrudToolbar";
 import { CrudTable } from "@/components/shared/CrudTable";
-import ConfirmAlert from "@/components/shared/ComfirmAlert";
+// import ConfirmAlert from "@/components/shared/ComfirmAlert";
 import { getAllVentas } from "@/services/ventaService";
 import { Ventas } from "@/types/ventas";
 
 export default function VentasAll() {
   const [data, setData] = useState<Ventas[]>([]);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<Alimentacion | null>(null);
+  // const [dialogOpen, setDialogOpen] = useState(false);
+  // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  // const [itemToDelete, setItemToDelete] = useState<Alimentacion | null>(null);
 
   const loadData = async () => {
     try {
