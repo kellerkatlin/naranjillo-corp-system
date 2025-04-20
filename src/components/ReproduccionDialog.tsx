@@ -54,6 +54,8 @@ export default function ReproduccionDialog({
     if (open) {
       if (reproduccion) {
         reset(reproduccion);
+        setValue("padre.id", reproduccion.padre.id);
+        setValue("estado", reproduccion.estado);
       } else {
         reset({
           cantidadHijos: 0,
