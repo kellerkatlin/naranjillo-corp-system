@@ -11,7 +11,15 @@ import Deposito from "@/components/Deposito";
 import { ThermometerIcon } from "lucide-react";
 
 export default function MonitorDepositos() {
-  const [monitoreo, setMonitoreo] = useState<Monitoreo | null>(null);
+  const [monitoreo, setMonitoreo] = useState<Monitoreo>({
+    id: 0,
+    hum1: 0,
+    hum2: 0,
+    hum3: 0,
+    hum4: 0,
+    temp5: 0,
+    nombre_dispositivo: "Sin datos",
+  });
 
   const loadData = async (showToast = false) => {
     try {
