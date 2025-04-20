@@ -21,12 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { MultiSelectHembras } from "./MultiSelectHembras";
 
 interface ReproduccionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: ReproduccionRequest) => void;
   reproduccion?: Reproduccion | null;
+  readOnly?: boolean;
 }
 
 export default function ReproduccionDialog({
@@ -34,6 +36,7 @@ export default function ReproduccionDialog({
   onOpenChange,
   onSubmit,
   reproduccion,
+  readOnly,
 }: ReproduccionDialogProps) {
   const [cuyesPadres, setCuyesPadres] = useState<Cuy[]>([]);
   const [cuyesMadres, setCuyesMadres] = useState<Cuy[]>([]);
@@ -43,6 +46,7 @@ export default function ReproduccionDialog({
     reset,
     watch,
     setValue,
+    setError,
     formState: { errors },
   } = useForm<ReproduccionRequest>();
 
@@ -55,8 +59,8 @@ export default function ReproduccionDialog({
           cantidadHijos: 0,
           fechaReproduccion: new Date().toISOString().split("T")[0],
           fechaParto: new Date().toISOString().split("T")[0],
-          padre: { id: 0 },
-          madre: { id: 0 },
+          padre: {},
+          hembras: [],
         });
       }
     }
@@ -69,6 +73,7 @@ export default function ReproduccionDialog({
       setCuyesPadres(dataPadres);
       const resMadres = await getAllCuyes();
       const dataMadres = resMadres.filter((cuy) => cuy.sexo === "HEMBRA");
+
       setCuyesMadres(dataMadres);
     } catch (error) {
       console.error("Error loading cuyes:", error);
@@ -80,13 +85,25 @@ export default function ReproduccionDialog({
   }, []);
 
   const handleFormSubmit = (data: ReproduccionRequest) => {
+    if (!data.hembras) {
+      return setError("hembras", {
+        type: "manual",
+        message: "Debes seleccionar al menos una madre",
+      });
+    }
+    if (!data.padre.id) {
+      return setError("padre", {
+        type: "manual",
+        message: "Debes seleccionar un padre",
+      });
+    }
     onSubmit(data);
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="overflow-visible">
         <DialogHeader>
           <DialogTitle>
             {reproduccion ? "Editar reproducción" : "Registrar reproducción"}
@@ -96,16 +113,66 @@ export default function ReproduccionDialog({
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
+              <Label className="block mb-1">Cuyera</Label>
+              <Input
+                disabled={readOnly}
+                type="text"
+                {...register("nombreCuyera", { required: true })}
+              />
+              {errors.nombreCuyera && (
+                <p className="text-red-500 text-sm mt-1">Campo requerido</p>
+              )}
+            </div>
+            <div>
               <Label className="block mb-1">Cantidad de Hijos</Label>
               <Input
                 type="number"
+                disabled={readOnly}
                 {...register("cantidadHijos", { required: true })}
               />
               {errors.cantidadHijos && (
                 <p className="text-red-500 text-sm mt-1">Campo requerido</p>
               )}
             </div>
-
+            <div>
+              <Label className="block mb-1">Cantidad de Hijos Muertos</Label>
+              <Input
+                disabled={readOnly}
+                type="number"
+                {...register("cantidadHijosMuertos", { required: true })}
+              />
+              {errors.cantidadHijosMuertos && (
+                <p className="text-red-500 text-sm mt-1">Campo requerido</p>
+              )}
+            </div>
+            <div>
+              <Label className="mb-1 block">Estado</Label>
+              <Select
+                disabled={readOnly}
+                onValueChange={(value) => {
+                  if (!readOnly) {
+                    const id = parseInt(value, 10);
+                    if (!isNaN(id)) {
+                      setValue("padre.id", id);
+                    }
+                  }
+                }}
+                defaultValue={watch("estado") || "PROCESO"}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecciona un estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PROCESO">PROCESO</SelectItem>
+                  <SelectItem value="FINALIZADO">FINALIZADO</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.estado && (
+                <p className="text-red-500 text-sm mt-1">
+                  Este campo es requerido
+                </p>
+              )}
+            </div>
             <div>
               <Label className="block mb-1">Fecha de Reproducción</Label>
               <Input
@@ -150,46 +217,39 @@ export default function ReproduccionDialog({
                   ))}
                 </SelectContent>
               </Select>
-              {errors.padre?.id && (
-                <p className="text-red-500 text-sm mt-1">Campo requerido</p>
+              {errors.padre?.message && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.padre.message}
+                </p>
               )}
             </div>
 
             <div>
               <Label className="block mb-1">Madre (Hembra)</Label>
-              <Select
-                onValueChange={(value) => {
-                  const id = parseInt(value, 10);
-                  if (!isNaN(id)) {
-                    setValue("madre.id", id);
-                  }
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona una madre" />
-                </SelectTrigger>
-                <SelectContent>
-                  {cuyesMadres.map((cuy) => (
-                    <SelectItem key={cuy.id} value={String(cuy.id)}>
-                      ID: {cuy.id} - {cuy.categoria}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.madre?.id && (
-                <p className="text-red-500 text-sm mt-1">Campo requerido</p>
+              <MultiSelectHembras
+                disabled={readOnly}
+                options={cuyesMadres}
+                selected={watch("hembras") || []}
+                onChange={(newHembras) => setValue("hembras", newHembras)}
+              />
+              {errors.hembras?.message && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.hembras.message}
+                </p>
               )}
             </div>
           </div>
 
-          <div className="flex justify-end pt-4">
-            <Button
-              type="submit"
-              className="bg-primary cursor-pointer hover:bg-orange-400"
-            >
-              {reproduccion ? "Actualizar" : "Registrar"}
-            </Button>
-          </div>
+          {!readOnly && (
+            <div className="flex justify-end pt-4">
+              <Button
+                type="submit"
+                className="bg-primary cursor-pointer hover:bg-orange-400"
+              >
+                {reproduccion ? "Actualizar" : "Registrar"}
+              </Button>
+            </div>
+          )}
         </form>
       </DialogContent>
     </Dialog>

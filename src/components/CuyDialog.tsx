@@ -148,9 +148,9 @@ export default function CuyDialog({
                 <SelectValue placeholder="Selecciona un estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="VIVO">VIVO</SelectItem>
-                <SelectItem value="MUERTO">MUERTO</SelectItem>
                 <SelectItem value="VENDIDO">VENDIDO</SelectItem>
+                <SelectItem value="APTO ">APTO </SelectItem>
+                <SelectItem value="CAMADA">CAMADA</SelectItem>
               </SelectContent>
             </Select>
             {errors.estado && (

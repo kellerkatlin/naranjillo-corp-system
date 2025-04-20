@@ -11,7 +11,7 @@ import {
 } from "@/services/reproduccionService";
 import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import ReproduccionDialog from "@/components/ReproduccionDialog";
 import { CrudToolbar } from "@/components/shared/CrudToolbar";
 import { CrudTable } from "@/components/shared/CrudTable";
@@ -23,6 +23,7 @@ export default function FormReproduccion() {
   const [editItem, setEditItem] = useState<Reproduccion | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Reproduccion | null>(null);
+  const [viewItem, setViewItem] = useState<Reproduccion | null>(null);
 
   const loadData = async () => {
     try {
@@ -38,6 +39,10 @@ export default function FormReproduccion() {
   }, []);
 
   const columns: ColumnDef<Reproduccion>[] = [
+    {
+      accessorKey: "nombreCuyera",
+      header: "Nombre Cuyera",
+    },
     {
       accessorKey: "cantidadHijos",
       header: "Cantidad de Hijos",
@@ -69,22 +74,6 @@ export default function FormReproduccion() {
       },
     },
     {
-      accessorKey: "padre",
-      header: "Padre",
-      cell: ({ row }) => {
-        const padre = row.getValue("padre") as { id: number; codigo?: string };
-        return padre?.codigo || `ID ${padre?.id}`;
-      },
-    },
-    {
-      accessorKey: "madre",
-      header: "Madre",
-      cell: ({ row }) => {
-        const madre = row.getValue("madre") as { id: number; codigo?: string };
-        return madre?.codigo || `ID ${madre?.id}`;
-      },
-    },
-    {
       id: "acciones",
       header: "Acciones",
       cell: ({ row }) => {
@@ -111,6 +100,14 @@ export default function FormReproduccion() {
               }}
             >
               <Trash2 className="w-4 h-4" />
+            </Button>
+            <Button
+              className="cursor-pointer"
+              size="sm"
+              variant="secondary"
+              onClick={() => setViewItem(item)}
+            >
+              <Eye className="w-4 h-4" />
             </Button>
           </div>
         );
@@ -155,6 +152,17 @@ export default function FormReproduccion() {
         onSubmit={onSubmit}
         reproduccion={editItem}
       />
+
+      <ReproduccionDialog
+        open={!!viewItem}
+        onOpenChange={(open) => {
+          if (!open) setViewItem(null);
+        }}
+        onSubmit={() => {}}
+        reproduccion={viewItem}
+        readOnly
+      />
+
       <CrudToolbar onCreate={() => setDialogOpen(true)} title="Reproducción" />
       <CrudTable columns={columns} data={data} />
       <ConfirmAlert

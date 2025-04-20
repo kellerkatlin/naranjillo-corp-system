@@ -3,9 +3,12 @@ export type Reproduccion = ReproduccionRequest & {
 };
 
 export type ReproduccionRequest = {
+  nombreCuyera: string;
+  cantidadHijosMuertos: number;
   cantidadHijos: number;
   fechaReproduccion: string;
   fechaParto: string;
+  estado: string;
   padre: { id: number };
-  madre: { id: number };
+  hembras: { id: number }[];
 };
