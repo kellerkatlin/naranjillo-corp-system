@@ -123,7 +123,10 @@ export default function FormAlimentacion() {
     <>
       <AlimentacionDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) setEditItem(null);
+        }}
         onSubmit={onSubmit}
         alimentacion={editItem}
       />
