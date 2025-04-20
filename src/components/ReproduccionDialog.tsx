@@ -77,6 +77,7 @@ export default function ReproduccionDialog({
       );
       setCuyesPadres(dataPadres);
       const resMadres = await getAllCuyes();
+
       const dataMadres = resMadres.filter(
         (cuy) => cuy.sexo === "HEMBRA" && cuy.estado === "APTO"
       );

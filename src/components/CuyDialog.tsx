@@ -150,7 +150,7 @@ export default function CuyDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="VENDIDO">VENDIDO</SelectItem>
-                <SelectItem value="APTO ">APTO </SelectItem>
+                <SelectItem value="APTO">APTO</SelectItem>
                 <SelectItem value="CAMADA">CAMADA</SelectItem>
               </SelectContent>
             </Select>

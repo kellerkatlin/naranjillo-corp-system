@@ -42,6 +42,7 @@ export function MultiSelectHembras({
   const selectedOptions = options.filter((hembra) =>
     selected.some((s) => s.id === hembra.id)
   );
+
   if (disabled) {
     return (
       <div className="border rounded-md px-4 py-2 bg-muted text-muted-foreground">
