@@ -162,14 +162,9 @@ export default function ReproduccionDialog({
               <Select
                 disabled={readOnly}
                 onValueChange={(value) => {
-                  if (!readOnly) {
-                    const id = parseInt(value, 10);
-                    if (!isNaN(id)) {
-                      setValue("padre.id", id);
-                    }
-                  }
+                  setValue("estado", value);
                 }}
-                defaultValue={watch("estado")}
+                value={watch("estado")}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona un estado" />
@@ -185,6 +180,7 @@ export default function ReproduccionDialog({
                 </p>
               )}
             </div>
+
             <div>
               <Label className="block mb-1">Fecha de Reproducción</Label>
               <Input

@@ -47,6 +47,7 @@ export default function CuyDialog({
           fechaRegistro: new Date().toISOString().split("T")[0],
           categoria: "",
           estado: "",
+          sexo: "",
         });
       }
     }
@@ -143,7 +144,7 @@ export default function CuyDialog({
             <Label className="mb-1 block">Estado</Label>
             <Select
               onValueChange={(value) => setValue("estado", value)}
-              defaultValue={watch("estado")}
+              defaultValue={watch("estado") || "APTO"}
             >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecciona un estado" />

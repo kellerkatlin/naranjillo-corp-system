@@ -148,7 +148,10 @@ export default function FormReproduccion() {
     <>
       <ReproduccionDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) setEditItem(null);
+        }}
         onSubmit={onSubmit}
         reproduccion={editItem}
       />
