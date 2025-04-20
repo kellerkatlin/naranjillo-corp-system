@@ -109,6 +109,7 @@ export default function CuyDialog({
               <SelectContent>
                 <SelectItem value="ENGORDE">ENGORDE</SelectItem>
                 <SelectItem value="REPRODUCTOR">REPRODUCTOR</SelectItem>
+                <SelectItem value="CRIA">CRIA</SelectItem>
               </SelectContent>
             </Select>
             {errors.categoria && (
@@ -124,7 +125,7 @@ export default function CuyDialog({
               defaultValue={watch("sexo")}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecciona un estado" />
+                <SelectValue placeholder="Selecciona un sexo" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="MACHO">MACHO</SelectItem>
