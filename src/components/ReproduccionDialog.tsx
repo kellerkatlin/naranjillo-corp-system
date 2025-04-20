@@ -54,8 +54,6 @@ export default function ReproduccionDialog({
     if (open) {
       if (reproduccion) {
         reset(reproduccion);
-        setValue("padre.id", reproduccion.padre.id);
-        setValue("estado", reproduccion.estado);
       } else {
         reset({
           cantidadHijos: 0,
@@ -216,6 +214,7 @@ export default function ReproduccionDialog({
                     setValue("padre.id", id);
                   }
                 }}
+                disabled={readOnly}
                 defaultValue={watch("padre.id")?.toString()}
               >
                 <SelectTrigger className="w-full">

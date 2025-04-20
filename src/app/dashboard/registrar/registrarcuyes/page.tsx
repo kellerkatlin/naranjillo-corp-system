@@ -128,7 +128,10 @@ export default function FormCuy() {
     <>
       <CuyDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
+        onOpenChange={(open) => {
+          setDialogOpen(open);
+          if (!open) setEditItem(null);
+        }}
         onSubmit={onSubmit}
         cuy={editItem}
       />
