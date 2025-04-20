@@ -106,7 +106,11 @@ export default function ReproduccionDialog({
       <DialogContent className="overflow-visible">
         <DialogHeader>
           <DialogTitle>
-            {reproduccion ? "Editar reproducción" : "Registrar reproducción"}
+            {readOnly
+              ? `Visualizar reproducción ${reproduccion?.nombreCuyera}`
+              : reproduccion
+              ? `Editar reproducción ${reproduccion.nombreCuyera}`
+              : "Registrar reproducción"}
           </DialogTitle>
         </DialogHeader>
 
@@ -177,6 +181,7 @@ export default function ReproduccionDialog({
               <Label className="block mb-1">Fecha de Reproducción</Label>
               <Input
                 type="date"
+                disabled={readOnly}
                 {...register("fechaReproduccion", { required: true })}
               />
               {errors.fechaReproduccion && (
@@ -188,6 +193,7 @@ export default function ReproduccionDialog({
               <Label className="block mb-1">Fecha de Parto</Label>
               <Input
                 type="date"
+                disabled={readOnly}
                 {...register("fechaParto", { required: true })}
               />
               {errors.fechaParto && (
