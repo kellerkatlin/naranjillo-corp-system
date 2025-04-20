@@ -39,6 +39,26 @@ export function MultiSelectHembras({
       onChange([...selected, { id }]);
     }
   };
+  const selectedOptions = options.filter((hembra) =>
+    selected.some((s) => s.id === hembra.id)
+  );
+  if (disabled) {
+    return (
+      <div className="border rounded-md px-4 py-2 bg-muted text-muted-foreground">
+        {selectedOptions.length > 0 ? (
+          <ul className="list-disc ml-4">
+            {selectedOptions.map((hembra) => (
+              <li key={hembra.id}>
+                ID: {hembra.id} - {hembra.categoria}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <span>No hay madres seleccionadas</span>
+        )}
+      </div>
+    );
+  }
 
   return (
     <Popover>

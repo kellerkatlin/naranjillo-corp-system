@@ -58,6 +58,9 @@ export default function ReproduccionDialog({
         reset({
           cantidadHijos: 0,
           fechaReproduccion: new Date().toISOString().split("T")[0],
+          cantidadHijosMuertos: 0,
+          estado: "PROCESO",
+          nombreCuyera: "",
           fechaParto: new Date().toISOString().split("T")[0],
           padre: {},
           hembras: [],
@@ -69,10 +72,14 @@ export default function ReproduccionDialog({
   const loadCuyes = async () => {
     try {
       const resPadres = await getAllCuyes();
-      const dataPadres = resPadres.filter((cuy) => cuy.sexo === "MACHO");
+      const dataPadres = resPadres.filter(
+        (cuy) => cuy.sexo === "MACHO" && cuy.estado === "APTO"
+      );
       setCuyesPadres(dataPadres);
       const resMadres = await getAllCuyes();
-      const dataMadres = resMadres.filter((cuy) => cuy.sexo === "HEMBRA");
+      const dataMadres = resMadres.filter(
+        (cuy) => cuy.sexo === "HEMBRA" && cuy.estado === "APTO"
+      );
 
       setCuyesMadres(dataMadres);
     } catch (error) {
@@ -141,9 +148,9 @@ export default function ReproduccionDialog({
             <div>
               <Label className="block mb-1">Cantidad de Hijos Muertos</Label>
               <Input
-                disabled={readOnly}
-                type="number"
+                disabled={!reproduccion || readOnly}
                 {...register("cantidadHijosMuertos", { required: true })}
+                defaultValue={0}
               />
               {errors.cantidadHijosMuertos && (
                 <p className="text-red-500 text-sm mt-1">Campo requerido</p>
@@ -161,7 +168,7 @@ export default function ReproduccionDialog({
                     }
                   }
                 }}
-                defaultValue={watch("estado") || "PROCESO"}
+                defaultValue={watch("estado")}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona un estado" />
