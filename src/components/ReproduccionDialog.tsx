@@ -209,10 +209,7 @@ export default function ReproduccionDialog({
               <Label className="block mb-1">Padre (Macho)</Label>
               <Select
                 onValueChange={(value) => {
-                  const id = parseInt(value, 10);
-                  if (!isNaN(id)) {
-                    setValue("padre.id", id);
-                  }
+                  setValue("padre.id", +value);
                 }}
                 disabled={readOnly}
                 defaultValue={watch("padre.id")?.toString()}
