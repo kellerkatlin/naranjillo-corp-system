@@ -11,6 +11,9 @@ export function middleware(request: NextRequest) {
   if (pathname === "/login" && token) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   const isProtected = PROTECTED_PATHS.some(
     (path) => pathname === path || pathname.startsWith(`${path}/`)

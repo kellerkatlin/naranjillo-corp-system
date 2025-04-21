@@ -37,13 +37,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[url(/banner.jpg)] ">
-      <div className="flex w-[900px] overflow-hidden">
-        <div className="w-1/2 flex items-center justify-center p-8 relative">
-          <img src="/Logo.png" alt="Naranjilo Corp" className="max-w-xs" />
-        </div>
+    <div className="flex min-h-screen items-center justify-center bg-[url(/banner.jpg)] bg-cover bg-center">
+      <div className="flex flex-col items-center w-[900px] gap-4">
+        <img src="/Logo.png" alt="Naranjilo Corp" className="w-40" />
 
-        <div className="w-1/2 p-10 backdrop-blur-md bg-white/10 border-2 rounded-lg border-solid border-primary/30 flex flex-col justify-center">
+        <div className="w-[90%] md:w-1/2   p-10 backdrop-blur-md bg-white/10 border-2 rounded-lg border-solid border-primary/30">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <input
               type="text"
