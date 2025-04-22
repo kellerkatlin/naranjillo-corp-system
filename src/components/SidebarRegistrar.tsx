@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 import React from "react";
 const links = [
   { label: "Registrar Cuyes", href: "/dashboard/registrar/registrarcuyes" },
-  { label: "Reprodución", href: "/dashboard/registrar/reproduccion" },
-  { label: "Alimentacion", href: "/dashboard/registrar/alimentacion" },
+  { label: "Reproducción", href: "/dashboard/registrar/reproduccion" },
+  { label: "Alimentación", href: "/dashboard/registrar/alimentacion" },
 ];
 export default function SidebarRegistrar() {
   const pathname = usePathname();

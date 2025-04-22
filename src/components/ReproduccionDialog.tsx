@@ -139,8 +139,9 @@ export default function ReproduccionDialog({
               <Label className="block mb-1">Cantidad de Hijos</Label>
               <Input
                 type="number"
-                disabled={readOnly}
+                disabled={!reproduccion || readOnly}
                 {...register("cantidadHijos", { required: true })}
+                defaultValue={0}
               />
               {errors.cantidadHijos && (
                 <p className="text-red-500 text-sm mt-1">Campo requerido</p>
