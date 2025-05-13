@@ -5,9 +5,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col w-full min-h-screen">
       <SidebarRegistrar />
-      <div className="mt-6 rounded-md shadow bg-white md:mr-8  md:p-4">
+      <div className="mt-6 rounded-md shadow bg-white p-2 md:mr-8 md:p-4">
         {children}
       </div>
     </div>

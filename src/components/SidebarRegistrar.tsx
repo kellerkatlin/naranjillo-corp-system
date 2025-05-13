@@ -6,6 +6,7 @@ const links = [
   { label: "Registrar Cuyes", href: "/dashboard/registrar/registrarcuyes" },
   { label: "Reproducción", href: "/dashboard/registrar/reproduccion" },
   { label: "Alimentación", href: "/dashboard/registrar/alimentacion" },
+  { label: "Sanidad", href: "/dashboard/registrar/sanidad" },
 ];
 export default function SidebarRegistrar() {
   const pathname = usePathname();

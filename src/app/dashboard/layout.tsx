@@ -13,11 +13,11 @@ export default function DashboardLayout({
     <div className="flex min-h-screen">
       <Sidebar />
 
-      <div className="md:pl-72 pl-0 flex flex-col flex-1 bg-gray-100">
+      <div className="md:pl-72 pl-0 flex flex-col flex-1 w-full bg-gray-100">
         <SidebarMobile />
         <DashboardHeader />
 
-        <main className=" p-6">{children}</main>
+        <main className="p-3 md:p-6 ">{children}</main>
         <Toaster position="top-right" richColors />
       </div>
     </div>
