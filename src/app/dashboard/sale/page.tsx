@@ -10,15 +10,18 @@ import { useEffect, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { Cuy } from "@/types/cuy";
 import { Checkbox } from "@/components/ui/checkbox";
-import { VentasRequest } from "@/types/ventas";
+import { Ventas, VentasRequest } from "@/types/ventas";
 import { getCuyAvailable } from "@/services/cuyService";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import { getAllVentas } from "@/services/ventaService";
 interface VentaFormData {
   cantidad: number;
   total: number;
 }
 
 export default function FormVenta() {
+  const [data, setData] = useState<Ventas[]>([]);
   const [cuyes, setCuyes] = useState<Cuy[]>([]);
   const [selectedCuyes, setSelectedCuyes] = useState<Cuy[]>([]);
   const [precioPorCuy, setPrecioPorCuy] = useState<string>("");
@@ -40,9 +43,57 @@ export default function FormVenta() {
     }
   };
 
+  const sampleData: Ventas[] = [
+    {
+      id: 1,
+      cantidad: 3,
+      total: 90,
+      cuyes: { id: [101, 102, 103] },
+    },
+    {
+      id: 2,
+      cantidad: 2,
+      total: 60,
+      cuyes: { id: [104, 105] },
+    },
+    {
+      id: 3,
+      cantidad: 1,
+      total: 30,
+      cuyes: { id: [106] },
+    },
+  ];
+
+  const loadAllSales = async () => {
+    try {
+      const res = await getAllVentas();
+      setData(res);
+    } catch {
+      toast.error("Error al cargar datos");
+    }
+  };
   useEffect(() => {
+    loadAllSales();
     loadData();
   }, []);
+
+  const exportToExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Ventas");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(blob, "ventas.xlsx");
+  };
 
   const toggleCuySeleccion = (cuy: Cuy) => {
     setSelectedCuyes((prev) => {
@@ -132,6 +183,14 @@ export default function FormVenta() {
 
   return (
     <>
+      <div className="flex justify-end items-center py-2 ">
+        <button
+          onClick={exportToExcel}
+          className="bg-primary cursor-pointer text-white shadow px-4 py-2 rounded"
+        >
+          Ver todas las ventas
+        </button>
+      </div>
       <div className="bg-white rounded-lg shadow p-6 flex flex-col lg:flex-row gap-6 mx-auto max-w-7xl">
         <form
           onSubmit={handleSubmit(onSubmit)}

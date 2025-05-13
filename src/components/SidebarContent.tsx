@@ -31,12 +31,12 @@ const links = [
     icon: "S/. ",
     roles: ["admin", "employee"],
   },
-  {
-    label: "Ventas",
-    href: "/dashboard/allsales",
-    icon: "S/. ",
-    roles: ["admin", "employee"],
-  },
+  // {
+  //   label: "Ventas",
+  //   href: "/dashboard/allsales",
+  //   icon: "S/. ",
+  //   roles: ["admin", "employee"],
+  // },
   {
     label: "Monitoreo",
     href: "/dashboard/monitoreo",

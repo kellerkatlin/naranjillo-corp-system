@@ -17,7 +17,7 @@ export default function ChooseRolePage() {
         <div className="flex gap-10 justify-center">
           <button
             onClick={() => selectRole("employee")}
-            className="flex flex-col items-center "
+            className="flex flex-col items-center cursor-pointer "
           >
             <Image
               src={"/imagen2.png"}
@@ -30,7 +30,7 @@ export default function ChooseRolePage() {
           </button>
           <button
             onClick={() => selectRole("admin")}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center cursor-pointer"
           >
             <Image
               src={"/imagen1.png"}

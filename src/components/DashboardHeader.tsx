@@ -47,7 +47,7 @@ export default function DashboardHeader() {
       </h2>
 
       <div className="hidden md:flex items-center gap-4">
-        <button className="relative">
+        <button className="relative cursor-pointer">
           <Bell className="w-5 h-5 text-gray-600" />
           <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
         </button>
@@ -55,16 +55,19 @@ export default function DashboardHeader() {
         <div className="md:flex hidden items-center gap-2">
           <Menubar className="border-none bg-white">
             <MenubarMenu>
-              <MenubarTrigger>
+              <MenubarTrigger className="cursor-pointer">
                 <UserCircle className="w-6 h-6 text-primary" />
               </MenubarTrigger>
               <MenubarContent>
                 <MenubarItem
+                  className="cursor-pointer"
                   onClick={() => (window.location.href = "/dashboard/profile")}
                 >
                   Profile
                 </MenubarItem>
-                <MenubarItem onClick={logout}>Logout</MenubarItem>
+                <MenubarItem className="cursor-pointer" onClick={logout}>
+                  Logout
+                </MenubarItem>
               </MenubarContent>
             </MenubarMenu>
           </Menubar>
