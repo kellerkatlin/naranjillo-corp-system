@@ -17,6 +17,8 @@ import { toast } from "sonner";
 import { CrudToolbar } from "@/components/shared/CrudToolbar";
 import { CrudTable } from "@/components/shared/CrudTable";
 import ConfirmAlert from "@/components/shared/ComfirmAlert";
+import { Reproduccion } from "@/types/reproduccion";
+import { getAllReproducciones } from "@/services/reproduccionService";
 
 export default function FormAlimentacion() {
   const [data, setData] = useState<Alimentacion[]>([]);
@@ -24,19 +26,23 @@ export default function FormAlimentacion() {
   const [editItem, setEditItem] = useState<Alimentacion | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Alimentacion | null>(null);
-
-  const loadData = async () => {
-    try {
-      const res = await getAllAlimentaciones();
-
-      setData(res);
-    } catch {
-      toast.error("Error al cargar datos");
-    }
-  };
+  const [reproducciones, setReproducciones] = useState<Reproduccion[]>([]);
 
   useEffect(() => {
-    loadData();
+    const fetchData = async () => {
+      try {
+        const [alimentacionesRes, reproduccionesRes] = await Promise.all([
+          getAllAlimentaciones(),
+          getAllReproducciones(),
+        ]);
+        setData(alimentacionesRes);
+        setReproducciones(reproduccionesRes);
+      } catch {
+        toast.error("Error al cargar datos");
+      }
+    };
+
+    fetchData();
   }, []);
 
   const columns: ColumnDef<Alimentacion>[] = [
@@ -53,6 +59,14 @@ export default function FormAlimentacion() {
           Number(month) - 1,
           Number(day)
         ).toLocaleDateString();
+      },
+    },
+    {
+      header: "Reproducción",
+      cell: ({ row }) => {
+        const id = row.original.reproduccion.id;
+        const rep = reproducciones.find((r) => r.id === id);
+        return rep ? rep.nombreCuyera : `ID: ${id}`;
       },
     },
     {
