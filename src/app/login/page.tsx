@@ -23,7 +23,7 @@ export default function LoginPage() {
         .map(() => Math.random().toString(36).charAt(2))
         .join("");
       document.cookie = `token=${token}; path=/; max-age=3600`;
-      window.location.href = "/dashboard";
+      window.location.href = "/choose-role";
     } else {
       setError("id", {
         type: "manual",

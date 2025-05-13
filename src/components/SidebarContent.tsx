@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FaBookOpen, FaHouseChimney, FaPaw } from "react-icons/fa6";
 import { IoIosArrowForward } from "react-icons/io";
 import { MdMonitor } from "react-icons/md";
@@ -8,52 +9,88 @@ import { MdMonitor } from "react-icons/md";
 type SidebarContentProps = {
   onLinkClick?: () => void;
 };
+
+type Role = "admin" | "employee" | null;
+
 const links = [
-  { label: "Principal", href: "/dashboard", icon: <FaHouseChimney /> },
+  {
+    label: "Principal",
+    href: "/dashboard",
+    icon: <FaHouseChimney />,
+    roles: ["admin", "employee"],
+  },
   {
     label: "Registrar",
     href: "/dashboard/registrar/",
     icon: <FaPaw />,
+    roles: ["admin", "employee"],
   },
-  { label: "Venta", href: "/dashboard/sale", icon: "S/. " },
-  { label: "Ventas", href: "/dashboard/allsales", icon: "S/. " },
-  { label: "Monitoreo", href: "/dashboard/monitoreo", icon: <MdMonitor /> },
+  {
+    label: "Venta",
+    href: "/dashboard/sale",
+    icon: "S/. ",
+    roles: ["admin", "employee"],
+  },
+  {
+    label: "Ventas",
+    href: "/dashboard/allsales",
+    icon: "S/. ",
+    roles: ["admin", "employee"],
+  },
+  {
+    label: "Monitoreo",
+    href: "/dashboard/monitoreo",
+    icon: <MdMonitor />,
+    roles: ["admin"],
+  },
   {
     label: "Capacitacion",
     href: "/dashboard/capacitacion",
     icon: <FaBookOpen />,
+    roles: ["admin", "employee"],
   },
 ];
 
 export default function SidebarContent({ onLinkClick }: SidebarContentProps) {
   const pathname = usePathname();
+  const [role, setRole] = useState<Role>(null);
+
+  useEffect(() => {
+    const storedRole = localStorage.getItem("userRole") as Role;
+    setRole(storedRole);
+  }, []);
 
   return (
     <div className="flex flex-col justify-between h-full w-full">
       <nav className="flex flex-col w-full uppercase gap-3 mt-8">
-        {links.map((link) => {
-          const isActive =
-            link.href === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(link.href);
+        {links
+          .filter(
+            (link) =>
+              !link.roles || (role !== null && link.roles.includes(role))
+          )
+          .map((link) => {
+            const isActive =
+              link.href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(link.href);
 
-          return (
-            <Link
-              key={link.label}
-              href={link.href}
-              onClick={onLinkClick}
-              className={`flex items-center  justify-between gap-2 p-2 rounded-md hover:bg-white hover:text-black transition-colors ${
-                isActive ? "bg-white text-black" : ""
-              }`}
-            >
-              <div className="flex items-center gap-2">
-                {link.icon}
-                {link.label}
-              </div>
-              <IoIosArrowForward />
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={onLinkClick}
+                className={`flex items-center  justify-between gap-2 p-2 rounded-md hover:bg-white hover:text-black transition-colors ${
+                  isActive ? "bg-white text-black" : ""
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  {link.icon}
+                  {link.label}
+                </div>
+                <IoIosArrowForward />
+              </Link>
+            );
+          })}
       </nav>
       <section className=" text-gray-700 p-0 mt-8">
         <div className="flex flex-col gap-0 mb-2 text-sm">
