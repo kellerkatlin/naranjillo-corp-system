@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { getAllReproducciones } from "@/services/reproduccionService";
 
 interface AlimentacionDialogProps {
   open: boolean;
@@ -43,32 +44,12 @@ export default function AlimentacionDialog({
   useEffect(() => {
     // Simulate fetching reproducciones data
     const fetchReproducciones = async () => {
-      // Replace with actual API call
-      const data: Reproduccion[] = [
-        {
-          id: 1,
-          nombreCuyera: "Reproducción 1",
-          cantidadHijosMuertos: 0,
-          cantidadHijos: 5,
-          fechaReproduccion: "2023-10-01",
-          fechaParto: "2023-10-15",
-          estado: "Finalizada",
-          padre: { id: 1 },
-          hembras: [{ id: 1 }, { id: 2 }],
-        },
-        {
-          id: 2,
-          nombreCuyera: "Reproducción 2",
-          cantidadHijosMuertos: 1,
-          cantidadHijos: 6,
-          fechaReproduccion: "2023-09-01",
-          fechaParto: "2023-09-15",
-          estado: "En curso",
-          padre: { id: 2 },
-          hembras: [{ id: 3 }, { id: 4 }],
-        },
-      ];
-      setReproducciones(data);
+      try {
+        const response = await getAllReproducciones();
+        setReproducciones(response);
+      } catch (error) {
+        console.error("Error fetching reproducciones:", error);
+      }
     };
 
     fetchReproducciones();
