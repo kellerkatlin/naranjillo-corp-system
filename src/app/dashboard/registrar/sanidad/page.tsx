@@ -43,7 +43,7 @@ export default function FormSanidad() {
     { accessorKey: "tipoMedicina", header: "Tipo de medicina" },
     { accessorKey: "incidencia", header: "Incidencia" },
     { accessorKey: "comentario", header: "Comentario" },
-    { accessorKey: "unidadSuministro", header: "Unidad de medida" },
+    { accessorKey: "unidadMedida", header: "Unidad de medida" },
     {
       accessorKey: "fecha",
       header: "Fecha",

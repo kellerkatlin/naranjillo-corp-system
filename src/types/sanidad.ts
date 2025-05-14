@@ -3,7 +3,7 @@ export interface Sanidad {
   tipoMedicina: string;
   incidencia: string;
   comentario: string;
-  unidadSuministro: string;
+  unidadMedida: string;
   fecha: string;
 }
 

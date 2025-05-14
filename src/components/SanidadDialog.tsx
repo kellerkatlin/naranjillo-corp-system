@@ -40,7 +40,7 @@ export default function SanidadDialog({
           tipoMedicina: "",
           incidencia: "",
           comentario: "",
-          unidadSuministro: "",
+          unidadMedida: "",
           fecha: new Date().toISOString().split("T")[0],
         });
       }
@@ -118,9 +118,9 @@ export default function SanidadDialog({
               type="text"
               readOnly={readOnly}
               placeholder="Ej: ml, g, tabletas"
-              {...register("unidadSuministro", { required: true })}
+              {...register("unidadMedida", { required: true })}
             />
-            {errors.unidadSuministro && (
+            {errors.unidadMedida && (
               <p className="text-red-500 text-sm mt-1">
                 Este campo es requerido
               </p>
