@@ -49,6 +49,7 @@ export default function FormSanidad() {
       header: "Fecha",
       cell: ({ row }) => {
         const fechaStr = row.getValue("fecha") as string;
+        if (!fechaStr) return "Sin fecha";
         const [y, m, d] = fechaStr.split("-");
         return new Date(+y, +m - 1, +d).toLocaleDateString();
       },

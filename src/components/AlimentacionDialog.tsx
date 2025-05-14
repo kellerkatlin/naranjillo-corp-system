@@ -4,9 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Alimentacion } from "@/types/alimentacion";
+import { Reproduccion } from "@/types/reproduccion";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 interface AlimentacionDialogProps {
   open: boolean;
@@ -25,8 +33,46 @@ export default function AlimentacionDialog({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<Alimentacion>();
+
+  const [reproducciones, setReproducciones] = useState<Reproduccion[]>([]);
+
+  useEffect(() => {
+    // Simulate fetching reproducciones data
+    const fetchReproducciones = async () => {
+      // Replace with actual API call
+      const data: Reproduccion[] = [
+        {
+          id: 1,
+          nombreCuyera: "Reproducción 1",
+          cantidadHijosMuertos: 0,
+          cantidadHijos: 5,
+          fechaReproduccion: "2023-10-01",
+          fechaParto: "2023-10-15",
+          estado: "Finalizada",
+          padre: { id: 1 },
+          hembras: [{ id: 1 }, { id: 2 }],
+        },
+        {
+          id: 2,
+          nombreCuyera: "Reproducción 2",
+          cantidadHijosMuertos: 1,
+          cantidadHijos: 6,
+          fechaReproduccion: "2023-09-01",
+          fechaParto: "2023-09-15",
+          estado: "En curso",
+          padre: { id: 2 },
+          hembras: [{ id: 3 }, { id: 4 }],
+        },
+      ];
+      setReproducciones(data);
+    };
+
+    fetchReproducciones();
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -37,12 +83,17 @@ export default function AlimentacionDialog({
           tipoAlimento: "",
           cantidad: "",
           fechaAlimentacion: new Date().toISOString().split("T")[0],
+          reproduccion: {
+            id: 0,
+          },
+          unidadMedida: "",
         });
       }
     }
   }, [open, alimentacion, reset]);
 
   const handleFormSubmit = (data: Alimentacion) => {
+    console.log("Form submitted with data:", data);
     if (onSubmit) {
       onSubmit(data);
     }
@@ -72,9 +123,64 @@ export default function AlimentacionDialog({
               </p>
             )}
           </div>
-
           <div>
-            <Label className="mb-1 block">Cantidad (kg)</Label>
+            <Label className="mb-1 block"> Reproducción</Label>
+            <Select
+              onValueChange={(value) => {
+                setValue("reproduccion.id", +value, {
+                  shouldValidate: true,
+                });
+              }}
+              value={watch("reproduccion.id")?.toString() || ""}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona un estado" />
+              </SelectTrigger>
+              <SelectContent>
+                {reproducciones.map((reproduccion) => (
+                  <SelectItem
+                    key={reproduccion.id}
+                    value={reproduccion.id.toString()}
+                  >
+                    {reproduccion.nombreCuyera}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.reproduccion?.id && (
+              <p className="text-red-500 text-sm mt-1">
+                Este campo es requerido
+              </p>
+            )}
+          </div>
+          <div>
+            <Label className="mb-1 block">Unidad de Medida</Label>
+            <Select
+              onValueChange={(value) => {
+                setValue("unidadMedida", value, { shouldValidate: true });
+              }}
+              value={watch("unidadMedida") || ""}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona una unidad" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="kg">Kilogramos</SelectItem>
+                <SelectItem value="g">Gramos</SelectItem>
+                <SelectItem value="l">Litros</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.unidadMedida && (
+              <p className="text-red-500 text-sm mt-1">
+                Este campo es requerido
+              </p>
+            )}
+          </div>
+          <div>
+            <Label className="mb-1 block">
+              Cantidad{" "}
+              {watch("unidadMedida") ? `(${watch("unidadMedida")})` : ""}
+            </Label>
             <Input
               type="number"
               step="0.1"
