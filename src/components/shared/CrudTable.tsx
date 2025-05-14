@@ -35,7 +35,7 @@ export function CrudTable<TData>({ columns, data }: CrudTableProps<TData>) {
 
   return (
     <>
-      <div className="rounded-md border   overflow-x-auto w-full">
+      <div className="rounded-md border overflow-x-auto w-full">
         <Table className="min-w-max">
           <TableHeader>
             {table.getHeaderGroups().map((group) => (

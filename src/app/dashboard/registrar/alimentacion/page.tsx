@@ -62,12 +62,8 @@ export default function FormAlimentacion() {
       },
     },
     {
+      accessorKey: "nombreReproduccion",
       header: "Reproducción",
-      cell: ({ row }) => {
-        const id = row.original.reproduccion.id;
-        const rep = reproducciones.find((r) => r.id === id);
-        return rep ? rep.nombreCuyera : `ID: ${id}`;
-      },
     },
     {
       id: "acciones",

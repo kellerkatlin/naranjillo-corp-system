@@ -7,6 +7,7 @@ export type AlimentacionRequest = {
   cantidad: string;
   fechaAlimentacion: string;
   unidadMedida: string;
+  nombreReproduccion?: string;
   reproduccion: {
     id: number;
   };
