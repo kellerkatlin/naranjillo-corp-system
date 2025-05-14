@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState } from "react";
+import Image from "next/image";
 
 interface ProfileFormData {
   name: string;
@@ -49,11 +50,13 @@ export default function ProfilePage() {
             className="space-y-6"
             noValidate
           >
-            <div className="flex items-center gap-4">
+            <div className="flex items-centers gap-4">
               <div className="md:size-20 size-10 rounded-full overflow-hidden bg-gray-200 border border-orange-300">
                 {photo ? (
-                  <img
+                  <Image
                     src={photo}
+                    width={80}
+                    height={80}
                     alt="Foto de perfil"
                     className="object-cover w-full h-full"
                   />

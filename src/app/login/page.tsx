@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 
 type FormInputs = {
@@ -39,7 +40,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[url(/banner.jpg)] bg-cover bg-center">
       <div className="flex flex-col items-center w-[900px] gap-4">
-        <img src="/Logo.png" alt="Naranjilo Corp" className="w-40" />
+        <Image src="/Logo.png" alt="Naranjilo Corp" className="w-40" />
 
         <div className="w-[90%] md:w-1/2   p-10 backdrop-blur-md bg-white/10 border-2 rounded-lg border-solid border-primary/30">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

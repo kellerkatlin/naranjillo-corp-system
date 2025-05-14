@@ -43,27 +43,6 @@ export default function FormVenta() {
     }
   };
 
-  const sampleData: Ventas[] = [
-    {
-      id: 1,
-      cantidad: 3,
-      total: 90,
-      cuyes: { id: [101, 102, 103] },
-    },
-    {
-      id: 2,
-      cantidad: 2,
-      total: 60,
-      cuyes: { id: [104, 105] },
-    },
-    {
-      id: 3,
-      cantidad: 1,
-      total: 30,
-      cuyes: { id: [106] },
-    },
-  ];
-
   const loadAllSales = async () => {
     try {
       const res = await getAllVentas();
