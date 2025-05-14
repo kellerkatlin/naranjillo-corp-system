@@ -58,12 +58,21 @@ export default function AlimentacionDialog({
   useEffect(() => {
     if (open) {
       if (alimentacion) {
-        reset(alimentacion);
+        const reproduccionId = reproducciones.find(
+          (repro) => repro.nombreCuyera === alimentacion.nombreReproduccion
+        );
+        reset({
+          ...alimentacion,
+          reproduccion: {
+            id: reproduccionId?.id || 0,
+          },
+        });
       } else {
         reset({
           tipoAlimento: "",
           cantidad: "",
           fechaAlimentacion: new Date().toISOString().split("T")[0],
+          nombreReproduccion: "",
           reproduccion: {
             id: 0,
           },
@@ -71,7 +80,7 @@ export default function AlimentacionDialog({
         });
       }
     }
-  }, [open, alimentacion, reset]);
+  }, [open, alimentacion, reset, reproducciones]);
 
   const handleFormSubmit = (data: Alimentacion) => {
     console.log("Form submitted with data:", data);
@@ -105,7 +114,7 @@ export default function AlimentacionDialog({
             )}
           </div>
           <div>
-            <Label className="mb-1 block"> Reproducción</Label>
+            <Label className="mb-1 block">Reproducción</Label>
             <Select
               onValueChange={(value) => {
                 setValue("reproduccion.id", +value, {
@@ -115,7 +124,10 @@ export default function AlimentacionDialog({
               value={watch("reproduccion.id")?.toString() || ""}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecciona un estado" />
+                <SelectValue>
+                  {reproducciones.find((r) => r.id === watch("reproduccion.id"))
+                    ?.nombreCuyera || "Selecciona una reproducción"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {reproducciones.map((reproduccion) => (

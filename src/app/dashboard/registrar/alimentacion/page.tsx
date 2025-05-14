@@ -122,6 +122,7 @@ export default function FormAlimentacion() {
    * Maneja el envío del formulario de registro o edición de alimentación.
    * @param {AlimentacionRequest} form - Datos del formulario.
    */
+
   const onSubmit = async (form: AlimentacionRequest) => {
     try {
       if (editItem) {
