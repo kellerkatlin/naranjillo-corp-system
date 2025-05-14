@@ -14,29 +14,35 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import AlimentacionDialog from "@/components/AlimentacionDialog";
 import { toast } from "sonner";
-import { CrudToolbar } from "@/components/shared/CrudToolbar";
 import { CrudTable } from "@/components/shared/CrudTable";
 import ConfirmAlert from "@/components/shared/ComfirmAlert";
-import { Reproduccion } from "@/types/reproduccion";
-import { getAllReproducciones } from "@/services/reproduccionService";
 
+/**
+ * Componente para gestionar la alimentación.
+ * Permite registrar, editar, eliminar y visualizar registros de alimentación.
+ */
 export default function FormAlimentacion() {
+  /** Estado para almacenar la lista de alimentaciones. */
   const [data, setData] = useState<Alimentacion[]>([]);
+  /** Estado para controlar la visibilidad del diálogo de registro/edición. */
   const [dialogOpen, setDialogOpen] = useState(false);
+  /** Estado para almacenar el ítem de alimentación que se está editando. */
   const [editItem, setEditItem] = useState<Alimentacion | null>(null);
+  /** Estado para controlar la visibilidad del diálogo de confirmación de eliminación. */
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  /** Estado para almacenar el ítem de alimentación que se va a eliminar. */
   const [itemToDelete, setItemToDelete] = useState<Alimentacion | null>(null);
-  const [reproducciones, setReproducciones] = useState<Reproduccion[]>([]);
+  /** Estado para almacenar la lista de reproducciones disponibles. */
 
+  /**
+   * Efecto para cargar los datos iniciales de alimentaciones y reproducciones
+   * cuando el componente se monta.
+   */
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [alimentacionesRes, reproduccionesRes] = await Promise.all([
-          getAllAlimentaciones(),
-          getAllReproducciones(),
-        ]);
-        setData(alimentacionesRes);
-        setReproducciones(reproduccionesRes);
+        const res = await getAllAlimentaciones();
+        setData(res);
       } catch {
         toast.error("Error al cargar datos");
       }
@@ -45,12 +51,19 @@ export default function FormAlimentacion() {
     fetchData();
   }, []);
 
+  /** Definición de las columnas para la tabla de alimentaciones. */
   const columns: ColumnDef<Alimentacion>[] = [
     { accessorKey: "tipoAlimento", header: "Tipo" },
     { accessorKey: "cantidad", header: "Cantidad" },
     {
       accessorKey: "fechaAlimentacion",
       header: "Fecha",
+      /**
+       * Formatea la fecha de alimentación para su visualización.
+       * @param {object} props - Propiedades de la celda.
+       * @param {object} props.row - Fila actual de la tabla.
+       * @returns {string} Fecha formateada.
+       */
       cell: ({ row }) => {
         const fechaStr = row.getValue("fechaAlimentacion") as string;
         const [year, month, day] = fechaStr.split("-");
@@ -68,6 +81,12 @@ export default function FormAlimentacion() {
     {
       id: "acciones",
       header: "Acciones",
+      /**
+       * Renderiza los botones de acciones (editar, eliminar) para cada fila.
+       * @param {object} props - Propiedades de la celda.
+       * @param {object} props.row - Fila actual de la tabla.
+       * @returns {JSX.Element} Botones de acciones.
+       */
       cell: ({ row }) => {
         const item = row.original;
         return (
@@ -99,6 +118,10 @@ export default function FormAlimentacion() {
     },
   ];
 
+  /**
+   * Maneja el envío del formulario de registro o edición de alimentación.
+   * @param {AlimentacionRequest} form - Datos del formulario.
+   */
   const onSubmit = async (form: AlimentacionRequest) => {
     try {
       if (editItem) {
@@ -106,10 +129,13 @@ export default function FormAlimentacion() {
         setData((prev) =>
           prev.map((item) => (item.id === editItem.id ? updated : item))
         );
+
         toast.success("Actualizado");
       } else {
         const created = await createAlimentacion(form);
+
         setData((prev) => [...prev, created]);
+
         toast.success("Registrado");
       }
       setDialogOpen(false);
@@ -119,6 +145,10 @@ export default function FormAlimentacion() {
     }
   };
 
+  /**
+   * Maneja la eliminación de un registro de alimentación.
+   * @param {number} id - ID del registro de alimentación a eliminar.
+   */
   const handleDelete = async (id: number) => {
     try {
       await deleteAlimentacion(id);
@@ -140,7 +170,14 @@ export default function FormAlimentacion() {
         onSubmit={onSubmit}
         alimentacion={editItem}
       />
-      <CrudToolbar onCreate={() => setDialogOpen(true)} title="Alimentación" />
+      <div className="flex items-center justify-between mb-4 p-2 ">
+        <Button
+          className="bg-primary  hover:bg-orange-400 cursor-pointer"
+          onClick={() => setDialogOpen(true)}
+        >
+          Registrar Alimentación
+        </Button>
+      </div>
       <CrudTable columns={columns} data={data} />
       <ConfirmAlert
         open={deleteDialogOpen}
