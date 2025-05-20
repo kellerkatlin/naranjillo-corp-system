@@ -8,7 +8,11 @@ export default function ChooseRolePage() {
 
   const selectRole = (role: "admin" | "employee") => {
     localStorage.setItem("userRole", role);
-    router.push("/dashboard");
+    if (role === "admin") {
+      router.push("/dashboard/monitoreo");
+    } else {
+      router.push("/dashboard");
+    }
   };
 
   return (
