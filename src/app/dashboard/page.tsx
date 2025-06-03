@@ -23,6 +23,12 @@ export default function Dashboard() {
     loadData();
   }, []);
 
+  const getTotalHembras = () => {
+    return data.filter((cuy) => cuy.sexo === "HEMBRA").length;
+  };
+  const getTotalMachos = () => {
+    return data.filter((cuy) => cuy.sexo === "MACHO").length;
+  };
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="col-span-2 flex flex-col gap-4">
@@ -49,21 +55,15 @@ export default function Dashboard() {
             RESUMEN GENERAL
           </h3>
           <div className="space-y-3">
-            <ResumenItem label="Cuyes machos" value={30} color="bg-green-500" />
+            <ResumenItem
+              label="Cuyes machos"
+              value={getTotalMachos()}
+              color="bg-green-500"
+            />
             <ResumenItem
               label="Cuyes hembras"
-              value={72}
+              value={getTotalHembras()}
               color="bg-green-600"
-            />
-            <ResumenItem
-              label="Cuyes fallecidos"
-              value={7}
-              color="bg-pink-500"
-            />
-            <ResumenItem
-              label="Cuyes en tratamiento"
-              value={7}
-              color="bg-pink-500"
             />
           </div>
         </div>
