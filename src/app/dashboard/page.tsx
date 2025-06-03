@@ -1,10 +1,27 @@
 "use client";
 import ResumenItem from "@/components/ResumeItem";
 import { Calendar } from "@/components/ui/calendar";
-import { useState } from "react";
+import { getAllCuyes } from "@/services/cuyService";
+import { Cuy } from "@/types/cuy";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [data, setData] = useState<Cuy[]>([]);
+
+  const loadData = async () => {
+    try {
+      const res = await getAllCuyes();
+      setData(res);
+    } catch {
+      toast.error("Error al cargar datos");
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -14,7 +31,7 @@ export default function Dashboard() {
             <h3 className="text-sm text-gray-500 font-semibold">
               TOTAL DE CUYES
             </h3>
-            <p className="text-4xl font-bold">100</p>
+            <p className="text-4xl font-bold">{data.length}</p>
             <span className="text-gray-500 text-sm">MARZO</span>
           </div>
 
