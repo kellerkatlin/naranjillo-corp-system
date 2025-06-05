@@ -6,9 +6,12 @@ import { Monitoreo } from "@/types/monitoreo";
 // import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
 
 import Deposito from "@/components/Deposito";
 import { ThermometerIcon } from "lucide-react";
+import { getAllCuyes } from "@/services/cuyService";
+import { Cuy } from "@/types/cuy";
 
 export default function MonitorDepositos() {
   const [monitoreo, setMonitoreo] = useState<Monitoreo>({
@@ -21,24 +24,47 @@ export default function MonitorDepositos() {
     nombre_dispositivo: "Sin datos",
   });
 
+  const [cuyes, setCuyes] = useState<Cuy[]>([]);
+
   const loadData = async (showToast = false) => {
     try {
       const res = await getAllMonitoreo();
-
       if (res && res.length > 0) {
         const ultimo = res[res.length - 1];
         setMonitoreo(ultimo);
-
-        if (showToast) {
-          toast.success("Datos cargados correctamente");
-        }
+        if (showToast) toast.success("Datos cargados correctamente");
       }
     } catch {
-      if (showToast) {
-        toast.error("Error al cargar datos");
-      }
+      if (showToast) toast.error("Error al cargar datos");
     }
   };
+
+  const loadCuyes = async () => {
+    try {
+      const data = await getAllCuyes();
+      setCuyes(data);
+    } catch (error) {
+      console.error("Error al cargar cuyes", error);
+    }
+  };
+
+  const exportToExcel = () => {
+    if (!cuyes || cuyes.length === 0) {
+      toast.error("No hay datos de cuyes para exportar");
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(cuyes);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Cuyes");
+
+    XLSX.writeFile(workbook, "cuyes.xlsx");
+    toast.success("Cuyes exportados a Excel");
+  };
+
+  useEffect(() => {
+    loadCuyes();
+  }, []);
 
   useEffect(() => {
     loadData(true);
@@ -64,6 +90,15 @@ export default function MonitorDepositos() {
       <h2 className="text-gray-600 text-sm">
         Sistema de monitoreo de los depositos de desecho de cuy
       </h2>
+
+      <div className="w-full flex justify-end items-center">
+        <button
+          onClick={exportToExcel}
+          className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
+        >
+          Exportar a Excel
+        </button>
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
         {monitoreo && (
