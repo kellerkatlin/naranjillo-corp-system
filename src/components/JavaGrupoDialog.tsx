@@ -90,20 +90,16 @@ export default function JavaGrupoDialog({
 
   useEffect(() => {
     const fetchPadres = async () => {
-      if (sexo && categoria) {
-        try {
-          const data = await getCuyesPadres("ENGORDE", "MACHO");
-          setPadresDisponibles(data);
-        } catch (error) {
-          console.error("Error al obtener padres", error);
-        }
-      } else {
-        setPadresDisponibles([]);
+      try {
+        const data = await getCuyesPadres("MACHO", "ENGORDE");
+        setPadresDisponibles(data);
+      } catch (error) {
+        console.error("Error al obtener padres", error);
       }
     };
 
     fetchPadres();
-  }, [sexo, categoria]);
+  }, [seleccionActual]);
 
   useEffect(() => {
     if (categoria === "REPRODUCCION" && watch("sexo") !== "NA") {
