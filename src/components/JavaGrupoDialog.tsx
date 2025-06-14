@@ -153,7 +153,7 @@ export default function JavaGrupoDialog({
           <DialogTitle>Crear Java</DialogTitle>
         </AlertDialogHeader>
 
-        <div className="flex gap-6 flex-col  justify-start md:flex-row">
+        <div className="flex gap-6 flex-col  md:justify-between md:flex-row">
           <form className="space-y-4 flex-1 ">
             <div className="flex w-full flex-col md:flex-row gap-4">
               <div className="flex-1">
@@ -493,8 +493,7 @@ export default function JavaGrupoDialog({
                       <TableHeader>
                         <TableRow>
                           <TableHead>Id</TableHead>
-                          <TableHead>Grupo</TableHead>
-                          <TableHead>Java</TableHead>
+                          <TableHead>Sexo</TableHead>
                           <TableHead>Check</TableHead>
                         </TableRow>
                       </TableHeader>
