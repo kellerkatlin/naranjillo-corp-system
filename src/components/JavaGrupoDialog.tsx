@@ -549,7 +549,7 @@ export default function JavaGrupoDialog({
                       }
                       onSelect={(date) => {
                         if (date) {
-                          const formatted = date.toISOString().split("T")[0];
+                          const formatted = date.toLocaleDateString("en-CA");
                           setValue("fechaInicio", formatted);
                         }
                       }}
