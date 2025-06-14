@@ -455,8 +455,7 @@ export default function JavaGrupoDialog({
                       <TableHeader>
                         <TableRow>
                           <TableHead>Id</TableHead>
-                          <TableHead>Grupo</TableHead>
-                          <TableHead>Java</TableHead>
+                          <TableHead>Sexo</TableHead>
                           <TableHead>Check</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -468,7 +467,6 @@ export default function JavaGrupoDialog({
                             <TableRow key={item.id}>
                               <TableCell>{item.id}</TableCell>
                               <TableCell>{item.sexo}</TableCell>
-                              <TableCell>{item.java}</TableCell>
                               <TableCell>
                                 <Checkbox
                                   disabled={isReproduccionIniciada}
