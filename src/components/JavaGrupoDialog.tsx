@@ -37,13 +37,13 @@ interface JavaGrupoDialogProps {
 type FormData = {
   nombre: string;
   fechaInicio: string;
-  padre: string;
+  padre: { id: number; sexo: string } | null;
   hembrasNacidas?: number;
   machosNacidos?: number;
-  sexo?: string; // agregado
-  categoria?: string; // agregado
+  sexo?: string;
+  categoria?: string;
   muertos?: number;
-  madre: string;
+  madre: { id: number; sexo: string }[];
   regiones: { [key: string]: boolean };
 };
 
@@ -69,10 +69,10 @@ export default function JavaGrupoDialog({
     defaultValues: {
       nombre: "",
       fechaInicio: "",
-      categoria: "", // agregado
-      sexo: "", // agregado
-      padre: "",
-      madre: "",
+      categoria: "",
+      sexo: "",
+      padre: null,
+      madre: [],
       hembrasNacidas: 0,
       machosNacidos: 0,
       muertos: 0,
@@ -136,17 +136,18 @@ export default function JavaGrupoDialog({
   };
 
   const handleSeleccionMadre = (item: any) => {
-    const current = [...madresSeleccionadas];
-    const key = `${item.id} ${item.grupo} ${item.java}`;
-    if (current.includes(key)) {
+    const current = watch("madre") || [];
+    const exists = current.find((m) => m.id === item.id);
+    if (exists) {
       setValue(
         "madre",
-        current.filter((m) => m !== key)
+        current.filter((m) => m.id !== item.id)
       );
     } else {
-      setValue("madre", [...current, key]);
+      setValue("madre", [...current, { id: item.id, sexo: item.sexo }]);
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl h-[90vh] overflow-y-auto">
@@ -351,7 +352,9 @@ export default function JavaGrupoDialog({
                     className="w-full cursor-pointer"
                     onClick={handleOpenPadre}
                   >
-                    {watch("padre") || "Seleccionar Padre"}
+                    {watch("padre")
+                      ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
+                      : "Seleccionar Padre"}
                   </Button>
                 </div>
                 <div className="flex-1 w-full">
@@ -420,9 +423,11 @@ export default function JavaGrupoDialog({
                       className="cursor-pointer w-full hover:bg-gray-50"
                       onClick={handleOpenMadre}
                     >
-                      <div className="flex   text-sm flex-col text-center font-semibold w-full">
+                      <div className="flex text-sm flex-col text-center font-semibold w-full">
                         {madresSeleccionadas.map((madre, index) => (
-                          <span key={index}>{madre}</span>
+                          <span key={index}>
+                            {madre.id} - {madre.sexo}
+                          </span>
                         ))}
                       </div>
                     </Card>
@@ -462,8 +467,6 @@ export default function JavaGrupoDialog({
                       </TableHeader>
                       <TableBody>
                         {padresDisponibles.map((item) => {
-                          const key = `${item.id} ${item.sexo} ${item.java}`;
-                          const selectedPadre = watch("padre");
                           return (
                             <TableRow key={item.id}>
                               <TableCell>{item.id}</TableCell>
@@ -471,8 +474,13 @@ export default function JavaGrupoDialog({
                               <TableCell>
                                 <Checkbox
                                   disabled={isReproduccionIniciada}
-                                  checked={selectedPadre === key}
-                                  onCheckedChange={() => setValue("padre", key)}
+                                  checked={watch("padre")?.id === item.id}
+                                  onCheckedChange={() =>
+                                    setValue("padre", {
+                                      id: item.id,
+                                      sexo: item.sexo,
+                                    })
+                                  }
                                 />
                               </TableCell>
                             </TableRow>
@@ -500,7 +508,6 @@ export default function JavaGrupoDialog({
                       </TableHeader>
                       <TableBody>
                         {madresDisponibles.map((item) => {
-                          const key = `${item.id} ${item.sexo} ${item.java}`;
                           return (
                             <TableRow key={item.id}>
                               <TableCell>{item.id}</TableCell>
@@ -508,7 +515,9 @@ export default function JavaGrupoDialog({
                               <TableCell>
                                 <Checkbox
                                   disabled={isReproduccionIniciada}
-                                  checked={madresSeleccionadas.includes(key)}
+                                  checked={madresSeleccionadas.some(
+                                    (m) => m.id === item.id
+                                  )}
                                   onCheckedChange={() =>
                                     handleSeleccionMadre(item)
                                   }
