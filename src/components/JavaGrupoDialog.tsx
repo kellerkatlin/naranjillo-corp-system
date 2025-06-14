@@ -32,8 +32,6 @@ import { Calendar } from "./ui/calendar";
 interface JavaGrupoDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
-  readonly categoriaOpen?: string;
-  readonly sexoOpen?: string;
 }
 
 type FormData = {
@@ -50,8 +48,6 @@ type FormData = {
 };
 
 export default function JavaGrupoDialog({
-  categoriaOpen,
-  sexoOpen,
   open,
   onOpenChange,
 }: JavaGrupoDialogProps) {
@@ -74,8 +70,8 @@ export default function JavaGrupoDialog({
     defaultValues: {
       nombre: "",
       fechaInicio: null,
-      categoria: categoriaOpen ?? "REPORDUCCION",
-      sexo: sexoOpen ?? "MACHO",
+      categoria: "REPRODUCCION",
+      sexo: "",
       padre: null,
       madre: [],
       hembrasNacidas: 0,
@@ -90,8 +86,8 @@ export default function JavaGrupoDialog({
       reset({
         nombre: "",
         fechaInicio: null,
-        categoria,
-        sexo,
+        categoria: "REPRODUCCION",
+        sexo: "NA",
         padre: null,
         madre: [],
         hembrasNacidas: 0,
@@ -123,14 +119,6 @@ export default function JavaGrupoDialog({
       console.error("Error al obtener madres", error);
     }
   };
-
-  useEffect(() => {
-    if (categoria === "REPRODUCCION" && watch("sexo") !== "NA") {
-      setValue("sexo", "NA");
-    } else if (categoria !== "REPRODUCCION") {
-      setValue("sexo", "");
-    }
-  }, [categoria, setValue, watch]);
 
   const onSubmit = (data: FormData) => {
     console.log("Datos enviados:", data);
@@ -213,6 +201,7 @@ export default function JavaGrupoDialog({
               <div className="flex-1 w-1/2">
                 <Label className="mb-2">Categoria</Label>
                 <Select
+                  value={watch("categoria")}
                   onValueChange={(value) => setValue("categoria", value)}
                   disabled={isReproduccionIniciada}
                 >

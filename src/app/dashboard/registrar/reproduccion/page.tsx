@@ -235,8 +235,6 @@ export default function FormReproduccion() {
         onOpenChange={(open) => {
           setDialogGrupoOpen(open);
         }}
-        categoria={"REPRODUCCION"}
-        sexo={"MACHO"}
       />
     </div>
   );
