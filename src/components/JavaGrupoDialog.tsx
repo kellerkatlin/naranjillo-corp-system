@@ -32,6 +32,8 @@ import { Calendar } from "./ui/calendar";
 interface JavaGrupoDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
+  readonly categoria?: string;
+  readonly sexo?: string;
 }
 
 type FormData = {
@@ -48,6 +50,8 @@ type FormData = {
 };
 
 export default function JavaGrupoDialog({
+  categoria,
+  sexo,
   open,
   onOpenChange,
 }: JavaGrupoDialogProps) {
@@ -63,12 +67,13 @@ export default function JavaGrupoDialog({
     register,
     handleSubmit,
     watch,
+    reset,
     setValue,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
       nombre: "",
-      fechaInicio: "",
+      fechaInicio: null,
       categoria: "",
       sexo: "",
       padre: null,
@@ -79,6 +84,23 @@ export default function JavaGrupoDialog({
       regiones: {},
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      reset({
+        nombre: "",
+        fechaInicio: null,
+        categoria,
+        sexo,
+        padre: null,
+        madre: [],
+        hembrasNacidas: 0,
+        machosNacidos: 0,
+        muertos: 0,
+        regiones: {},
+      });
+    }
+  }, [open, reset]);
 
   const categoria = watch("categoria");
 
