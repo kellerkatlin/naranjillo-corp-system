@@ -61,7 +61,7 @@ export default function JavaGrupoDialog({
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
 
   const [seleccionActual, setSeleccionActual] = useState<
-    "padre" | "madre" | null
+    "padre" | "madre" | "fecha" | null
   >(null);
 
   const {
@@ -89,19 +89,21 @@ export default function JavaGrupoDialog({
   const sexo = watch("sexo");
 
   useEffect(() => {
-    if (open) {
-      cargarPadres();
-    }
-  }, [open]);
+    const fetchPadres = async () => {
+      if (sexo && categoria) {
+        try {
+          const data = await getCuyesPadres(sexo, categoria);
+          setPadresDisponibles(data);
+        } catch (error) {
+          console.error("Error al obtener padres", error);
+        }
+      } else {
+        setPadresDisponibles([]);
+      }
+    };
 
-  const cargarPadres = async () => {
-    try {
-      const data = await getCuyesPadres(sexo ?? "NA", categoria ?? "CRIA");
-      setPadresDisponibles(data);
-    } catch (error) {
-      console.error("Error al obtener padres", error);
-    }
-  };
+    fetchPadres();
+  }, [sexo, categoria]);
 
   useEffect(() => {
     if (categoria === "REPRODUCCION" && watch("sexo") !== "NA") {
@@ -155,8 +157,8 @@ export default function JavaGrupoDialog({
           <DialogTitle>Crear Java</DialogTitle>
         </AlertDialogHeader>
 
-        <div className="flex gap-6 flex-col md:flex-row">
-          <form className="space-y-4 flex-1">
+        <div className="flex gap-6 flex-col  md:flex-row">
+          <form className="space-y-4 flex-1 items-start">
             <div className="flex w-full flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <Label className="mb-1 block">Nombre de Java</Label>
@@ -174,16 +176,15 @@ export default function JavaGrupoDialog({
 
               <div className="flex-1">
                 <Label className="mb-1 block">Fecha de Inicio</Label>
-                <Input
-                  type="date"
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setSeleccionActual("fecha")}
                   disabled={isReproduccionIniciada}
-                  {...register("fechaInicio", { required: true })}
-                />
-                {errors.fechaInicio && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Este campo es requerido
-                  </p>
-                )}
+                >
+                  {watch("fechaInicio") || "Seleccionar fecha"}
+                </Button>
               </div>
             </div>
             <div className="flex items-center w-full flex-col md:flex-row gap-4">
@@ -525,6 +526,27 @@ export default function JavaGrupoDialog({
                         })}
                       </TableBody>
                     </Table>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
+            {seleccionActual === "fecha" && (
+              <>
+                <h2 className="text-base font-bold mb-4">
+                  Seleccionar Fecha de Inicio
+                </h2>
+                <Card>
+                  <CardContent className="p-4">
+                    <input
+                      type="date"
+                      className="border rounded-md p-2 w-full"
+                      value={watch("fechaInicio") || ""}
+                      onChange={(e) => {
+                        setValue("fechaInicio", e.target.value);
+                        setSeleccionActual(null);
+                      }}
+                    />
                   </CardContent>
                 </Card>
               </>

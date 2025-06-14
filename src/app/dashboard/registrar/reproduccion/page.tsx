@@ -158,32 +158,78 @@ export default function FormReproduccion() {
   ];
 
   return (
-    <div className="bg-gray-50 p-4 rounded-lg">
-      <div className="mb-4">
-        <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold">
-          Grupo Reproducción
-        </span>
+    <div className="p-4 rounded-lg">
+      <div className="flex flex-col gap-4">
+        <Card className="flex p-3  flex-wrap">
+          <div className="mb-4">
+            <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold">
+              Grupo Reproducción
+            </span>
+          </div>
+          <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
+            {grupos.map((grupo, idx) => (
+              <CardJava key={idx} java={grupo} />
+            ))}
+            <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+              <CardContent
+                onClick={() => setDialogGrupoOpen(true)}
+                className="p-2 flex flex-col items-center justify-center"
+              >
+                <Plus className="w-8 h-8 text-green-400" />
+                <div className="mt-2 font-semibold text-green-400">
+                  CREAR JAVA
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </Card>
+        <Card className="flex p-3  flex-wrap">
+          <div className="mb-4">
+            <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold">
+              Todos los Machos
+            </span>
+          </div>
+          <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
+            {grupos.map((grupo, idx) => (
+              <CardJava key={idx} java={grupo} />
+            ))}
+            <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+              <CardContent
+                onClick={() => setDialogGrupoOpen(true)}
+                className="p-2 flex flex-col items-center justify-center"
+              >
+                <Plus className="w-8 h-8 text-green-400" />
+                <div className="mt-2 font-semibold text-green-400">
+                  CREAR JAVA
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </Card>
+        <Card className="flex p-3  flex-wrap">
+          <div className="mb-4">
+            <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold">
+              Todas las Hembras
+            </span>
+          </div>
+          <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
+            {grupos.map((grupo, idx) => (
+              <CardJava key={idx} java={grupo} />
+            ))}
+            <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+              <CardContent
+                onClick={() => setDialogGrupoOpen(true)}
+                className="p-2 flex flex-col items-center justify-center"
+              >
+                <Plus className="w-8 h-8 text-green-400" />
+                <div className="mt-2 font-semibold text-green-400">
+                  CREAR JAVA
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </Card>
       </div>
-
-      <Card className="flex gap-4 flex-wrap">
-        <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
-          {grupos.map((grupo, idx) => (
-            <CardJava key={idx} java={grupo} />
-          ))}
-          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-            <CardContent
-              onClick={() => setDialogGrupoOpen(true)}
-              className="p-2 flex flex-col items-center justify-center"
-            >
-              <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 font-semibold text-green-400">
-                CREAR JAVA
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </Card>
-
       <JavaGrupoDialog
         open={dialogGrupoOpen}
         onOpenChange={(open) => {
