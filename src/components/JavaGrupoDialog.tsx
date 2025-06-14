@@ -46,19 +46,13 @@ type FormData = {
   regiones: { [key: string]: boolean };
 };
 
-const madresDisponibles = [
-  { id: 11, grupo: "Hembra", java: "Arequipa" },
-  { id: 12, grupo: "Hembra", java: "Arequipa" },
-  { id: 13, grupo: "Hembra", java: "Tacna" },
-  { id: 14, grupo: "Hembra", java: "Tacna" },
-];
-
 export default function JavaGrupoDialog({
   open,
   onOpenChange,
 }: JavaGrupoDialogProps) {
   const [isReproduccionIniciada, setIsReproduccionIniciada] = useState(false);
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
+  const [madresDisponibles, setMadresDisponibles] = useState<CuyPadre[]>([]);
 
   const [seleccionActual, setSeleccionActual] = useState<
     "padre" | "madre" | "fecha" | null
@@ -86,20 +80,26 @@ export default function JavaGrupoDialog({
   });
 
   const categoria = watch("categoria");
-  const sexo = watch("sexo");
 
-  useEffect(() => {
-    const fetchPadres = async () => {
-      try {
-        const data = await getCuyesPadres("MACHO", "ENGORDE");
-        setPadresDisponibles(data);
-      } catch (error) {
-        console.error("Error al obtener padres", error);
-      }
-    };
+  const handleOpenPadre = async () => {
+    try {
+      const data = await getCuyesPadres("MACHO", "ENGORDE");
+      setPadresDisponibles(data);
+      setSeleccionActual("padre");
+    } catch (error) {
+      console.error("Error al obtener padres", error);
+    }
+  };
 
-    fetchPadres();
-  }, [seleccionActual]);
+  const handleOpenMadre = async () => {
+    try {
+      const data = await getCuyesPadres("HEMBRA", "ENGORDE");
+      setMadresDisponibles(data); // usas el mismo setPadresDisponibles si quieres, o mejor aún, lo renombramos a algo más genérico
+      setSeleccionActual("madre");
+    } catch (error) {
+      console.error("Error al obtener madres", error);
+    }
+  };
 
   useEffect(() => {
     if (categoria === "REPRODUCCION" && watch("sexo") !== "NA") {
@@ -348,7 +348,7 @@ export default function JavaGrupoDialog({
                     type="button"
                     variant="outline"
                     className="w-full cursor-pointer"
-                    onClick={() => setSeleccionActual("padre")}
+                    onClick={handleOpenPadre}
                   >
                     {watch("padre") || "Seleccionar Padre"}
                   </Button>
@@ -417,7 +417,7 @@ export default function JavaGrupoDialog({
                   {madresSeleccionadas.length > 0 ? (
                     <Card
                       className="cursor-pointer w-full hover:bg-gray-50"
-                      onClick={() => setSeleccionActual("madre")}
+                      onClick={handleOpenMadre}
                     >
                       <div className="flex   text-sm flex-col text-center font-semibold w-full">
                         {madresSeleccionadas.map((madre, index) => (
@@ -430,7 +430,7 @@ export default function JavaGrupoDialog({
                       type="button"
                       variant="outline"
                       className="w-full justify-start text-center flex-col items-start"
-                      onClick={() => setSeleccionActual("madre")}
+                      onClick={handleOpenMadre}
                     >
                       Seleccionar Madres
                     </Button>
@@ -500,12 +500,11 @@ export default function JavaGrupoDialog({
                       </TableHeader>
                       <TableBody>
                         {madresDisponibles.map((item) => {
-                          const key = `${item.id} ${item.grupo} ${item.java}`;
+                          const key = `${item.id} ${item.sexo} ${item.java}`;
                           return (
                             <TableRow key={item.id}>
                               <TableCell>{item.id}</TableCell>
-                              <TableCell>{item.grupo}</TableCell>
-                              <TableCell>{item.java}</TableCell>
+                              <TableCell>{item.sexo}</TableCell>
                               <TableCell>
                                 <Checkbox
                                   disabled={isReproduccionIniciada}
