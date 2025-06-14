@@ -92,7 +92,7 @@ export default function JavaGrupoDialog({
     const fetchPadres = async () => {
       if (sexo && categoria) {
         try {
-          const data = await getCuyesPadres(sexo, categoria);
+          const data = await getCuyesPadres("ENGORDE", "MACHO");
           setPadresDisponibles(data);
         } catch (error) {
           console.error("Error al obtener padres", error);
@@ -157,8 +157,8 @@ export default function JavaGrupoDialog({
           <DialogTitle>Crear Java</DialogTitle>
         </AlertDialogHeader>
 
-        <div className="flex gap-6 flex-col  md:flex-row">
-          <form className="space-y-4 flex-1 items-start">
+        <div className="flex gap-6 flex-col  justify-start md:flex-row">
+          <form className="space-y-4 flex-1 ">
             <div className="flex w-full flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <Label className="mb-1 block">Nombre de Java</Label>
