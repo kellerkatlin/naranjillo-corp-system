@@ -8,7 +8,7 @@ import {
   deleteReproduccion,
   getAllReproducciones,
   updateReproduccion,
-} from "@/services/reproduccionService";
+} from "@/services/javaService";
 import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pencil, Plus, Trash2 } from "lucide-react";

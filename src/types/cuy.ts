@@ -11,3 +11,15 @@ export type CuyRequest = {
   java: number;
   estado: string;
 };
+
+export type CuyPadre = {
+  id: number;
+  nombre: string;
+  sexo: string;
+  edad: number;
+  fechaRegistro: string;
+  horaRegistro: string;
+  java: string;
+  categoria: string;
+  estado: string;
+};

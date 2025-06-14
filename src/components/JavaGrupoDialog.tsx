@@ -25,6 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { getCuyesPadres } from "@/services/javaService";
+import { CuyPadre } from "@/types/cuy";
 
 interface JavaGrupoDialogProps {
   readonly open: boolean;
@@ -44,13 +46,6 @@ type FormData = {
   regiones: { [key: string]: boolean };
 };
 
-const padresDisponibles = [
-  { id: 22, grupo: "Macho", java: "Ayacucho" },
-  { id: 23, grupo: "Macho", java: "Ayacucho" },
-  { id: 24, grupo: "Macho", java: "Ayacucho" },
-  { id: 25, grupo: "Macho", java: "Junín" },
-];
-
 const madresDisponibles = [
   { id: 11, grupo: "Hembra", java: "Arequipa" },
   { id: 12, grupo: "Hembra", java: "Arequipa" },
@@ -63,6 +58,8 @@ export default function JavaGrupoDialog({
   onOpenChange,
 }: JavaGrupoDialogProps) {
   const [isReproduccionIniciada, setIsReproduccionIniciada] = useState(false);
+  const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
+
   const [seleccionActual, setSeleccionActual] = useState<
     "padre" | "madre" | null
   >(null);
@@ -89,6 +86,22 @@ export default function JavaGrupoDialog({
   });
 
   const categoria = watch("categoria");
+  const sexo = watch("sexo");
+
+  useEffect(() => {
+    if (open) {
+      cargarPadres();
+    }
+  }, [open]);
+
+  const cargarPadres = async () => {
+    try {
+      const data = await getCuyesPadres(sexo ?? "NA", categoria ?? "CRIA");
+      setPadresDisponibles(data);
+    } catch (error) {
+      console.error("Error al obtener padres", error);
+    }
+  };
 
   useEffect(() => {
     if (categoria === "REPRODUCCION" && watch("sexo") !== "NA") {
@@ -208,7 +221,7 @@ export default function JavaGrupoDialog({
                   >
                     <Input
                       type="number"
-                      value={watch("hembrasNacidas") || 0}
+                      value={watch("hembrasNacidas") ?? 0}
                       disabled
                       className="text-center   disabled:opacity-100 bg-pink-400"
                     />
@@ -223,12 +236,12 @@ export default function JavaGrupoDialog({
                       variant="outline"
                       className="cursor-pointer"
                       onClick={() => {
-                        const current = watch("hembrasNacidas") || 0;
+                        const current = watch("hembrasNacidas") ?? 0;
                         if (current > 0) {
                           setValue("hembrasNacidas", current - 1);
                         }
                       }}
-                      disabled={(watch("hembrasNacidas") || 0) <= 0}
+                      disabled={(watch("hembrasNacidas") ?? 0) <= 0}
                     >
                       <Minus />
                     </Button>
@@ -239,7 +252,7 @@ export default function JavaGrupoDialog({
                       className="cursor-pointer"
                       disabled={!isReproduccionIniciada}
                       onClick={() => {
-                        const current = watch("hembrasNacidas") || 0;
+                        const current = watch("hembrasNacidas") ?? 0;
                         setValue("hembrasNacidas", current + 1);
                       }}
                     >
@@ -255,7 +268,7 @@ export default function JavaGrupoDialog({
                 <Label className="mb-2">Sexo</Label>
                 <Select
                   disabled={categoria === "REPRODUCCION"}
-                  value={watch("sexo") || ""}
+                  value={watch("sexo") ?? ""}
                   onValueChange={(value) => setValue("sexo", value)}
                 >
                   <SelectTrigger className="w-full">
@@ -289,7 +302,7 @@ export default function JavaGrupoDialog({
                   >
                     <Input
                       type="number"
-                      value={watch("machosNacidos") || 0}
+                      value={watch("machosNacidos") ?? 0}
                       disabled
                       className=" text-center  disabled:opacity-100 bg-purple-400"
                     />
@@ -304,12 +317,12 @@ export default function JavaGrupoDialog({
                       variant="outline"
                       className="cursor-pointer"
                       onClick={() => {
-                        const current = watch("machosNacidos") || 0;
+                        const current = watch("machosNacidos") ?? 0;
                         if (current > 0) {
                           setValue("machosNacidos", current - 1);
                         }
                       }}
-                      disabled={(watch("machosNacidos") || 0) <= 0}
+                      disabled={(watch("machosNacidos") ?? 0) <= 0}
                     >
                       <Minus />
                     </Button>
@@ -320,7 +333,7 @@ export default function JavaGrupoDialog({
                       className="cursor-pointer"
                       disabled={!isReproduccionIniciada}
                       onClick={() => {
-                        const current = watch("machosNacidos") || 0;
+                        const current = watch("machosNacidos") ?? 0;
                         setValue("machosNacidos", current + 1);
                       }}
                     >
@@ -358,7 +371,7 @@ export default function JavaGrupoDialog({
                   >
                     <Input
                       type="number"
-                      value={watch("muertos") || 0}
+                      value={watch("muertos") ?? 0}
                       disabled
                       className=" text-center bg-gray-400 disabled:opacity-100"
                     />
@@ -373,12 +386,12 @@ export default function JavaGrupoDialog({
                       variant="outline"
                       className="cursor-pointer"
                       onClick={() => {
-                        const current = watch("muertos") || 0;
+                        const current = watch("muertos") ?? 0;
                         if (current > 0) {
                           setValue("muertos", current - 1);
                         }
                       }}
-                      disabled={(watch("muertos") || 0) <= 0}
+                      disabled={(watch("muertos") ?? 0) <= 0}
                     >
                       <Minus />
                     </Button>
@@ -389,7 +402,7 @@ export default function JavaGrupoDialog({
                       disabled={!isReproduccionIniciada}
                       className="cursor-pointer"
                       onClick={() => {
-                        const current = watch("muertos") || 0;
+                        const current = watch("muertos") ?? 0;
                         setValue("muertos", current + 1);
                       }}
                     >
@@ -419,7 +432,7 @@ export default function JavaGrupoDialog({
                     <Button
                       type="button"
                       variant="outline"
-                      className="w-full justify-start flex-col items-start"
+                      className="w-full justify-start text-center flex-col items-start"
                       onClick={() => setSeleccionActual("madre")}
                     >
                       Seleccionar Madres
@@ -452,12 +465,12 @@ export default function JavaGrupoDialog({
                       </TableHeader>
                       <TableBody>
                         {padresDisponibles.map((item) => {
-                          const key = `${item.id} ${item.grupo} ${item.java}`;
-                          const selectedPadre = watch("padre"); // obtenemos el padre actual seleccionado
+                          const key = `${item.id} ${item.sexo} ${item.java}`;
+                          const selectedPadre = watch("padre");
                           return (
                             <TableRow key={item.id}>
                               <TableCell>{item.id}</TableCell>
-                              <TableCell>{item.grupo}</TableCell>
+                              <TableCell>{item.sexo}</TableCell>
                               <TableCell>{item.java}</TableCell>
                               <TableCell>
                                 <Checkbox

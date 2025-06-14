@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { getAllReproducciones } from "@/services/reproduccionService";
+import { getAllReproducciones } from "@/services/javaService";
 
 interface AlimentacionDialogProps {
   open: boolean;
