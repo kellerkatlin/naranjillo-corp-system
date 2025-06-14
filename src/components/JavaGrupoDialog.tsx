@@ -36,7 +36,7 @@ interface JavaGrupoDialogProps {
 
 type FormData = {
   nombre: string;
-  fechaInicio: string;
+  fechaInicio: Date | null;
   padre: { id: number; sexo: string } | null;
   hembrasNacidas?: number;
   machosNacidos?: number;
@@ -181,7 +181,9 @@ export default function JavaGrupoDialog({
                   onClick={() => setSeleccionActual("fecha")}
                   disabled={isReproduccionIniciada}
                 >
-                  {watch("fechaInicio") || "Seleccionar fecha"}
+                  {watch("fechaInicio")
+                    ? watch("fechaInicio")?.toLocaleDateString("es-PE")
+                    : "Seleccionar fecha"}
                 </Button>
               </div>
             </div>
@@ -543,15 +545,12 @@ export default function JavaGrupoDialog({
                     <Calendar
                       mode="single"
                       selected={
-                        watch("fechaInicio")
-                          ? new Date(watch("fechaInicio"))
+                        watch("fechaInicio") !== null
+                          ? new Date(watch("fechaInicio") as Date)
                           : undefined
                       }
                       onSelect={(date) => {
-                        if (date) {
-                          const formatted = date.toLocaleDateString("en-CA");
-                          setValue("fechaInicio", formatted);
-                        }
+                        setValue("fechaInicio", date ?? null);
                       }}
                     />
                   </CardContent>
