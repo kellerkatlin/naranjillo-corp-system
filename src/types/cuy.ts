@@ -7,5 +7,7 @@ export type CuyRequest = {
   fechaRegistro: string;
   categoria: string;
   sexo: string;
+  horaRegistro: string;
+  java: number;
   estado: string;
 };

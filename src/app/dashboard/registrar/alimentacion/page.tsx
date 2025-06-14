@@ -76,7 +76,7 @@ export default function FormAlimentacion() {
     },
     {
       accessorKey: "nombreReproduccion",
-      header: "Reproducción",
+      header: "Javas",
     },
     {
       id: "acciones",
@@ -99,7 +99,7 @@ export default function FormAlimentacion() {
                 setDialogOpen(true);
               }}
             >
-              <Pencil className="w-4 h-4 " />
+              Detalle
             </Button>
             <Button
               className="cursor-pointer"
@@ -110,7 +110,7 @@ export default function FormAlimentacion() {
                 setDeleteDialogOpen(true);
               }}
             >
-              <Trash2 className="w-4 h-4" />
+              Agregar Alimento
             </Button>
           </div>
         );

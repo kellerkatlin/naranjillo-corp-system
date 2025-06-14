@@ -20,6 +20,7 @@ import CuyDialog from "@/components/CuyDialog";
 
 export default function FormCuy() {
   const [data, setData] = useState<Cuy[]>([]);
+  const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editItem, setEditItem] = useState<Cuy | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -37,6 +38,12 @@ export default function FormCuy() {
   useEffect(() => {
     loadData();
   }, []);
+  const filteredData = data.filter(
+    (item) =>
+      item.categoria.toLowerCase().includes(search.toLowerCase()) ||
+      item.sexo.toLowerCase().includes(search.toLowerCase()) ||
+      item.estado.toLowerCase().includes(search.toLowerCase())
+  );
 
   const columns: ColumnDef<Cuy>[] = [
     { accessorKey: "id", header: "ID" },
@@ -135,8 +142,13 @@ export default function FormCuy() {
         onSubmit={onSubmit}
         cuy={editItem}
       />
-      <CrudToolbar onCreate={() => setDialogOpen(true)} title="Cuy" />
-      <CrudTable columns={columns} data={data} />
+
+      <CrudToolbar
+        setSearch={setSearch}
+        onCreate={() => setDialogOpen(true)}
+        title="Cuy"
+      />
+      <CrudTable columns={columns} data={filteredData} />
       <ConfirmAlert
         open={deleteDialogOpen}
         title="Eliminar cuy"

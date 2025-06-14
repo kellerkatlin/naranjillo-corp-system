@@ -17,7 +17,7 @@ export default function DashboardHeader() {
     registrar: "REGISTRAR",
     registrarcuyes: "REGISTRAR CUYES",
     cuyes: "CUYES",
-    reproduccion: "REPRODUCCIÓN",
+    reproduccion: "JAVA",
     monitoreo: "MONITOREO",
     alimentacion: "ALIMENTACIÓN",
     profile: "PERFIL",

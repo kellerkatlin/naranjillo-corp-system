@@ -11,15 +11,20 @@ import {
 } from "@/services/reproduccionService";
 import { toast } from "sonner";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import ReproduccionDialog from "@/components/ReproduccionDialog";
 import { CrudToolbar } from "@/components/shared/CrudToolbar";
 import { CrudTable } from "@/components/shared/CrudTable";
 import ConfirmAlert from "@/components/shared/ComfirmAlert";
+import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+import CardJava from "@/components/CardJava";
+import JavaGrupoDialog from "@/components/JavaGrupoDialog";
 
 export default function FormReproduccion() {
   const [data, setData] = useState<Reproduccion[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogGrupoOpen, setDialogGrupoOpen] = useState(false);
   const [editItem, setEditItem] = useState<Reproduccion | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Reproduccion | null>(null);
@@ -144,46 +149,47 @@ export default function FormReproduccion() {
       toast.error("Error al eliminar");
     }
   };
+
+  const grupos = [
+    { nombre: "AMAZONAS", dias: 14 },
+    { nombre: "PASCO", dias: 15 },
+    { nombre: "MADRE DE DIOS", dias: 16 },
+    { nombre: "LORETO", dias: 16 },
+  ];
+
   return (
-    <>
-      <ReproduccionDialog
-        open={dialogOpen}
-        onOpenChange={(open) => {
-          setDialogOpen(open);
-          if (!open) setEditItem(null);
-        }}
-        onSubmit={onSubmit}
-        reproduccion={editItem}
-      />
+    <div className="bg-gray-50 p-4 rounded-lg">
+      <div className="mb-4">
+        <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold">
+          Grupo Reproducción
+        </span>
+      </div>
 
-      <ReproduccionDialog
-        open={!!viewItem}
-        onOpenChange={(open) => {
-          if (!open) setViewItem(null);
-        }}
-        onSubmit={() => {}}
-        reproduccion={viewItem}
-        readOnly
-      />
+      <Card className="flex gap-4 flex-wrap">
+        <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
+          {grupos.map((grupo, idx) => (
+            <CardJava key={idx} java={grupo} />
+          ))}
+          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+            <CardContent
+              onClick={() => setDialogGrupoOpen(true)}
+              className="p-2 flex flex-col items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-green-400" />
+              <div className="mt-2 font-semibold text-green-400">
+                CREAR JAVA
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Card>
 
-      <CrudToolbar onCreate={() => setDialogOpen(true)} title="Reproducción" />
-      <CrudTable columns={columns} data={data} />
-      <ConfirmAlert
-        open={deleteDialogOpen}
-        title="Eliminar registro"
-        message={`¿Deseas eliminar "${itemToDelete?.id}"?`}
-        onCancel={() => {
-          setDeleteDialogOpen(false);
-          setItemToDelete(null);
-        }}
-        onConfirm={async () => {
-          if (itemToDelete) {
-            await handleDelete(itemToDelete.id);
-            setDeleteDialogOpen(false);
-            setItemToDelete(null);
-          }
+      <JavaGrupoDialog
+        open={dialogGrupoOpen}
+        onOpenChange={(open) => {
+          setDialogGrupoOpen(open);
         }}
       />
-    </>
+    </div>
   );
 }
