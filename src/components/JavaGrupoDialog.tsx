@@ -27,6 +27,7 @@ import {
 } from "./ui/select";
 import { getCuyesPadres } from "@/services/javaService";
 import { CuyPadre } from "@/types/cuy";
+import { Calendar } from "./ui/calendar";
 
 interface JavaGrupoDialogProps {
   readonly open: boolean;
@@ -529,14 +530,19 @@ export default function JavaGrupoDialog({
                   Seleccionar Fecha de Inicio
                 </h2>
                 <Card>
-                  <CardContent className="p-4">
-                    <input
-                      type="date"
-                      className="border rounded-md p-2 w-full"
-                      value={watch("fechaInicio") || ""}
-                      onChange={(e) => {
-                        setValue("fechaInicio", e.target.value);
-                        setSeleccionActual(null);
+                  <CardContent className="p-4 flex justify-center">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        watch("fechaInicio")
+                          ? new Date(watch("fechaInicio"))
+                          : undefined
+                      }
+                      onSelect={(date) => {
+                        if (date) {
+                          const formatted = date.toISOString().split("T")[0];
+                          setValue("fechaInicio", formatted);
+                        }
                       }}
                     />
                   </CardContent>
