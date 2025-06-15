@@ -33,9 +33,10 @@ interface JavaGrupoDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
   readonly mode: "REPRODUCCION" | "MACHO" | "HEMBRA";
+  readonly onSubmit: (data: DataJava) => void;
 }
 
-type FormData = {
+export type DataJava = {
   nombre: string;
   fechaInicio: Date | null;
   padre: { id: number; sexo: string } | null;
@@ -51,6 +52,7 @@ type FormData = {
 export default function JavaGrupoDialog({
   open,
   onOpenChange,
+  onSubmit,
   mode,
 }: JavaGrupoDialogProps) {
   const [isReproduccionIniciada, setIsReproduccionIniciada] = useState(false);
@@ -68,7 +70,7 @@ export default function JavaGrupoDialog({
     reset,
     setValue,
     formState: { errors },
-  } = useForm<FormData>({
+  } = useForm<DataJava>({
     defaultValues: {
       nombre: "",
       fechaInicio: null,
@@ -137,8 +139,11 @@ export default function JavaGrupoDialog({
     }
   };
 
-  const onSubmit = (data: FormData) => {
-    console.log("Datos enviados:", data);
+  const handleFinalSubmit = () => {
+    const formData = {
+      ...watch(), // lee los datos actuales del formulario
+    };
+    onSubmit(formData); // lo envías al padre para que procese si es reproducción o no
   };
 
   const madresSeleccionadas = watch("madre") || [];
@@ -162,7 +167,7 @@ export default function JavaGrupoDialog({
     return true;
   };
 
-  const handleSeleccionMadre = (item: any) => {
+  const handleSeleccionMadre = (item: CuyPadre) => {
     const current = watch("madre") || [];
     const exists = current.find((m) => m.id === item.id);
     if (exists) {
@@ -610,7 +615,13 @@ export default function JavaGrupoDialog({
                 : "bg-primary hover:bg-primary/90"
             }
             disabled={!canStartReproduction()}
-            onClick={() => setIsReproduccionIniciada(true)}
+            onClick={() => {
+              if (isReproduccionIniciada) {
+                handleFinalSubmit();
+              } else {
+                setIsReproduccionIniciada(true);
+              }
+            }}
           >
             {isReproduccionIniciada
               ? "Finalizar Reproducción"

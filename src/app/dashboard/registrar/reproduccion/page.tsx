@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Reproduccion, ReproduccionRequest } from "@/types/reproduccion";
 import {
+  createJavaCuy,
+  createJavaCuyReproduccion,
   createReproduccion,
   deleteReproduccion,
   getAllReproducciones,
@@ -19,7 +21,8 @@ import ConfirmAlert from "@/components/shared/ComfirmAlert";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import CardJava from "@/components/CardJava";
-import JavaGrupoDialog from "@/components/JavaGrupoDialog";
+import JavaGrupoDialog, { DataJava } from "@/components/JavaGrupoDialog";
+import { JavaRequest, JavaRequestReproduccion } from "@/types/java";
 
 export default function FormReproduccion() {
   const [data, setData] = useState<Reproduccion[]>([]);
@@ -143,6 +146,32 @@ export default function FormReproduccion() {
     }
   };
 
+  const handleSubmitJava = (form: DataJava) => {
+    if (form.categoria === "REPRODUCCION") {
+      const request: JavaRequestReproduccion = {
+        nombre: form.nombre,
+        categoria: form.categoria,
+        sexo: "NA",
+        fechaReproduccion: form.fechaInicio?.toISOString().split("T")[0] ?? "",
+        cantidadHijasHembras: form.hembrasNacidas ?? 0,
+        cantidadHijosMachos: form.machosNacidos ?? 0,
+        cantidadHijosMuertos: form.muertos ?? 0,
+        cuyes: form.madre.map((m) => ({ id: m.id })),
+      };
+
+      createJavaCuyReproduccion(request);
+    } else {
+      const request: JavaRequest = {
+        nombre: form.nombre,
+        categoria: form.categoria ?? "",
+        sexo: form.sexo ?? "",
+        fechaReproduccion: form.fechaInicio?.toISOString().split("T")[0] ?? "",
+      };
+
+      createJavaCuy(request);
+    }
+  };
+
   const handleDelete = async (id: number) => {
     try {
       await deleteReproduccion(id);
@@ -236,11 +265,10 @@ export default function FormReproduccion() {
       <JavaGrupoDialog
         open={dialogGrupoOpen !== false}
         onOpenChange={(open) => {
-          if (!open) {
-            setDialogGrupoOpen(false);
-          }
+          if (!open) setDialogGrupoOpen(false);
         }}
         mode={dialogGrupoOpen === false ? "REPRODUCCION" : dialogGrupoOpen}
+        onSubmit={handleSubmitJava}
       />
     </div>
   );
