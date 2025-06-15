@@ -147,28 +147,39 @@ export default function FormReproduccion() {
   };
 
   const handleSubmitJava = async (form: DataJava) => {
-    if (form.categoria === "REPRODUCCION") {
-      const request: JavaRequestReproduccion = {
-        nombre: form.nombre,
-        categoria: form.categoria,
-        sexo: "NA",
-        fechaReproduccion: form.fechaInicio?.toISOString().split("T")[0] ?? "",
-        cantidadHijasHembras: form.hembrasNacidas ?? 0,
-        cantidadHijosMachos: form.machosNacidos ?? 0,
-        cantidadHijosMuertos: form.muertos ?? 0,
-        cuyes: form.madre.map((m) => ({ id: m.id })),
-      };
+    try {
+      if (form.categoria === "REPRODUCCION") {
+        const request: JavaRequestReproduccion = {
+          nombre: form.nombre,
+          categoria: form.categoria,
+          sexo: "NA",
+          fechaReproduccion:
+            form.fechaInicio?.toISOString().split("T")[0] ?? "",
+          cantidadHijasHembras: form.hembrasNacidas ?? 0,
+          cantidadHijosMachos: form.machosNacidos ?? 0,
+          cantidadHijosMuertos: form.muertos ?? 0,
+          cuyes: form.madre.map((m) => ({ id: m.id })),
+        };
 
-      await createJavaCuyReproduccion(request);
-    } else {
-      const request: JavaRequest = {
-        nombre: form.nombre,
-        categoria: form.categoria ?? "",
-        sexo: form.sexo ?? "",
-        fechaReproduccion: form.fechaInicio?.toISOString().split("T")[0] ?? "",
-      };
+        await createJavaCuyReproduccion(request);
+        setDialogGrupoOpen(false);
+        toast.success("Java de reproducción creado");
+      } else {
+        const request: JavaRequest = {
+          nombre: form.nombre,
+          categoria: form.categoria ?? "",
+          sexo: form.sexo ?? "",
+          fechaReproduccion:
+            form.fechaInicio?.toISOString().split("T")[0] ?? "",
+        };
 
-      await createJavaCuy(request);
+        await createJavaCuy(request);
+        setDialogGrupoOpen(false);
+        toast.success("Java creado");
+      }
+    } catch (error) {
+      toast.error("Error al crear Java");
+      console.error(error);
     }
   };
 
