@@ -7,7 +7,7 @@ import {
 } from "@/types/java";
 
 const BASE = "/java";
-const BASE_CUY = "/javacuy/";
+const BASE_CUY = "/javacuy";
 export const getCuyesPadres = (
   sexo: string,
   categoriaName: string
