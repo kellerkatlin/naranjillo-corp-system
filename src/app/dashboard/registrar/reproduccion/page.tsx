@@ -180,6 +180,9 @@ export default function FormReproduccion() {
         };
 
         await createJavaCuyReproduccion(request);
+
+        allJavas("MACHO").then((res) => setJavasMachos(res));
+        allJavas("HEMBRA").then((res) => setJavasHembras(res));
         setDialogGrupoOpen(false);
         toast.success("Java de reproducción creado");
       } else {
