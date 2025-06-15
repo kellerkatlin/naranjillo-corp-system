@@ -24,7 +24,10 @@ import JavaGrupoDialog from "@/components/JavaGrupoDialog";
 export default function FormReproduccion() {
   const [data, setData] = useState<Reproduccion[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [dialogGrupoOpen, setDialogGrupoOpen] = useState(false);
+  const [dialogGrupoOpen, setDialogGrupoOpen] = useState<
+    false | "REPRODUCCION" | "MACHO" | "HEMBRA"
+  >(false);
+
   const [editItem, setEditItem] = useState<Reproduccion | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Reproduccion | null>(null);
@@ -172,7 +175,7 @@ export default function FormReproduccion() {
             ))}
             <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
               <CardContent
-                onClick={() => setDialogGrupoOpen(true)}
+                onClick={() => setDialogGrupoOpen("REPRODUCCION")}
                 className="p-2 flex flex-col items-center justify-center"
               >
                 <Plus className="w-8 h-8 text-green-400" />
@@ -195,7 +198,7 @@ export default function FormReproduccion() {
             ))}
             <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
               <CardContent
-                onClick={() => setDialogGrupoOpen(true)}
+                onClick={() => setDialogGrupoOpen("MACHO")}
                 className="p-2 flex flex-col items-center justify-center"
               >
                 <Plus className="w-8 h-8 text-green-400" />
@@ -218,7 +221,7 @@ export default function FormReproduccion() {
             ))}
             <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
               <CardContent
-                onClick={() => setDialogGrupoOpen(true)}
+                onClick={() => setDialogGrupoOpen("HEMBRA")}
                 className="p-2 flex flex-col items-center justify-center"
               >
                 <Plus className="w-8 h-8 text-green-400" />
@@ -231,10 +234,13 @@ export default function FormReproduccion() {
         </Card>
       </div>
       <JavaGrupoDialog
-        open={dialogGrupoOpen}
+        open={dialogGrupoOpen !== false}
         onOpenChange={(open) => {
-          setDialogGrupoOpen(open);
+          if (!open) {
+            setDialogGrupoOpen(false);
+          }
         }}
+        mode={dialogGrupoOpen === false ? "REPRODUCCION" : dialogGrupoOpen}
       />
     </div>
   );

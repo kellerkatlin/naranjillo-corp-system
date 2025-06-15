@@ -32,6 +32,7 @@ import { Calendar } from "./ui/calendar";
 interface JavaGrupoDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
+  readonly mode: "REPRODUCCION" | "MACHO" | "HEMBRA";
 }
 
 type FormData = {
@@ -50,6 +51,7 @@ type FormData = {
 export default function JavaGrupoDialog({
   open,
   onOpenChange,
+  mode,
 }: JavaGrupoDialogProps) {
   const [isReproduccionIniciada, setIsReproduccionIniciada] = useState(false);
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
@@ -83,20 +85,35 @@ export default function JavaGrupoDialog({
 
   useEffect(() => {
     if (open) {
-      reset({
-        nombre: "",
-        fechaInicio: null,
-        categoria: "REPRODUCCION",
-        sexo: "NA",
-        padre: null,
-        madre: [],
-        hembrasNacidas: 0,
-        machosNacidos: 0,
-        muertos: 0,
-        regiones: {},
-      });
+      if (mode === "REPRODUCCION") {
+        reset({
+          nombre: "",
+          fechaInicio: null,
+          categoria: "REPRODUCCION",
+          sexo: "NA",
+          padre: null,
+          madre: [],
+          hembrasNacidas: 0,
+          machosNacidos: 0,
+          muertos: 0,
+          regiones: {},
+        });
+      } else {
+        reset({
+          nombre: "",
+          fechaInicio: null,
+          categoria: "CRIA",
+          sexo: mode, // Modo es MACHO o HEMBRA
+          padre: null,
+          madre: [],
+          hembrasNacidas: 0,
+          machosNacidos: 0,
+          muertos: 0,
+          regiones: {},
+        });
+      }
     }
-  }, [open, reset]);
+  }, [open, reset, mode]);
 
   const categoria = watch("categoria");
 
@@ -203,16 +220,27 @@ export default function JavaGrupoDialog({
                 <Select
                   value={watch("categoria")}
                   onValueChange={(value) => setValue("categoria", value)}
-                  disabled={isReproduccionIniciada}
+                  disabled={
+                    isReproduccionIniciada ||
+                    watch("categoria") === "REPRODUCCION"
+                  }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Seleccionar categoria" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectItem value="CRIA">CRIA</SelectItem>
-                      <SelectItem value="REPRODUCCION">REPRODUCCION</SelectItem>
-                      <SelectItem value="ENGORDE">ENGORDE</SelectItem>
+                      {mode === "REPRODUCCION" && (
+                        <SelectItem value="REPRODUCCION">
+                          REPRODUCCION
+                        </SelectItem>
+                      )}
+                      {mode !== "REPRODUCCION" && (
+                        <>
+                          <SelectItem value="CRIA">CRIA</SelectItem>
+                          <SelectItem value="ENGORDE">ENGORDE</SelectItem>
+                        </>
+                      )}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -279,7 +307,7 @@ export default function JavaGrupoDialog({
               <div className="flex-1 w-full">
                 <Label className="mb-2">Sexo</Label>
                 <Select
-                  disabled={categoria === "REPRODUCCION"}
+                  disabled
                   value={watch("sexo") ?? ""}
                   onValueChange={(value) => setValue("sexo", value)}
                 >
@@ -287,13 +315,15 @@ export default function JavaGrupoDialog({
                     <SelectValue placeholder="Seleccionar sexo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectGroup>
+                    {mode === "REPRODUCCION" && (
+                      <SelectItem value="NA">N/A</SelectItem>
+                    )}
+                    {mode === "MACHO" && (
                       <SelectItem value="MACHO">MACHO</SelectItem>
+                    )}
+                    {mode === "HEMBRA" && (
                       <SelectItem value="HEMBRA">HEMBRA</SelectItem>
-                      {categoria === "REPRODUCCION" && (
-                        <SelectItem value="NA">N/A</SelectItem>
-                      )}
-                    </SelectGroup>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
