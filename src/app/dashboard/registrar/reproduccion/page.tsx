@@ -193,10 +193,15 @@ export default function FormReproduccion() {
         };
 
         await createJavaCuy(request);
-        setDialogGrupoOpen(false);
-        allJavas("MACHO").then((res) => setJavasMachos(res));
-        allJavas("HEMBRA").then((res) => setJavasHembras(res));
+        if (form.sexo === "MACHO") {
+          const machos = await allJavas("MACHO");
+          setJavasMachos(machos);
+        } else if (form.sexo === "HEMBRA") {
+          const hembras = await allJavas("HEMBRA");
+          setJavasHembras(hembras);
+        }
         toast.success("Java creado");
+        setDialogGrupoOpen(false);
       }
     } catch (error) {
       toast.error("Error al crear Java");
