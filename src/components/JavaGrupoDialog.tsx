@@ -55,6 +55,8 @@ export default function JavaGrupoDialog({
   onSubmit,
   mode,
 }: JavaGrupoDialogProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [isReproduccionIniciada, setIsReproduccionIniciada] = useState(false);
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
   const [madresDisponibles, setMadresDisponibles] = useState<CuyPadre[]>([]);
@@ -139,11 +141,19 @@ export default function JavaGrupoDialog({
     }
   };
 
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     const formData = {
-      ...watch(), // lee los datos actuales del formulario
+      ...watch(),
     };
-    onSubmit(formData); // lo envías al padre para que procese si es reproducción o no
+    try {
+      setIsSubmitting(true);
+      await onSubmit(formData);
+      onOpenChange(false); // Cerrar el modal después de enviar
+    } catch (error) {
+      console.error("Error al enviar:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const madresSeleccionadas = watch("madre") || [];
@@ -614,18 +624,24 @@ export default function JavaGrupoDialog({
                 ? "bg-green-600 hover:bg-green-700"
                 : "bg-primary hover:bg-primary/90"
             }
-            disabled={!canStartReproduction()}
+            disabled={!canStartReproduction() || isSubmitting}
             onClick={() => {
-              if (isReproduccionIniciada) {
-                handleFinalSubmit();
+              if (categoria === "REPRODUCCION") {
+                if (isReproduccionIniciada) {
+                  handleFinalSubmit();
+                } else {
+                  setIsReproduccionIniciada(true);
+                }
               } else {
-                setIsReproduccionIniciada(true);
+                handleFinalSubmit();
               }
             }}
           >
-            {isReproduccionIniciada
-              ? "Finalizar Reproducción"
-              : "Iniciar Reproducción"}
+            {categoria === "REPRODUCCION"
+              ? isReproduccionIniciada
+                ? "Finalizar Reproducción"
+                : "Iniciar Reproducción"
+              : "Crear Java"}
           </Button>
         </div>
       </DialogContent>

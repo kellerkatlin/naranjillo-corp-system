@@ -146,7 +146,7 @@ export default function FormReproduccion() {
     }
   };
 
-  const handleSubmitJava = (form: DataJava) => {
+  const handleSubmitJava = async (form: DataJava) => {
     if (form.categoria === "REPRODUCCION") {
       const request: JavaRequestReproduccion = {
         nombre: form.nombre,
@@ -159,7 +159,7 @@ export default function FormReproduccion() {
         cuyes: form.madre.map((m) => ({ id: m.id })),
       };
 
-      createJavaCuyReproduccion(request);
+      await createJavaCuyReproduccion(request);
     } else {
       const request: JavaRequest = {
         nombre: form.nombre,
@@ -168,7 +168,7 @@ export default function FormReproduccion() {
         fechaReproduccion: form.fechaInicio?.toISOString().split("T")[0] ?? "",
       };
 
-      createJavaCuy(request);
+      await createJavaCuy(request);
     }
   };
 
