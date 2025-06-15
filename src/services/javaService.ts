@@ -35,7 +35,7 @@ export const createJavaCuyReproduccion = (data: JavaRequestReproduccion) =>
   });
 
 export const getAllJava = (sexo: string): Promise<JavaRespose[]> =>
-  apiFetch(`${BASE_CUY}/java/sexo/${sexo}`, {
+  apiFetch(`${BASE_CUY}/javas/sexo/${sexo}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
