@@ -122,11 +122,10 @@ export default function FormReproduccion() {
               <Button
                 key={cat}
                 className={`${
-                  filtroHembra === cat
+                  filtroMacho === cat
                     ? "bg-orange-400 text-white"
                     : "bg-blue-300 text-white"
                 }`}
-                variant={filtroMacho === cat ? "default" : "outline"}
                 onClick={() => setFiltroMacho(cat)}
               >
                 {cat}
@@ -134,21 +133,27 @@ export default function FormReproduccion() {
             ))}
           </div>
         </div>
-        <div className="flex flex-wrap gap-4">
+
+        {/* CARRUSEL */}
+        <div className="flex gap-4 overflow-x-auto max-w-sm scroll-smooth pb-4">
           {javasMachos.map((grupo) => (
-            <CardJava key={grupo.id} java={grupo} />
+            <div key={grupo.id} className="flex-shrink-0 w-36">
+              <CardJava java={grupo} />
+            </div>
           ))}
-          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-            <CardContent
-              onClick={() => setDialogGrupoOpen("MACHO")}
-              className="p-2 flex flex-col items-center justify-center"
-            >
-              <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 font-semibold text-green-400">
-                CREAR JAVA
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex-shrink-0 w-36">
+            <Card className="h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+              <CardContent
+                onClick={() => setDialogGrupoOpen("MACHO")}
+                className="p-2 flex flex-col items-center justify-center"
+              >
+                <Plus className="w-8 h-8 text-green-400" />
+                <div className="mt-2 font-semibold text-green-400">
+                  CREAR JAVA
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </Card>
 
