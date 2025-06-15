@@ -8,6 +8,7 @@ import {
   createJavaCuyReproduccion,
   createReproduccion,
   deleteReproduccion,
+  getAllJava,
   getAllReproducciones,
   updateReproduccion,
 } from "@/services/javaService";
@@ -22,11 +23,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import CardJava from "@/components/CardJava";
 import JavaGrupoDialog, { DataJava } from "@/components/JavaGrupoDialog";
-import { JavaRequest, JavaRequestReproduccion } from "@/types/java";
+import {
+  JavaRequest,
+  JavaRequestReproduccion,
+  JavaRespose,
+} from "@/types/java";
 
 export default function FormReproduccion() {
   const [data, setData] = useState<Reproduccion[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
+  const [javasHembras, setJavasHembras] = useState<JavaRespose[]>([]);
   const [dialogGrupoOpen, setDialogGrupoOpen] = useState<
     false | "REPRODUCCION" | "MACHO" | "HEMBRA"
   >(false);
@@ -47,8 +54,19 @@ export default function FormReproduccion() {
 
   useEffect(() => {
     loadData();
+    allJavas("MACHO").then((res) => setJavasMachos(res));
+    allJavas("HEMBRA").then((res) => setJavasHembras(res));
   }, []);
 
+  const allJavas = async (sexo: string): Promise<JavaRespose[]> => {
+    try {
+      const res = await getAllJava(sexo);
+      return res;
+    } catch {
+      toast.error("Error al cargar datos");
+      return [];
+    }
+  };
   const columns: ColumnDef<Reproduccion>[] = [
     {
       accessorKey: "nombreCuyera",
@@ -233,8 +251,8 @@ export default function FormReproduccion() {
             </span>
           </div>
           <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
-            {grupos.map((grupo, idx) => (
-              <CardJava key={idx} java={grupo} />
+            {javasMachos.map((grupo) => (
+              <CardJava key={grupo.id} java={grupo} />
             ))}
             <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
               <CardContent
@@ -256,8 +274,8 @@ export default function FormReproduccion() {
             </span>
           </div>
           <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
-            {grupos.map((grupo, idx) => (
-              <CardJava key={idx} java={grupo} />
+            {javasHembras.map((grupo) => (
+              <CardJava key={grupo.id} java={grupo} />
             ))}
             <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
               <CardContent

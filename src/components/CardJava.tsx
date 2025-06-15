@@ -1,9 +1,10 @@
 import React from "react";
 import { Card, CardContent } from "./ui/card";
 import Image from "next/image";
+import { JavaRespose } from "@/types/java";
 
 interface CardJavaProps {
-  readonly java?: any;
+  readonly java?: JavaRespose;
 }
 
 export default function CardJava({ java }: CardJavaProps) {
@@ -12,7 +13,7 @@ export default function CardJava({ java }: CardJavaProps) {
       <CardContent className="p-2 ">
         <div>{java?.nombre}</div>
         {/* <Image src={java?.imagen} alt={java?.nombre} width={100} height={100} /> */}
-        <div>{java?.dias}</div>
+        <div>{java?.sexo}</div>
       </CardContent>
     </Card>
   );

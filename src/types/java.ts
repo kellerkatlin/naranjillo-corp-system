@@ -17,3 +17,21 @@ export interface JavaRequestReproduccion {
     id: number;
   }>;
 }
+
+export interface JavaRespose {
+  id: number;
+  nombre: string;
+  categoria: string;
+  sexo: string;
+  fechaReproduccion: string;
+  catidadHijasHembras: number;
+  cantidadHijosMachos: number;
+  cantidadHijosMuertos: number;
+  cuyes: Array<{
+    id: number;
+    nombre: string;
+    sexo: string;
+    categoria: string;
+    fechaNacimiento: string;
+  }>;
+}
