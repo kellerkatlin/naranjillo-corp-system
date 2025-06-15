@@ -1,173 +1,65 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Reproduccion, ReproduccionRequest } from "@/types/reproduccion";
+import { toast } from "sonner";
+import { getAllJava } from "@/services/javaService";
+import { JavaRespose } from "@/types/java";
+import { Card, CardContent } from "@/components/ui/card";
+import CardJava from "@/components/CardJava";
+import { Plus } from "lucide-react";
+import JavaGrupoDialog, { DataJava } from "@/components/JavaGrupoDialog";
 import {
   createJavaCuy,
   createJavaCuyReproduccion,
-  createReproduccion,
-  deleteReproduccion,
-  getAllJava,
-  getAllReproducciones,
-  updateReproduccion,
 } from "@/services/javaService";
-import { toast } from "sonner";
-import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Pencil, Plus, Trash2 } from "lucide-react";
-import ReproduccionDialog from "@/components/ReproduccionDialog";
-import { CrudToolbar } from "@/components/shared/CrudToolbar";
-import { CrudTable } from "@/components/shared/CrudTable";
-import ConfirmAlert from "@/components/shared/ComfirmAlert";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
-import CardJava from "@/components/CardJava";
-import JavaGrupoDialog, { DataJava } from "@/components/JavaGrupoDialog";
-import {
-  JavaRequest,
-  JavaRequestReproduccion,
-  JavaRespose,
-} from "@/types/java";
+import { Button } from "@/components/ui/button";
 
 export default function FormReproduccion() {
-  const [data, setData] = useState<Reproduccion[]>([]);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
   const [javasHembras, setJavasHembras] = useState<JavaRespose[]>([]);
+  const [filtroMacho, setFiltroMacho] = useState("TODOS");
+  const [filtroHembra, setFiltroHembra] = useState("TODOS");
   const [dialogGrupoOpen, setDialogGrupoOpen] = useState<
     false | "REPRODUCCION" | "MACHO" | "HEMBRA"
   >(false);
 
-  const [editItem, setEditItem] = useState<Reproduccion | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<Reproduccion | null>(null);
-  const [viewItem, setViewItem] = useState<Reproduccion | null>(null);
-
-  const loadData = async () => {
-    try {
-      const res = await getAllReproducciones();
-      setData(res);
-    } catch {
-      toast.error("Error al cargar datos");
-    }
-  };
-
+  // Carga inicial
   useEffect(() => {
-    loadData();
-    allJavas("MACHO").then((res) => setJavasMachos(res));
-    allJavas("HEMBRA").then((res) => setJavasHembras(res));
+    fetchMachos();
+    fetchHembras();
   }, []);
 
-  const allJavas = async (sexo: string): Promise<JavaRespose[]> => {
+  // Al cambiar filtros, recarga
+  useEffect(() => {
+    fetchMachos();
+  }, [filtroMacho]);
+
+  useEffect(() => {
+    fetchHembras();
+  }, [filtroHembra]);
+
+  const fetchMachos = async () => {
     try {
-      const res = await getAllJava(sexo);
-      return res;
+      const res = await getAllJava("MACHO", filtroMacho);
+      setJavasMachos(res);
     } catch {
-      toast.error("Error al cargar datos");
-      return [];
+      toast.error("Error al cargar machos");
     }
   };
-  const columns: ColumnDef<Reproduccion>[] = [
-    {
-      accessorKey: "nombreCuyera",
-      header: "Nombre Cuyera",
-    },
-    {
-      accessorKey: "cantidadHijos",
-      header: "Cantidad de Hijos",
-    },
-    {
-      accessorKey: "fechaReproduccion",
-      header: "Fecha Reproducción",
-      cell: ({ row }) => {
-        const fechaStr = row.getValue("fechaReproduccion") as string;
-        const [year, month, day] = fechaStr.split("-");
-        return new Date(
-          Number(year),
-          Number(month) - 1,
-          Number(day)
-        ).toLocaleDateString();
-      },
-    },
-    {
-      accessorKey: "fechaParto",
-      header: "Fecha Parto",
-      cell: ({ row }) => {
-        const fechaStr = row.getValue("fechaParto") as string;
-        const [year, month, day] = fechaStr.split("-");
-        return new Date(
-          Number(year),
-          Number(month) - 1,
-          Number(day)
-        ).toLocaleDateString();
-      },
-    },
-    {
-      id: "acciones",
-      header: "Acciones",
-      cell: ({ row }) => {
-        const item = row.original;
-        return (
-          <div className="flex gap-2">
-            <Button
-              className="cursor-pointer"
-              size="sm"
-              onClick={() => {
-                setEditItem(item);
-                setDialogOpen(true);
-              }}
-            >
-              <Pencil className="w-4 h-4" />
-            </Button>
-            <Button
-              className="cursor-pointer"
-              size="sm"
-              variant="destructive"
-              onClick={() => {
-                setItemToDelete(item);
-                setDeleteDialogOpen(true);
-              }}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-            <Button
-              className="cursor-pointer"
-              size="sm"
-              variant="secondary"
-              onClick={() => setViewItem(item)}
-            >
-              <Eye className="w-4 h-4" />
-            </Button>
-          </div>
-        );
-      },
-    },
-  ];
 
-  const onSubmit = async (form: ReproduccionRequest) => {
+  const fetchHembras = async () => {
     try {
-      if (editItem) {
-        const updated = await updateReproduccion(editItem.id, form);
-        setData((prev) =>
-          prev.map((item) => (item.id === editItem.id ? updated : item))
-        );
-        toast.success("Actualizado");
-      } else {
-        const created = await createReproduccion(form);
-        setData((prev) => [...prev, created]);
-        toast.success("Registrado");
-      }
-      setDialogOpen(false);
-      setEditItem(null);
+      const res = await getAllJava("HEMBRA", filtroHembra);
+      setJavasHembras(res);
     } catch {
-      toast.error("Error al guardar");
+      toast.error("Error al cargar hembras");
     }
   };
 
   const handleSubmitJava = async (form: DataJava) => {
     try {
       if (form.categoria === "REPRODUCCION") {
-        const request: JavaRequestReproduccion = {
+        await createJavaCuyReproduccion({
           nombre: form.nombre,
           categoria: form.categoria,
           sexo: "NA",
@@ -177,133 +69,130 @@ export default function FormReproduccion() {
           cantidadHijosMachos: form.machosNacidos ?? 0,
           cantidadHijosMuertos: form.muertos ?? 0,
           cuyes: form.madre.map((m) => ({ id: m.id })),
-        };
-
-        await createJavaCuyReproduccion(request);
-
-        setDialogGrupoOpen(false);
+        });
         toast.success("Java de reproducción creado");
       } else {
-        const request: JavaRequest = {
+        await createJavaCuy({
           nombre: form.nombre,
           categoria: form.categoria ?? "",
           sexo: form.sexo ?? "",
           fechaReproduccion:
             form.fechaInicio?.toISOString().split("T")[0] ?? "",
-        };
+        });
 
-        await createJavaCuy(request);
-        if (form.sexo === "MACHO") {
-          const machos = await allJavas("MACHO");
-          setJavasMachos(machos);
-        } else if (form.sexo === "HEMBRA") {
-          const hembras = await allJavas("HEMBRA");
-          setJavasHembras(hembras);
-        }
+        // Refresca según el sexo
+        form.sexo === "MACHO" ? fetchMachos() : fetchHembras();
         toast.success("Java creado");
-        setDialogGrupoOpen(false);
       }
-    } catch (error) {
-      toast.error("Error al crear Java");
-      console.error(error);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteReproduccion(id);
-      setData((prev) => prev.filter((item) => item.id !== id));
-      toast.success("Eliminado");
+      setDialogGrupoOpen(false);
     } catch {
-      toast.error("Error al eliminar");
+      toast.error("Error al crear Java");
     }
   };
-
-  const grupos = [
-    { nombre: "AMAZONAS", dias: 14 },
-    { nombre: "PASCO", dias: 15 },
-    { nombre: "MADRE DE DIOS", dias: 16 },
-    { nombre: "LORETO", dias: 16 },
-  ];
 
   return (
     <div className="p-4 rounded-lg">
-      <div className="flex flex-col gap-4">
-        <Card className="flex p-3  flex-wrap">
-          <div className="mb-4">
-            <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold">
-              Grupo Reproducción
-            </span>
-          </div>
-          <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
-            {grupos.map((grupo, idx) => (
-              <CardJava key={idx} java={grupo} />
-            ))}
-            <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-              <CardContent
-                onClick={() => setDialogGrupoOpen("REPRODUCCION")}
-                className="p-2 flex flex-col items-center justify-center"
+      {/* GRUPO REPRODUCCION */}
+      <Card className="p-3 mb-6">
+        <div>
+          <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold inline-block text-center">
+            Grupo Reproducción
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-4 mt-4">
+          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+            <CardContent
+              onClick={() => setDialogGrupoOpen("REPRODUCCION")}
+              className="p-2 flex flex-col items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-green-400" />
+              <div className="mt-2 font-semibold text-green-400">
+                CREAR JAVA
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Card>
+
+      {/* GRUPO MACHOS */}
+      <Card className="p-3 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex gap-2">
+            {["TODOS", "ENGORDE", "CRIA"].map((cat) => (
+              <Button
+                key={cat}
+                className={`${
+                  filtroHembra === cat
+                    ? "bg-orange-400 text-white"
+                    : "bg-blue-300 text-white"
+                }`}
+                variant={filtroMacho === cat ? "default" : "outline"}
+                onClick={() => setFiltroMacho(cat)}
               >
-                <Plus className="w-8 h-8 text-green-400" />
-                <div className="mt-2 font-semibold text-green-400">
-                  CREAR JAVA
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </Card>
-        <Card className="flex p-3  flex-wrap">
-          <div className="mb-4">
-            <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold">
-              Todos los Machos
-            </span>
-          </div>
-          <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
-            {javasMachos.map((grupo) => (
-              <CardJava key={grupo.id} java={grupo} />
+                {cat}
+              </Button>
             ))}
-            <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-              <CardContent
-                onClick={() => setDialogGrupoOpen("MACHO")}
-                className="p-2 flex flex-col items-center justify-center"
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-4">
+          {javasMachos.map((grupo) => (
+            <CardJava key={grupo.id} java={grupo} />
+          ))}
+          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+            <CardContent
+              onClick={() => setDialogGrupoOpen("MACHO")}
+              className="p-2 flex flex-col items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-green-400" />
+              <div className="mt-2 font-semibold text-green-400">
+                CREAR JAVA
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Card>
+
+      {/* GRUPO HEMBRAS */}
+      <Card className="p-3 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex gap-2">
+            {["TODOS", "ENGORDE", "CRIA"].map((cat) => (
+              <Button
+                key={cat}
+                className={`${
+                  filtroHembra === cat
+                    ? "bg-orange-400 text-white"
+                    : "bg-blue-300 text-white"
+                }`}
+                variant={filtroHembra === cat ? "default" : "outline"}
+                onClick={() => setFiltroHembra(cat)}
               >
-                <Plus className="w-8 h-8 text-green-400" />
-                <div className="mt-2 font-semibold text-green-400">
-                  CREAR JAVA
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </Card>
-        <Card className="flex p-3  flex-wrap">
-          <div className="mb-4">
-            <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold">
-              Todas las Hembras
-            </span>
-          </div>
-          <div className="flex flex-wrap space-x-4 space-y-4 pl-4">
-            {javasHembras.map((grupo) => (
-              <CardJava key={grupo.id} java={grupo} />
+                {cat}
+              </Button>
             ))}
-            <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-              <CardContent
-                onClick={() => setDialogGrupoOpen("HEMBRA")}
-                className="p-2 flex flex-col items-center justify-center"
-              >
-                <Plus className="w-8 h-8 text-green-400" />
-                <div className="mt-2 font-semibold text-green-400">
-                  CREAR JAVA
-                </div>
-              </CardContent>
-            </Card>
           </div>
-        </Card>
-      </div>
+        </div>
+        <div className="flex flex-wrap gap-4">
+          {javasHembras.map((grupo) => (
+            <CardJava key={grupo.id} java={grupo} />
+          ))}
+          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+            <CardContent
+              onClick={() => setDialogGrupoOpen("HEMBRA")}
+              className="p-2 flex flex-col items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-green-400" />
+              <div className="mt-2 font-semibold text-green-400">
+                CREAR JAVA
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Card>
+
       <JavaGrupoDialog
         open={dialogGrupoOpen !== false}
-        onOpenChange={(open) => {
-          if (!open) setDialogGrupoOpen(false);
-        }}
+        onOpenChange={(open) => !open && setDialogGrupoOpen(false)}
         mode={dialogGrupoOpen === false ? "REPRODUCCION" : dialogGrupoOpen}
         onSubmit={handleSubmitJava}
       />

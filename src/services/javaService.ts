@@ -34,10 +34,19 @@ export const createJavaCuyReproduccion = (data: JavaRequestReproduccion) =>
     },
   });
 
-export const getAllJava = (sexo: string): Promise<JavaRespose[]> =>
-  apiFetch(`${BASE_CUY}/javas/sexo/${sexo}`, {
+export const getAllJava = (
+  sexo: string,
+  categoria?: string
+): Promise<JavaRespose[]> => {
+  const url =
+    categoria && categoria !== "TODOS"
+      ? `${BASE_CUY}/javas/categoria/${categoria}/sexo/${sexo}`
+      : `${BASE_CUY}/javas/sexo/${sexo}`;
+
+  return apiFetch(url, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
   });
+};
