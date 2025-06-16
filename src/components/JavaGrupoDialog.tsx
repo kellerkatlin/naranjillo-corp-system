@@ -266,14 +266,18 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label
                     className={`flex items-center gap-1 mb-2 ${
-                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
+                      isReproduccionIniciada || isEditing
+                        ? "opacity-100"
+                        : "opacity-60"
                     }`}
                   >
                     Hembras Nacidas
                   </Label>
                   <div
                     className={`flex items-center gap-1 ${
-                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
+                      isReproduccionIniciada || isEditing
+                        ? "opacity-100"
+                        : "opacity-60"
                     }`}
                   >
                     <Input
@@ -364,99 +368,18 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label
                     className={`flex items-center gap-1 mb-2 ${
-                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
-                    }`}
-                  >
-                    Registrar Muertos
-                  </Label>
-                  <div
-                    className={`flex items-center gap-1 ${
-                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
-                    }`}
-                  >
-                    <Input
-                      type="number"
-                      value={watch("muertos") ?? 0}
-                      disabled
-                      className=" text-center bg-gray-400 disabled:opacity-100"
-                    />
-                    {errors.muertos && (
-                      <p className="text-red-500 text-sm mt-1">
-                        Este campo es requerido
-                      </p>
-                    )}
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const current = watch("muertos") ?? 0;
-                        if (current > 0) {
-                          setValue("muertos", current - 1);
-                        }
-                      }}
-                      disabled={(watch("muertos") ?? 0) <= 0}
-                    >
-                      <Minus />
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={!isReproduccionIniciada}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const current = watch("muertos") ?? 0;
-                        setValue("muertos", current + 1);
-                      }}
-                    >
-                      <Plus />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {categoria === "REPRODUCCION" && (
-              <div className="flex items-start w-full flex-col md:flex-row gap-4">
-                <div className="flex-1 w-full">
-                  <Label className="mb-2">Seleccionar Madres</Label>
-                  {madresSeleccionadas.length > 0 ? (
-                    <Card
-                      className="cursor-pointer w-full hover:bg-gray-50"
-                      onClick={handleOpenMadre}
-                    >
-                      <div className="flex text-sm flex-col text-center font-semibold w-full">
-                        {madresSeleccionadas.map((madre, index) => (
-                          <span key={index}>
-                            {madre.id} - {madre.sexo}
-                          </span>
-                        ))}
-                      </div>
-                    </Card>
-                  ) : (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full justify-start text-center flex-col items-start"
-                      onClick={handleOpenMadre}
-                    >
-                      Seleccionar Madres
-                    </Button>
-                  )}
-                </div>
-                <div className="flex-1 w-full">
-                  <Label
-                    className={`flex items-center gap-1 mb-2 ${
-                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
+                      isReproduccionIniciada || isEditing
+                        ? "opacity-100"
+                        : "opacity-60"
                     }`}
                   >
                     Machos Nacidos
                   </Label>
                   <div
                     className={`flex items-center gap-1 ${
-                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
+                      isReproduccionIniciada || isEditing
+                        ? "opacity-100"
+                        : "opacity-60"
                     }`}
                   >
                     <Input
@@ -494,6 +417,96 @@ export default function JavaGrupoDialog({
                       onClick={() => {
                         const current = watch("machosNacidos") ?? 0;
                         setValue("machosNacidos", current + 1);
+                      }}
+                    >
+                      <Plus />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {categoria === "REPRODUCCION" && (
+              <div className="flex items-start w-full flex-col md:flex-row gap-4">
+                <div className="flex-1 w-full">
+                  <Label className="mb-2">Seleccionar Madres</Label>
+                  {madresSeleccionadas.length > 0 ? (
+                    <Card
+                      className="cursor-pointer w-full hover:bg-gray-50"
+                      onClick={handleOpenMadre}
+                    >
+                      <div className="flex text-sm flex-col text-center font-semibold w-full">
+                        {madresSeleccionadas.map((madre, index) => (
+                          <span key={index}>
+                            {madre.id} - {madre.sexo}
+                          </span>
+                        ))}
+                      </div>
+                    </Card>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full justify-start text-center flex-col items-start"
+                      onClick={handleOpenMadre}
+                    >
+                      Seleccionar Madres
+                    </Button>
+                  )}
+                </div>
+
+                <div className="flex-1 w-full">
+                  <Label
+                    className={`flex items-center gap-1 mb-2 ${
+                      isReproduccionIniciada || isEditing
+                        ? "opacity-100"
+                        : "opacity-60"
+                    }`}
+                  >
+                    Registrar Muertos
+                  </Label>
+                  <div
+                    className={`flex items-center gap-1 ${
+                      isReproduccionIniciada || isEditing
+                        ? "opacity-100"
+                        : "opacity-60"
+                    }`}
+                  >
+                    <Input
+                      type="number"
+                      value={watch("muertos") ?? 0}
+                      disabled
+                      className=" text-center bg-gray-400 disabled:opacity-100"
+                    />
+                    {errors.muertos && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Este campo es requerido
+                      </p>
+                    )}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const current = watch("muertos") ?? 0;
+                        if (current > 0) {
+                          setValue("muertos", current - 1);
+                        }
+                      }}
+                      disabled={(watch("muertos") ?? 0) <= 0}
+                    >
+                      <Minus />
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={!isReproduccionIniciada}
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const current = watch("muertos") ?? 0;
+                        setValue("muertos", current + 1);
                       }}
                     >
                       <Plus />
@@ -625,19 +638,10 @@ export default function JavaGrupoDialog({
                 : "bg-primary hover:bg-primary/90"
             }
             disabled={!canStartReproduction() || isSubmitting}
-            onClick={() => {
-              if (categoria === "REPRODUCCION") {
-                if (isReproduccionIniciada) {
-                  handleFinalSubmit();
-                } else {
-                  setIsReproduccionIniciada(true);
-                }
-              } else {
-                handleFinalSubmit();
-              }
-            }}
           >
-            {categoria === "REPRODUCCION"
+            {isEditing
+              ? "Finalizar Reproducción"
+              : categoria === "REPRODUCCION"
               ? isReproduccionIniciada
                 ? "Finalizar Reproducción"
                 : "Iniciar Reproducción"
