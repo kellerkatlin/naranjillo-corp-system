@@ -68,7 +68,7 @@ export default function CuyDialog({
           }),
           categoria: "",
           java: { id: 0 },
-          estado: "APTO",
+          estado: "VIVO",
           sexo: "",
         });
       }
@@ -179,7 +179,6 @@ export default function CuyDialog({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ENGORDE">ENGORDE</SelectItem>
-                  <SelectItem value="REPRODUCTOR">REPRODUCTOR</SelectItem>
                   <SelectItem value="CRIA">CRIA</SelectItem>
                 </SelectContent>
               </Select>
@@ -253,15 +252,14 @@ export default function CuyDialog({
               <Label className="mb-1 block">Estado</Label>
               <Select
                 onValueChange={(value) => setValue("estado", value)}
-                value={watch("estado") || "APTO"}
+                value={watch("estado") || "VIVO"}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona un estado" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="VENDIDO">VENDIDO</SelectItem>
-                  <SelectItem value="APTO">APTO</SelectItem>
-                  <SelectItem value="CAMADA">CAMADA</SelectItem>
+                  <SelectItem value="VIVO">VIVO</SelectItem>
+                  <SelectItem value="MUERTO">MUERTO</SelectItem>
                 </SelectContent>
               </Select>
               {errors.estado && (
