@@ -13,7 +13,7 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
   return (
     <Card
       onClick={onClickEdit}
-      className="w-36 h-36 border-black bg-green-400 items-center justify-center relative cursor-pointer hover:scale-105"
+      className="w-36 h-36 border-black bg-green-300 border-none items-center justify-center relative cursor-pointer hover:scale-105"
     >
       <CardContent className="p-2 flex flex-col justify-center items-center text-center">
         <div className="font-semibold text-white text-sm">{java?.nombre}</div>
