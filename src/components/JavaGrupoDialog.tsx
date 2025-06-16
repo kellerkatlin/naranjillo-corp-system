@@ -394,7 +394,7 @@ export default function JavaGrupoDialog({
               )}
             </div>
             {categoria === "REPRODUCCION" && (
-              <div className="flex items-center w-full flex-col md:flex-row gap-4">
+              <div className="flex items-start w-full flex-col md:flex-row gap-4">
                 <div className="flex-1 w-full">
                   <Label className="mb-2">Padre</Label>
 
@@ -429,7 +429,8 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label
                     className={`flex items-center gap-1 mb-2 ${
-                      isReproduccionIniciada || isEditing
+                      (isReproduccionIniciada || isEditing) &&
+                      !isCountersBlocked
                         ? "opacity-100"
                         : "opacity-60"
                     }`}
@@ -438,7 +439,8 @@ export default function JavaGrupoDialog({
                   </Label>
                   <div
                     className={`flex items-center gap-1 ${
-                      isReproduccionIniciada || isEditing
+                      (isReproduccionIniciada || isEditing) &&
+                      !isCountersBlocked
                         ? "opacity-100"
                         : "opacity-60"
                     }`}
@@ -529,7 +531,8 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label
                     className={`flex items-center gap-1 mb-2 ${
-                      isReproduccionIniciada || isEditing
+                      (isReproduccionIniciada || isEditing) &&
+                      !isCountersBlocked
                         ? "opacity-100"
                         : "opacity-60"
                     }`}
@@ -538,7 +541,8 @@ export default function JavaGrupoDialog({
                   </Label>
                   <div
                     className={`flex items-center gap-1 ${
-                      isReproduccionIniciada || isEditing
+                      (isReproduccionIniciada || isEditing) &&
+                      !isCountersBlocked
                         ? "opacity-100"
                         : "opacity-60"
                     }`}
