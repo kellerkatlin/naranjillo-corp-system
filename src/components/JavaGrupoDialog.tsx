@@ -140,6 +140,30 @@ export default function JavaGrupoDialog({
     }
   };
 
+  const handleSubmitUpdateOnlyCounters = async () => {
+    try {
+      setIsSubmitting(true);
+      const dataToUpdate: DataJava = {
+        id: javaToEdit?.id ?? null,
+        nombre: javaToEdit?.nombre ?? "", // Lo que ya tienes
+        categoria: javaToEdit?.categoria ?? "",
+        fechaInicio: javaToEdit?.fechaInicio ?? null,
+        padre: javaToEdit?.padre ?? null,
+        madre: javaToEdit?.madre ?? [],
+        regiones: javaToEdit?.regiones ?? {},
+        hembrasNacidas: watch("hembrasNacidas") ?? 0,
+        machosNacidos: watch("machosNacidos") ?? 0,
+        muertos: watch("muertos") ?? 0,
+      };
+      await onSubmitUpdate(dataToUpdate);
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleFinalSubmit = async () => {
     const formData = {
       ...watch(),
@@ -668,10 +692,12 @@ export default function JavaGrupoDialog({
                 ? "bg-green-600 hover:bg-green-700"
                 : "bg-primary hover:bg-primary/90"
             }
-            disabled={!canStartReproduction() || isSubmitting}
+            disabled={isSubmitting || (!isEditing && !canStartReproduction())}
             onClick={() => {
-              if (categoria === "REPRODUCCION") {
-                if (isReproduccionIniciada || isEditing) {
+              if (isEditing) {
+                handleSubmitUpdateOnlyCounters(); // Nuevo método solo para edición
+              } else if (categoria === "REPRODUCCION") {
+                if (isReproduccionIniciada) {
                   handleFinalSubmit();
                 } else {
                   setIsReproduccionIniciada(true);
