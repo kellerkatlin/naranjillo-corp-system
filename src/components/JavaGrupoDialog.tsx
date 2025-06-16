@@ -733,7 +733,7 @@ export default function JavaGrupoDialog({
             )}
             {isEditing && (
               <>
-                <h2 className="text-base font-bold mb-4">Cuyes del grupo</h2>
+                <h2 className="text-base font-bold mb-4">Cuyes de la java</h2>
                 <Card>
                   <CardContent className="p-0">
                     {(watch("cuyes") ?? []).length > 0 ? (
@@ -745,8 +745,8 @@ export default function JavaGrupoDialog({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {(watch("cuyes") ?? []).map((cuy, index) => (
-                            <TableRow key={index}>
+                          {(watch("cuyes") ?? []).map((cuy) => (
+                            <TableRow key={cuy.id}>
                               <TableCell>{cuy.id}</TableCell>
                               <TableCell>{cuy.sexo}</TableCell>
                             </TableRow>
@@ -755,7 +755,7 @@ export default function JavaGrupoDialog({
                       </Table>
                     ) : (
                       <div className="text-gray-400 text-center p-4">
-                        No hay cuyes en este grupo.
+                        No hay cuyes en esta java.
                       </div>
                     )}
                   </CardContent>
