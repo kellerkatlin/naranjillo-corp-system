@@ -80,8 +80,14 @@ export default function FormReproduccion() {
           cantidadHijasHembras: form.hembrasNacidas ?? 0,
           cantidadHijosMachos: form.machosNacidos ?? 0,
           cantidadHijosMuertos: form.muertos ?? 0,
-          cuyes: form.madre.map((m) => ({ id: m.id })),
+          cuyes: [
+            ...(form.padre ? [{ id: form.padre.id }] : []),
+            ...form.madre.map((m) => ({ id: m.id })),
+          ],
         });
+        // Refresca los javas de reproducción
+        fetchReproduccion();
+
         toast.success("Java de reproducción creado");
       } else {
         await createJavaCuy({
