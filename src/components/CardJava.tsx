@@ -24,6 +24,7 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
           width={64}
           height={64}
         />
+        <div className=" text-white">{java?.sexo !== "NA" && java?.sexo}</div>
       </CardContent>
     </Card>
   );
