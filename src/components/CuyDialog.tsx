@@ -50,9 +50,13 @@ export default function CuyDialog({
     watch,
     formState: { errors },
   } = useForm<CuyRequest>();
+
   const [javasDisponibles, setJavasDisponibles] = useState<
     { id: number; nombre: string }[]
   >([]);
+
+  const sexo = watch("sexo");
+  const categoria = watch("categoria");
 
   useEffect(() => {
     if (open) {
@@ -75,30 +79,33 @@ export default function CuyDialog({
     }
   }, [open, cuy, reset]);
 
-  const handleFormSubmit = (data: CuyRequest) => {
-    console.log("Form data:", data);
-    onSubmit(data);
-    onOpenChange(false);
-  };
+  // Cuando cambia sexo o categoría, cargamos las javas
+  useEffect(() => {
+    if (sexo && categoria) {
+      fetchJavasDisponibles(sexo, categoria);
+    } else {
+      setJavasDisponibles([]);
+      setValue("java", { id: 0 });
+    }
+  }, [sexo, categoria, setValue]);
 
-  const fetchJavasDisponibles = async (sexo: string) => {
+  const fetchJavasDisponibles = async (sexo: string, categoria: string) => {
     try {
-      const res = await getJavasDisponibles(sexo);
+      const res = await getJavasDisponibles(sexo, categoria);
       setJavasDisponibles(res);
     } catch {
       toast.error("Error al cargar javas disponibles");
     }
   };
 
+  const handleFormSubmit = (data: CuyRequest) => {
+    onSubmit(data);
+    onOpenChange(false);
+  };
+
   const nacidos = [
     { id: 1, sexo: "macho", java: "sin asignar", fecha: "00/00/000" },
-    { id: 2, sexo: "macho", java: "sin asignar", fecha: "00/00/000" },
-    { id: 3, sexo: "macho", java: "sin asignar", fecha: "00/00/000" },
-    { id: 4, sexo: "macho", java: "sin asignar", fecha: "00/00/000" },
-    { id: 5, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
-    { id: 6, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
-    { id: 7, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
-    { id: 8, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
+    { id: 2, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
   ];
 
   return (
@@ -111,58 +118,50 @@ export default function CuyDialog({
         </DialogHeader>
 
         <div className="flex gap-6">
-          {/* Formulario a la izquierda */}
           <form
             onSubmit={handleSubmit(handleFormSubmit)}
             className="space-y-4 flex-1"
           >
+            {/* Fecha y hora */}
             <div className="flex gap-4 w-full flex-col md:flex-row">
               <div className="flex-1">
-                <Label className="mb-1 block">Fecha de Registro</Label>
+                <Label>Fecha de Registro</Label>
                 <Input
                   type="date"
                   {...register("fechaRegistro", { required: true })}
                 />
                 {errors.fechaRegistro && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Este campo es requerido
-                  </p>
+                  <p className="text-red-500 text-sm">Requerido</p>
                 )}
               </div>
               <div className="flex-1">
-                <Label className="mb-1 block">Hora</Label>
+                <Label>Hora</Label>
                 <Input
                   type="time"
                   {...register("horaRegistro", { required: true })}
                 />
                 {errors.horaRegistro && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Este campo es requerido
-                  </p>
+                  <p className="text-red-500 text-sm">Requerido</p>
                 )}
               </div>
             </div>
+
+            {/* Edad */}
             <div>
-              <Label className="mb-1 block">Edad (semanas)</Label>
-              <Input
-                type="number"
-                placeholder="Edad"
-                {...register("edad", { required: true })}
-              />
-              {errors.edad && (
-                <p className="text-red-500 text-sm mt-1">
-                  Este campo es requerido
-                </p>
-              )}
+              <Label>Edad (semanas)</Label>
+              <Input type="number" {...register("edad", { required: true })} />
+              {errors.edad && <p className="text-red-500 text-sm">Requerido</p>}
             </div>
+
+            {/* Categoría */}
             <div>
-              <Label className="mb-1 block">Categoría</Label>
+              <Label>Categoría</Label>
               <Select
                 onValueChange={(value) => setValue("categoria", value)}
-                defaultValue={watch("categoria")}
+                defaultValue={categoria}
               >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un estado" />
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona una categoría" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="ENGORDE">ENGORDE</SelectItem>
@@ -171,23 +170,18 @@ export default function CuyDialog({
                 </SelectContent>
               </Select>
               {errors.categoria && (
-                <p className="text-red-500 text-sm mt-1">
-                  Este campo es requerido
-                </p>
+                <p className="text-red-500 text-sm">Requerido</p>
               )}
             </div>
 
+            {/* Sexo */}
             <div>
-              <Label className="mb-1 block">Sexo</Label>
+              <Label>Sexo</Label>
               <Select
-                onValueChange={(value) => {
-                  setValue("sexo", value);
-                  fetchJavasDisponibles(value);
-                  setValue("java", { id: 0 });
-                }}
-                defaultValue={watch("sexo")}
+                onValueChange={(value) => setValue("sexo", value)}
+                defaultValue={sexo}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger>
                   <SelectValue placeholder="Selecciona un sexo" />
                 </SelectTrigger>
                 <SelectContent>
@@ -195,22 +189,20 @@ export default function CuyDialog({
                   <SelectItem value="HEMBRA">HEMBRA</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.sexo && (
-                <p className="text-red-500 text-sm mt-1">
-                  Este campo es requerido
-                </p>
-              )}
+              {errors.sexo && <p className="text-red-500 text-sm">Requerido</p>}
             </div>
+
+            {/* Java */}
             <div className="mb-4">
-              <Label className="mb-1 block">Java</Label>
+              <Label>Java</Label>
               <div className="flex items-center gap-2">
                 <div className="flex-1">
                   <Select
                     onValueChange={(value) => setValue("java", { id: +value })}
                     defaultValue={watch("java")?.id?.toString() || ""}
-                    disabled={!watch("sexo")}
+                    disabled={!sexo || !categoria}
                   >
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger>
                       <SelectValue placeholder="Selecciona una Java" />
                     </SelectTrigger>
                     <SelectContent>
@@ -223,30 +215,28 @@ export default function CuyDialog({
                   </Select>
                 </div>
 
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <FaExclamationCircle className="text-primary cursor-pointer" />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Debes crear una java para activar este casillero</p>
-                  </TooltipContent>
-                </Tooltip>
+                {/* Tooltip solo si no hay sexo o categoria */}
+                {(!sexo || !categoria) && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <FaExclamationCircle className="text-primary cursor-pointer" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Selecciona primero el sexo y la categoría</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
-
-              {errors.java && (
-                <p className="text-red-500 text-sm mt-1">
-                  Este campo es requerido
-                </p>
-              )}
             </div>
 
+            {/* Estado */}
             <div>
-              <Label className="mb-1 block">Estado</Label>
+              <Label>Estado</Label>
               <Select
                 onValueChange={(value) => setValue("estado", value)}
                 value={watch("estado") || "APTO"}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger>
                   <SelectValue placeholder="Selecciona un estado" />
                 </SelectTrigger>
                 <SelectContent>
@@ -255,18 +245,15 @@ export default function CuyDialog({
                   <SelectItem value="CAMADA">CAMADA</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.estado && (
-                <p className="text-red-500 text-sm mt-1">
-                  Este campo es requerido
-                </p>
-              )}
             </div>
           </form>
 
+          {/* Separador */}
           <div className="flex justify-center items-stretch">
             <Separator orientation="vertical" className="h-full" />
           </div>
 
+          {/* Lista de nacidos */}
           <div className="flex-1">
             <h2 className="text-base font-bold mb-4">Lista de nacidos</h2>
             <Card>
