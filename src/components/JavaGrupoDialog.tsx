@@ -49,6 +49,13 @@ export type DataJava = {
   muertos?: number;
   madre: { id: number; sexo: string }[];
   regiones: { [key: string]: boolean };
+  cuyes?: Array<{
+    id: number;
+    nombre: string;
+    sexo: string;
+    categoria: string;
+    fechaNacimiento: string;
+  }>;
 };
 
 export default function JavaGrupoDialog({
@@ -353,18 +360,36 @@ export default function JavaGrupoDialog({
             {categoria === "REPRODUCCION" && (
               <div className="flex items-center w-full flex-col md:flex-row gap-4">
                 <div className="flex-1 w-full">
-                  <Label className="mb-2">Seleccionar Padre</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full cursor-pointer"
-                    onClick={handleOpenPadre}
-                  >
-                    {watch("padre")
-                      ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
-                      : "Seleccionar Padre"}
-                  </Button>
+                  <Label className="mb-2">Padre</Label>
+
+                  {isEditing ? (
+                    <Card className="w-full">
+                      <CardContent className="p-2">
+                        {watch("padre") ? (
+                          <div className="text-center font-semibold">
+                            {watch("padre")?.id} - {watch("padre")?.sexo}
+                          </div>
+                        ) : (
+                          <div className="text-center text-gray-400">
+                            No se seleccionó padre
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full cursor-pointer"
+                      onClick={handleOpenPadre}
+                    >
+                      {watch("padre")
+                        ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
+                        : "Seleccionar Padre"}
+                    </Button>
+                  )}
                 </div>
+
                 <div className="flex-1 w-full">
                   <Label
                     className={`flex items-center gap-1 mb-2 ${
@@ -429,19 +454,25 @@ export default function JavaGrupoDialog({
             {categoria === "REPRODUCCION" && (
               <div className="flex items-start w-full flex-col md:flex-row gap-4">
                 <div className="flex-1 w-full">
-                  <Label className="mb-2">Seleccionar Madres</Label>
-                  {madresSeleccionadas.length > 0 ? (
-                    <Card
-                      className="cursor-pointer w-full hover:bg-gray-50"
-                      onClick={handleOpenMadre}
-                    >
-                      <div className="flex text-sm flex-col text-center font-semibold w-full">
-                        {madresSeleccionadas.map((madre, index) => (
-                          <span key={index}>
-                            {madre.id} - {madre.sexo}
-                          </span>
-                        ))}
-                      </div>
+                  <Label className="mb-2">Madres</Label>
+
+                  {isEditing ? (
+                    <Card className="w-full">
+                      <CardContent className="p-2">
+                        {madresSeleccionadas.length > 0 ? (
+                          <div className="flex flex-col text-center font-semibold">
+                            {madresSeleccionadas.map((madre, index) => (
+                              <span key={index}>
+                                {madre.id} - {madre.sexo}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center text-gray-400">
+                            No se seleccionaron madres
+                          </div>
+                        )}
+                      </CardContent>
                     </Card>
                   ) : (
                     <Button
@@ -638,6 +669,17 @@ export default function JavaGrupoDialog({
                 : "bg-primary hover:bg-primary/90"
             }
             disabled={!canStartReproduction() || isSubmitting}
+            onClick={() => {
+              if (categoria === "REPRODUCCION") {
+                if (isReproduccionIniciada || isEditing) {
+                  handleFinalSubmit();
+                } else {
+                  setIsReproduccionIniciada(true);
+                }
+              } else {
+                handleFinalSubmit();
+              }
+            }}
           >
             {isEditing
               ? "Finalizar Reproducción"
