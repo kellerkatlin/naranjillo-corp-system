@@ -21,6 +21,8 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
           src={imagen ? "/reproduccion.png" : "/machos.png"}
           alt={imagen ? "Reproducción" : "Machos"}
           className="w-16 h-16 mt-2 rounded"
+          width={64}
+          height={64}
         />
         <div className="mt-2 text-white">{java?.sexo}</div>
       </CardContent>
