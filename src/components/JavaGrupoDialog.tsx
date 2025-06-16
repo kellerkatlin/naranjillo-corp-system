@@ -501,9 +501,9 @@ export default function JavaGrupoDialog({
                   {isEditing ? (
                     <Card className="w-full">
                       <CardContent className="p-2">
-                        {madresSeleccionadas.length > 0 ? (
+                        {javaToEdit?.madre && javaToEdit.madre.length > 0 ? (
                           <div className="flex flex-col text-center font-semibold">
-                            {madresSeleccionadas.map((madre, index) => (
+                            {javaToEdit.madre.map((madre, index) => (
                               <span key={index}>
                                 {madre.id} - {madre.sexo}
                               </span>
