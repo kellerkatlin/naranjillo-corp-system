@@ -229,35 +229,41 @@ export default function JavaGrupoDialog({
               </div>
             </div>
             <div className="flex items-center w-full flex-col md:flex-row gap-4">
-              <div className="flex-1 w-1/2">
-                <Label className="mb-2">Categoria</Label>
-                <Select
-                  value={watch("categoria")}
-                  onValueChange={(value) => setValue("categoria", value)}
-                  disabled={
-                    isReproduccionIniciada ||
-                    watch("categoria") === "REPRODUCCION"
-                  }
+              <div className="flex-1 w-full">
+                <div
+                  className={`${
+                    categoria === "REPRODUCCION" ? "w-full" : "w-1/2"
+                  }`}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Seleccionar categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {mode === "REPRODUCCION" && (
-                        <SelectItem value="REPRODUCCION">
-                          REPRODUCCION
-                        </SelectItem>
-                      )}
-                      {mode !== "REPRODUCCION" && (
-                        <>
-                          <SelectItem value="CRIA">CRIA</SelectItem>
-                          <SelectItem value="ENGORDE">ENGORDE</SelectItem>
-                        </>
-                      )}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                  <Label className="mb-2">Categoria</Label>
+                  <Select
+                    value={watch("categoria")}
+                    onValueChange={(value) => setValue("categoria", value)}
+                    disabled={
+                      isReproduccionIniciada ||
+                      watch("categoria") === "REPRODUCCION"
+                    }
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Seleccionar categoria" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {mode === "REPRODUCCION" && (
+                          <SelectItem value="REPRODUCCION">
+                            REPRODUCCION
+                          </SelectItem>
+                        )}
+                        {mode !== "REPRODUCCION" && (
+                          <>
+                            <SelectItem value="CRIA">CRIA</SelectItem>
+                            <SelectItem value="ENGORDE">ENGORDE</SelectItem>
+                          </>
+                        )}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               {categoria === "REPRODUCCION" && (
                 <div className="flex-1 w-full">
@@ -320,80 +326,25 @@ export default function JavaGrupoDialog({
             <div className="flex items-center w-full flex-col md:flex-row gap-4">
               {mode !== "REPRODUCCION" && (
                 <div className="flex-1 w-full">
-                  <Label className="mb-2">Sexo</Label>
-                  <Select
-                    disabled
-                    value={watch("sexo") ?? ""}
-                    onValueChange={(value) => setValue("sexo", value)}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Seleccionar sexo" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {mode === "MACHO" && (
-                        <SelectItem value="MACHO">MACHO</SelectItem>
-                      )}
-                      {mode === "HEMBRA" && (
-                        <SelectItem value="HEMBRA">HEMBRA</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
-              {categoria === "REPRODUCCION" && (
-                <div className="flex-1 w-1/2 justify-end items-center">
-                  <Label
-                    className={`flex items-center gap-1 mb-2 ${
-                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
-                    }`}
-                  >
-                    Machos Nacidos
-                  </Label>
-                  <div
-                    className={`flex items-center gap-1 ${
-                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
-                    }`}
-                  >
-                    <Input
-                      type="number"
-                      value={watch("machosNacidos") ?? 0}
+                  <div className="w-1/2">
+                    <Label className="mb-2">Sexo</Label>
+                    <Select
                       disabled
-                      className=" text-center  disabled:opacity-100 bg-purple-400"
-                    />
-                    {errors.machosNacidos && (
-                      <p className="text-red-500 text-sm mt-1">
-                        Este campo es requerido
-                      </p>
-                    )}
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const current = watch("machosNacidos") ?? 0;
-                        if (current > 0) {
-                          setValue("machosNacidos", current - 1);
-                        }
-                      }}
-                      disabled={(watch("machosNacidos") ?? 0) <= 0}
+                      value={watch("sexo") ?? ""}
+                      onValueChange={(value) => setValue("sexo", value)}
                     >
-                      <Minus />
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      disabled={!isReproduccionIniciada}
-                      onClick={() => {
-                        const current = watch("machosNacidos") ?? 0;
-                        setValue("machosNacidos", current + 1);
-                      }}
-                    >
-                      <Plus />
-                    </Button>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Seleccionar sexo" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {mode === "MACHO" && (
+                          <SelectItem value="MACHO">MACHO</SelectItem>
+                        )}
+                        {mode === "HEMBRA" && (
+                          <SelectItem value="HEMBRA">HEMBRA</SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               )}
@@ -471,8 +422,8 @@ export default function JavaGrupoDialog({
             )}
 
             {categoria === "REPRODUCCION" && (
-              <div className="flex items-start w-1/2 flex-col md:flex-row gap-4">
-                <div className="flex-1">
+              <div className="flex items-start w-full flex-col md:flex-row gap-4">
+                <div className="flex-1 w-full">
                   <Label className="mb-2">Seleccionar Madres</Label>
                   {madresSeleccionadas.length > 0 ? (
                     <Card
@@ -497,6 +448,60 @@ export default function JavaGrupoDialog({
                       Seleccionar Madres
                     </Button>
                   )}
+                </div>
+                <div className="flex-1 w-full">
+                  <Label
+                    className={`flex items-center gap-1 mb-2 ${
+                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
+                    }`}
+                  >
+                    Machos Nacidos
+                  </Label>
+                  <div
+                    className={`flex items-center gap-1 ${
+                      isReproduccionIniciada ? "opacity-100" : "opacity-60"
+                    }`}
+                  >
+                    <Input
+                      type="number"
+                      value={watch("machosNacidos") ?? 0}
+                      disabled
+                      className=" text-center  disabled:opacity-100 bg-purple-400"
+                    />
+                    {errors.machosNacidos && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Este campo es requerido
+                      </p>
+                    )}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="cursor-pointer"
+                      onClick={() => {
+                        const current = watch("machosNacidos") ?? 0;
+                        if (current > 0) {
+                          setValue("machosNacidos", current - 1);
+                        }
+                      }}
+                      disabled={(watch("machosNacidos") ?? 0) <= 0}
+                    >
+                      <Minus />
+                    </Button>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="cursor-pointer"
+                      disabled={!isReproduccionIniciada}
+                      onClick={() => {
+                        const current = watch("machosNacidos") ?? 0;
+                        setValue("machosNacidos", current + 1);
+                      }}
+                    >
+                      <Plus />
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
