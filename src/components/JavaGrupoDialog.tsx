@@ -318,31 +318,28 @@ export default function JavaGrupoDialog({
             </div>
 
             <div className="flex items-center w-full flex-col md:flex-row gap-4">
-              <div className="flex-1 w-full">
-                <Label className="mb-2">Sexo</Label>
-                <Select
-                  disabled
-                  value={watch("sexo") ?? ""}
-                  onValueChange={(value) => setValue("sexo", value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Seleccionar sexo" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {mode === "REPRODUCCION" && (
-                      <SelectItem value="NA" className="hidden">
-                        N/A
-                      </SelectItem>
-                    )}
-                    {mode === "MACHO" && (
-                      <SelectItem value="MACHO">MACHO</SelectItem>
-                    )}
-                    {mode === "HEMBRA" && (
-                      <SelectItem value="HEMBRA">HEMBRA</SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
+              {mode !== "REPRODUCCION" && (
+                <div className="flex-1 w-full">
+                  <Label className="mb-2">Sexo</Label>
+                  <Select
+                    disabled
+                    value={watch("sexo") ?? ""}
+                    onValueChange={(value) => setValue("sexo", value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Seleccionar sexo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {mode === "MACHO" && (
+                        <SelectItem value="MACHO">MACHO</SelectItem>
+                      )}
+                      {mode === "HEMBRA" && (
+                        <SelectItem value="HEMBRA">HEMBRA</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {categoria === "REPRODUCCION" && (
                 <div className="flex-1 w-full">
