@@ -255,6 +255,7 @@ export default function FormReproduccion() {
       </Card>
 
       {/* GRUPO HEMBRAS */}
+
       <Card className="p-3 mb-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-2">
@@ -289,7 +290,6 @@ export default function FormReproduccion() {
                   id: grupo.id,
                   nombre: grupo.nombre,
                   categoria: grupo.categoria,
-
                   fechaInicio: new Date(grupo.fechaReproduccion),
                   sexo: grupo.sexo,
                   hembrasNacidas: grupo.cantidadHijasHembras,
@@ -300,6 +300,7 @@ export default function FormReproduccion() {
                   madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
                   regiones: {},
                 });
+
                 setDialogGrupoOpen("HEMBRA");
               }}
             />
