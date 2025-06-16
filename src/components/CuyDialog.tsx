@@ -214,7 +214,10 @@ export default function CuyDialog({
               <div className="flex items-center gap-2">
                 <div className="flex-1">
                   <Select
-                    onValueChange={(value) => setValue("java", { id: +value })}
+                    onValueChange={(value) => {
+                      setValue("java", { id: +value });
+                      setValue("estado", "VIVO"); // <-- Aquí seteamos el estado automáticamente
+                    }}
                     defaultValue={watch("java")?.id?.toString() || ""}
                     disabled={!sexo || !categoria}
                   >
