@@ -151,6 +151,7 @@ export default function FormReproduccion() {
             <CardJava
               key={grupo.id}
               java={grupo}
+              imagen={true}
               onClickEdit={() => {
                 const padre =
                   grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;

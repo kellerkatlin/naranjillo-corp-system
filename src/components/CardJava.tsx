@@ -1,13 +1,15 @@
 import React from "react";
 import { Card, CardContent } from "./ui/card";
 import { JavaRespose } from "@/types/java";
+import Image from "next/image";
 
 interface CardJavaProps {
   readonly java?: JavaRespose;
   readonly onClickEdit?: () => void; // <-- agregamos el callback opcional
+  readonly imagen?: boolean;
 }
 
-export default function CardJava({ java, onClickEdit }: CardJavaProps) {
+export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
   return (
     <Card
       onClick={onClickEdit}
@@ -15,6 +17,11 @@ export default function CardJava({ java, onClickEdit }: CardJavaProps) {
     >
       <CardContent className="p-2 flex flex-col justify-center items-center text-center">
         <div className="font-semibold text-white text-lg">{java?.nombre}</div>
+        <Image
+          src={imagen ? "/reproduccion.png" : "/machos.png"}
+          alt={imagen ? "Reproducción" : "Machos"}
+          className="w-16 h-16 mt-2 rounded"
+        />
         <div className="mt-2 text-white">{java?.sexo}</div>
       </CardContent>
     </Card>
