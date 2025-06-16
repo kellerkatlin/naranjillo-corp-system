@@ -173,13 +173,13 @@ export default function FormReproduccion() {
               }}
             />
           ))}
-          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+          <Card className="w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("REPRODUCCION")}
               className="p-2 flex flex-col items-center justify-center"
             >
               <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 font-semibold text-green-400">
+              <div className="mt-2 text-xs text-center font-semibold text-green-400">
                 CREAR REPRODUCCIÓN
               </div>
             </CardContent>
@@ -212,13 +212,13 @@ export default function FormReproduccion() {
           {javasMachos.map((grupo) => (
             <CardJava key={grupo.id} java={grupo} />
           ))}
-          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+          <Card className="w-36 h-36 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("HEMBRA")}
               className="p-2 flex flex-col items-center justify-center"
             >
               <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 font-semibold text-green-400">
+              <div className="mt-2 text-xs text-center font-semibold text-green-400">
                 CREAR JAVA MACHO
               </div>
             </CardContent>
@@ -250,13 +250,13 @@ export default function FormReproduccion() {
           {javasHembras.map((grupo) => (
             <CardJava key={grupo.id} java={grupo} />
           ))}
-          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+          <Card className="w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("HEMBRA")}
               className="p-2 flex flex-col items-center justify-center"
             >
               <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 font-semibold text-green-400">
+              <div className="mt-2 text-xs text-center font-semibold text-green-400">
                 CREAR JAVA HEMBRA
               </div>
             </CardContent>
