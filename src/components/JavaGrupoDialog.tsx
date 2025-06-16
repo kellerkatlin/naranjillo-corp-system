@@ -303,14 +303,18 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label
                     className={`flex items-center gap-1 mb-2 ${
-                      isCountersBlocked ? "opacity-100" : "opacity-60"
+                      (isReproduccionIniciada || isEditing) &&
+                      !isCountersBlocked
+                        ? "opacity-100"
+                        : "opacity-60"
                     }`}
                   >
                     Hembras Nacidas
                   </Label>
                   <div
                     className={`flex items-center gap-1 ${
-                      isReproduccionIniciada || isEditing
+                      (isReproduccionIniciada || isEditing) &&
+                      !isCountersBlocked
                         ? "opacity-100"
                         : "opacity-60"
                     }`}
@@ -708,10 +712,14 @@ export default function JavaGrupoDialog({
                 ? "bg-green-600 hover:bg-green-700"
                 : "bg-primary hover:bg-primary/90"
             }
-            disabled={isSubmitting || (!isEditing && !canStartReproduction())}
+            disabled={
+              isSubmitting ||
+              (!isEditing && !canStartReproduction()) ||
+              (isEditing && isCountersBlocked)
+            }
             onClick={() => {
               if (isEditing) {
-                handleSubmitUpdateOnlyCounters(); // Nuevo método solo para edición
+                handleSubmitUpdateOnlyCounters();
               } else if (categoria === "REPRODUCCION") {
                 if (isReproduccionIniciada) {
                   handleFinalSubmit();
