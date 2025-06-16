@@ -732,33 +732,35 @@ export default function JavaGrupoDialog({
               </>
             )}
             {isEditing && (
-              <div className="mt-4">
-                <Label className="mb-2 block">Cuyes del grupo:</Label>
-                <Card className="w-full">
-                  <CardContent className="p-2">
+              <>
+                <h2 className="text-base font-bold mb-4">Cuyes del grupo</h2>
+                <Card>
+                  <CardContent className="p-0">
                     {(watch("cuyes") ?? []).length > 0 ? (
-                      <div className="flex flex-col gap-1">
-                        {(watch("cuyes") ?? []).map((cuy, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between items-center border p-2 rounded"
-                          >
-                            <span>ID: {cuy.id}</span>
-                            <span>Nombre: {cuy.nombre}</span>
-                            <span>Sexo: {cuy.sexo}</span>
-                            <span>Categoria: {cuy.categoria}</span>
-                            <span>Fecha Nac: {cuy.fechaNacimiento}</span>
-                          </div>
-                        ))}
-                      </div>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Sexo</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {(watch("cuyes") ?? []).map((cuy, index) => (
+                            <TableRow key={index}>
+                              <TableCell>{cuy.id}</TableCell>
+                              <TableCell>{cuy.sexo}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
                     ) : (
-                      <div className="text-gray-400 text-center">
+                      <div className="text-gray-400 text-center p-4">
                         No hay cuyes en este grupo.
                       </div>
                     )}
                   </CardContent>
                 </Card>
-              </div>
+              </>
             )}
           </div>
         </div>
