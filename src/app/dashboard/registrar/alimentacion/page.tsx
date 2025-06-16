@@ -9,7 +9,6 @@ import {
 } from "@/services/alimentacionService";
 import { Alimentacion, AlimentacionRequest } from "@/types/alimentacion";
 import { ColumnDef } from "@tanstack/react-table";
-import { Pencil, Trash2 } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import AlimentacionDialog from "@/components/AlimentacionDialog";

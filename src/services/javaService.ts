@@ -5,9 +5,11 @@ import {
   JavaRequestReproduccion,
   JavaRespose,
 } from "@/types/java";
+import { Reproduccion } from "@/types/reproduccion";
 
 const BASE = "/java";
 const BASE_CUY = "/javacuy";
+
 export const getCuyesPadres = (
   sexo: string,
   categoriaName: string
@@ -24,6 +26,15 @@ export const createJavaCuy = (data: JavaRequest) =>
       "Content-Type": "application/json",
     },
   });
+
+export const getAllReproducciones = (): Promise<Reproduccion[]> => {
+  return apiFetch(`${BASE}/reproducciones`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+};
 
 export const createJavaCuyReproduccion = (data: JavaRequestReproduccion) =>
   apiFetch(`${BASE}/create`, {

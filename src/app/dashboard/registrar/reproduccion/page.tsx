@@ -30,17 +30,17 @@ export default function FormReproduccion() {
 
   useEffect(() => {
     fetchMachos();
-    fetchHembras();
-    fetchReproduccion();
-  }, []);
-
-  useEffect(() => {
-    fetchMachos();
   }, [filtroMacho]);
 
   useEffect(() => {
     fetchHembras();
   }, [filtroHembra]);
+
+  useEffect(() => {
+    fetchMachos();
+    fetchHembras();
+    fetchReproduccion();
+  }, []);
 
   const fetchMachos = async () => {
     try {

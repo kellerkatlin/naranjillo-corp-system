@@ -68,7 +68,7 @@ export default function JavaGrupoDialog({
 }: JavaGrupoDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditing = !!javaToEdit;
-  const [isReproduccionIniciada, setIsReproduccionIniciada] = useState(false);
+  const [isReproduccionIniciada] = useState(false);
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
   const [madresDisponibles, setMadresDisponibles] = useState<CuyPadre[]>([]);
 
