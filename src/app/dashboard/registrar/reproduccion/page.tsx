@@ -210,7 +210,30 @@ export default function FormReproduccion() {
         {/* CARRUSEL */}
         <div className="flex  gap-4">
           {javasMachos.map((grupo) => (
-            <CardJava key={grupo.id} java={grupo} />
+            <CardJava
+              key={grupo.id}
+              java={grupo}
+              onClickEdit={() => {
+                const padre =
+                  grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
+                const madres =
+                  grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+
+                setJavaToEdit({
+                  id: grupo.id,
+                  nombre: grupo.nombre,
+                  categoria: grupo.categoria,
+                  fechaInicio: new Date(grupo.fechaReproduccion),
+                  hembrasNacidas: grupo.cantidadHijasHembras,
+                  machosNacidos: grupo.cantidadHijosMachos,
+                  muertos: grupo.cantidadHijosMuertos,
+                  padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
+                  madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
+                  regiones: {},
+                });
+                setDialogGrupoOpen("MACHO");
+              }}
+            />
           ))}
           <Card className="w-36 h-36 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
             <CardContent
@@ -248,7 +271,30 @@ export default function FormReproduccion() {
         </div>
         <div className="flex  gap-4">
           {javasHembras.map((grupo) => (
-            <CardJava key={grupo.id} java={grupo} />
+            <CardJava
+              key={grupo.id}
+              java={grupo}
+              onClickEdit={() => {
+                const padre =
+                  grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
+                const madres =
+                  grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+
+                setJavaToEdit({
+                  id: grupo.id,
+                  nombre: grupo.nombre,
+                  categoria: grupo.categoria,
+                  fechaInicio: new Date(grupo.fechaReproduccion),
+                  hembrasNacidas: grupo.cantidadHijasHembras,
+                  machosNacidos: grupo.cantidadHijosMachos,
+                  muertos: grupo.cantidadHijosMuertos,
+                  padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
+                  madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
+                  regiones: {},
+                });
+                setDialogGrupoOpen("HEMBRA");
+              }}
+            />
           ))}
           <Card className="w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
