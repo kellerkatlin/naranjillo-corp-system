@@ -2,34 +2,37 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { getAllJava } from "@/services/javaService";
+import {
+  getAllJava,
+  createJavaCuy,
+  createJavaCuyReproduccion,
+  getAllJavaByCategoria,
+} from "@/services/javaService";
 import { JavaRespose } from "@/types/java";
 import { Card, CardContent } from "@/components/ui/card";
 import CardJava from "@/components/CardJava";
 import { Plus } from "lucide-react";
 import JavaGrupoDialog, { DataJava } from "@/components/JavaGrupoDialog";
-import {
-  createJavaCuy,
-  createJavaCuyReproduccion,
-} from "@/services/javaService";
+
 import { Button } from "@/components/ui/button";
 
 export default function FormReproduccion() {
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
   const [javasHembras, setJavasHembras] = useState<JavaRespose[]>([]);
+  const [javasReproduccion, setJavasReproduccion] = useState<JavaRespose[]>([]);
+
   const [filtroMacho, setFiltroMacho] = useState("TODOS");
   const [filtroHembra, setFiltroHembra] = useState("TODOS");
   const [dialogGrupoOpen, setDialogGrupoOpen] = useState<
     false | "REPRODUCCION" | "MACHO" | "HEMBRA"
   >(false);
 
-  // Carga inicial
   useEffect(() => {
     fetchMachos();
     fetchHembras();
+    fetchReproduccion();
   }, []);
 
-  // Al cambiar filtros, recarga
   useEffect(() => {
     fetchMachos();
   }, [filtroMacho]);
@@ -44,6 +47,15 @@ export default function FormReproduccion() {
       setJavasMachos(res);
     } catch {
       toast.error("Error al cargar machos");
+    }
+  };
+
+  const fetchReproduccion = async () => {
+    try {
+      const res = await getAllJavaByCategoria("REPRODUCCION");
+      setJavasReproduccion(res);
+    } catch {
+      toast.error("Error al cargar javas de reproducción");
     }
   };
 
@@ -81,7 +93,11 @@ export default function FormReproduccion() {
         });
 
         // Refresca según el sexo
-        form.sexo === "MACHO" ? fetchMachos() : fetchHembras();
+        if (form.sexo === "MACHO") {
+          fetchMachos();
+        } else {
+          fetchHembras();
+        }
         toast.success("Java creado");
       }
       setDialogGrupoOpen(false);
@@ -99,10 +115,14 @@ export default function FormReproduccion() {
             Grupo Reproducción
           </span>
         </div>
-        <div className="flex flex-wrap gap-4 mt-4">
+        {/* CARRUSEL */}
+        <div className="flex  gap-4">
+          {javasReproduccion.map((grupo) => (
+            <CardJava key={grupo.id} java={grupo} />
+          ))}
           <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
-              onClick={() => setDialogGrupoOpen("REPRODUCCION")}
+              onClick={() => setDialogGrupoOpen("HEMBRA")}
               className="p-2 flex flex-col items-center justify-center"
             >
               <Plus className="w-8 h-8 text-green-400" />
@@ -135,27 +155,21 @@ export default function FormReproduccion() {
         </div>
 
         {/* CARRUSEL */}
-        <div className="flex items-center gap-4">
-          <div className="flex gap-4 overflow-x-auto max-w-md scroll-smooth pb-4">
-            {javasMachos.map((grupo) => (
-              <div key={grupo.id} className="flex-shrink-0 w-36">
-                <CardJava java={grupo} />
+        <div className="flex  gap-4">
+          {javasMachos.map((grupo) => (
+            <CardJava key={grupo.id} java={grupo} />
+          ))}
+          <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+            <CardContent
+              onClick={() => setDialogGrupoOpen("HEMBRA")}
+              className="p-2 flex flex-col items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-green-400" />
+              <div className="mt-2 font-semibold text-green-400">
+                CREAR JAVA
               </div>
-            ))}
-          </div>
-          <div className="flex-shrink-0 w-36">
-            <Card className="h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-              <CardContent
-                onClick={() => setDialogGrupoOpen("MACHO")}
-                className="p-2 flex flex-col items-center justify-center"
-              >
-                <Plus className="w-8 h-8 text-green-400" />
-                <div className="mt-2 font-semibold text-green-400">
-                  CREAR JAVA
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       </Card>
 
@@ -179,7 +193,7 @@ export default function FormReproduccion() {
             ))}
           </div>
         </div>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex  gap-4">
           {javasHembras.map((grupo) => (
             <CardJava key={grupo.id} java={grupo} />
           ))}

@@ -70,6 +70,7 @@ export default function CuyDialog({
   }, [open, cuy, reset]);
 
   const handleFormSubmit = (data: Omit<Cuy, "id">) => {
+    console.log("Form data:", data);
     onSubmit(data);
     onOpenChange(false);
   };

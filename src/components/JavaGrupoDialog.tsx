@@ -67,7 +67,6 @@ export default function JavaGrupoDialog({
 
   const {
     register,
-    handleSubmit,
     watch,
     reset,
     setValue,

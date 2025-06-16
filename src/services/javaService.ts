@@ -50,3 +50,13 @@ export const getAllJava = (
     },
   });
 };
+
+export const getAllJavaByCategoria = (
+  categoria: string
+): Promise<JavaRespose[]> =>
+  apiFetch(`${BASE_CUY}/javas/categoria/${categoria}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
