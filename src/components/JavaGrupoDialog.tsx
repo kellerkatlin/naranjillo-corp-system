@@ -54,7 +54,7 @@ export type DataJava = {
     nombre: string;
     sexo: string;
     categoria: string;
-    fechaNacimiento: string;
+    fechaRegistro: string;
   }>;
 };
 
@@ -742,6 +742,7 @@ export default function JavaGrupoDialog({
                           <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Sexo</TableHead>
+                            <TableHead>Fecha Registro</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -749,6 +750,31 @@ export default function JavaGrupoDialog({
                             <TableRow key={cuy.id}>
                               <TableCell>{cuy.id}</TableCell>
                               <TableCell>{cuy.sexo}</TableCell>
+                              <TableCell>
+                                {(() => {
+                                  const fechaStr = cuy.fechaRegistro;
+                                  const fecha = new Date(fechaStr);
+
+                                  const dia = fecha
+                                    .getDate()
+                                    .toString()
+                                    .padStart(2, "0");
+                                  const mes = (fecha.getMonth() + 1)
+                                    .toString()
+                                    .padStart(2, "0");
+                                  const anio = fecha.getFullYear();
+                                  const hora = fecha
+                                    .getHours()
+                                    .toString()
+                                    .padStart(2, "0");
+                                  const minutos = fecha
+                                    .getMinutes()
+                                    .toString()
+                                    .padStart(2, "0");
+
+                                  return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
+                                })()}
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>

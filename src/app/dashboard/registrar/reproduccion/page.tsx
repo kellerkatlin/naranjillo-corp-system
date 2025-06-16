@@ -289,6 +289,7 @@ export default function FormReproduccion() {
                   id: grupo.id,
                   nombre: grupo.nombre,
                   categoria: grupo.categoria,
+
                   fechaInicio: new Date(grupo.fechaReproduccion),
                   sexo: grupo.sexo,
                   hembrasNacidas: grupo.cantidadHijasHembras,
