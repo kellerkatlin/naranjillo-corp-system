@@ -735,11 +735,7 @@ export default function JavaGrupoDialog({
         <div className="flex justify-end pt-4">
           <Button
             type="button"
-            className={
-              !isReproduccionIniciada
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-primary hover:bg-primary/90"
-            }
+            className="bg-green-600 hover:bg-green-700"
             disabled={
               isSubmitting ||
               (!isEditing && !canStartReproduction()) ||
@@ -748,24 +744,12 @@ export default function JavaGrupoDialog({
             onClick={() => {
               if (isEditing) {
                 handleSubmitUpdateOnlyCounters();
-              } else if (categoria === "REPRODUCCION") {
-                if (isReproduccionIniciada) {
-                  handleFinalSubmit();
-                } else {
-                  setIsReproduccionIniciada(true);
-                }
               } else {
                 handleFinalSubmit();
               }
             }}
           >
-            {isEditing
-              ? "Finalizar Reproducción"
-              : categoria === "REPRODUCCION"
-              ? isReproduccionIniciada
-                ? "Finalizar Reproducción"
-                : "Iniciar Reproducción"
-              : "Crear Java"}
+            {isEditing ? "Finalizar Reproducción" : "Crear Java"}
           </Button>
         </div>
       </DialogContent>
