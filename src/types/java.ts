@@ -24,7 +24,7 @@ export interface JavaRespose {
   categoria: string;
   sexo: string;
   fechaReproduccion: string;
-  catidadHijasHembras: number;
+  cantidadHijasHembras: number;
   cantidadHijosMachos: number;
   cantidadHijosMuertos: number;
   cuyes: Array<{
