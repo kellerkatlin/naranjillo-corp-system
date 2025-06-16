@@ -57,7 +57,15 @@ export default function CuyDialog({
   useEffect(() => {
     if (open) {
       if (cuy) {
-        reset(cuy);
+        const fecha = cuy.fechaRegistro.split("T")[0];
+        const hora =
+          cuy.fechaRegistro.split("T")[1]?.substring(0, 5) ?? "00:00";
+
+        reset({
+          ...cuy,
+          fechaRegistro: fecha,
+          horaRegistro: hora,
+        });
       } else {
         reset({
           edad: 0,
