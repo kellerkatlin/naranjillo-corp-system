@@ -103,6 +103,7 @@ export default function JavaGrupoDialog({
         reset({
           ...javaToEdit,
           madre: javaToEdit?.madre ?? [],
+          cuyes: javaToEdit?.cuyes ?? [],
         });
       } else {
         reset({
@@ -729,6 +730,35 @@ export default function JavaGrupoDialog({
                   </CardContent>
                 </Card>
               </>
+            )}
+            {isEditing && (
+              <div className="mt-4">
+                <Label className="mb-2 block">Cuyes del grupo:</Label>
+                <Card className="w-full">
+                  <CardContent className="p-2">
+                    {(watch("cuyes") ?? []).length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        {(watch("cuyes") ?? []).map((cuy, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center border p-2 rounded"
+                          >
+                            <span>ID: {cuy.id}</span>
+                            <span>Nombre: {cuy.nombre}</span>
+                            <span>Sexo: {cuy.sexo}</span>
+                            <span>Categoria: {cuy.categoria}</span>
+                            <span>Fecha Nac: {cuy.fechaNacimiento}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-gray-400 text-center">
+                        No hay cuyes en este grupo.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             )}
           </div>
         </div>
