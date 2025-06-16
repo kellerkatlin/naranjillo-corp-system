@@ -1,9 +1,7 @@
 "use client";
 
-// import { CrudTable } from "@/components/shared/CrudTable";
 import { getAllMonitoreo } from "@/services/monitoreoService";
 import { Monitoreo } from "@/types/monitoreo";
-// import { ColumnDef } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -19,6 +17,7 @@ export default function MonitorDepositos() {
     hum1: 0,
     hum2: 0,
     hum3: 0,
+    ph: 0,
     hum4: 0,
     temp5: 0,
     nombre_dispositivo: "Sin datos",
@@ -73,16 +72,6 @@ export default function MonitorDepositos() {
     }, 2000);
     return () => clearInterval(interval);
   }, []);
-
-  // const columns: ColumnDef<Monitoreo>[] = [
-  //   { accessorKey: "id", header: "ID" },
-  //   { accessorKey: "hum1", header: "Humedad 1" },
-  //   { accessorKey: "hum2", header: "Humedad 2" },
-  //   { accessorKey: "hum3", header: "Humedad 3" },
-  //   { accessorKey: "hum4", header: "Humedad 4" },
-  //   { accessorKey: "temp5", header: "Temperatura" },
-  //   { accessorKey: "nombre_dispositivo", header: "Nombre Dispositivo" },
-  // ];
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-start p-10 gap-10">
