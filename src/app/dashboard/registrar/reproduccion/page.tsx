@@ -242,7 +242,7 @@ export default function FormReproduccion() {
           ))}
           <Card className="w-36 h-36 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
             <CardContent
-              onClick={() => setDialogGrupoOpen("HEMBRA")}
+              onClick={() => setDialogGrupoOpen("MACHO")}
               className="p-2 flex flex-col items-center justify-center"
             >
               <Plus className="w-8 h-8 text-green-400" />
