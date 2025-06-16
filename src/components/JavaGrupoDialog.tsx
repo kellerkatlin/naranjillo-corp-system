@@ -201,7 +201,7 @@ export default function JavaGrupoDialog({
                 <Input
                   {...register("nombre", { required: true })}
                   placeholder="Nombre"
-                  disabled={isReproduccionIniciada}
+                  disabled={isReproduccionIniciada || isEditing}
                 />
                 {errors.nombre && (
                   <p className="text-red-500 text-sm mt-1">
@@ -311,7 +311,7 @@ export default function JavaGrupoDialog({
                       type="button"
                       variant="outline"
                       className="cursor-pointer"
-                      disabled={!isReproduccionIniciada}
+                      disabled={!isReproduccionIniciada && !isEditing}
                       onClick={() => {
                         const current = watch("hembrasNacidas") ?? 0;
                         setValue("hembrasNacidas", current + 1);
@@ -413,7 +413,7 @@ export default function JavaGrupoDialog({
                       type="button"
                       variant="outline"
                       className="cursor-pointer"
-                      disabled={!isReproduccionIniciada}
+                      disabled={!isReproduccionIniciada && !isEditing}
                       onClick={() => {
                         const current = watch("machosNacidos") ?? 0;
                         setValue("machosNacidos", current + 1);
@@ -502,7 +502,7 @@ export default function JavaGrupoDialog({
                     <Button
                       type="button"
                       variant="outline"
-                      disabled={!isReproduccionIniciada}
+                      disabled={!isReproduccionIniciada && !isEditing}
                       className="cursor-pointer"
                       onClick={() => {
                         const current = watch("muertos") ?? 0;
