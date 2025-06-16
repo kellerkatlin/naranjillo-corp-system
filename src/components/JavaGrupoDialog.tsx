@@ -100,7 +100,10 @@ export default function JavaGrupoDialog({
   useEffect(() => {
     if (open) {
       if (isEditing && javaToEdit) {
-        reset(javaToEdit);
+        reset({
+          ...javaToEdit,
+          madre: javaToEdit?.madre ?? [], // normalizas aquí 👈
+        });
       } else {
         reset({
           nombre: "",
