@@ -140,6 +140,12 @@ export default function JavaGrupoDialog({
     }
   };
 
+  const isCountersBlocked =
+    isEditing &&
+    ((javaToEdit?.hembrasNacidas ?? 0) > 0 ||
+      (javaToEdit?.machosNacidos ?? 0) > 0 ||
+      (javaToEdit?.muertos ?? 0) > 0);
+
   const handleSubmitUpdateOnlyCounters = async () => {
     try {
       setIsSubmitting(true);
@@ -297,9 +303,7 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label
                     className={`flex items-center gap-1 mb-2 ${
-                      isReproduccionIniciada || isEditing
-                        ? "opacity-100"
-                        : "opacity-60"
+                      isCountersBlocked ? "opacity-100" : "opacity-60"
                     }`}
                   >
                     Hembras Nacidas
@@ -342,7 +346,11 @@ export default function JavaGrupoDialog({
                       type="button"
                       variant="outline"
                       className="cursor-pointer"
-                      disabled={!isReproduccionIniciada && !isEditing}
+                      disabled={
+                        isSubmitting ||
+                        (!isEditing && !canStartReproduction()) ||
+                        (isEditing && isCountersBlocked)
+                      }
                       onClick={() => {
                         const current = watch("hembrasNacidas") ?? 0;
                         setValue("hembrasNacidas", current + 1);
@@ -462,7 +470,11 @@ export default function JavaGrupoDialog({
                       type="button"
                       variant="outline"
                       className="cursor-pointer"
-                      disabled={!isReproduccionIniciada && !isEditing}
+                      disabled={
+                        isSubmitting ||
+                        (!isEditing && !canStartReproduction()) ||
+                        (isEditing && isCountersBlocked)
+                      }
                       onClick={() => {
                         const current = watch("machosNacidos") ?? 0;
                         setValue("machosNacidos", current + 1);
@@ -557,7 +569,11 @@ export default function JavaGrupoDialog({
                     <Button
                       type="button"
                       variant="outline"
-                      disabled={!isReproduccionIniciada && !isEditing}
+                      disabled={
+                        isSubmitting ||
+                        (!isEditing && !canStartReproduction()) ||
+                        (isEditing && isCountersBlocked)
+                      }
                       className="cursor-pointer"
                       onClick={() => {
                         const current = watch("muertos") ?? 0;
