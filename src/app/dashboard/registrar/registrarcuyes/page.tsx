@@ -57,14 +57,18 @@ export default function FormCuy() {
       header: "Fecha de Registro",
       cell: ({ row }) => {
         const fechaStr = row.getValue("fechaRegistro") as string;
-        const [year, month, day] = fechaStr.split("-");
-        return new Date(
-          Number(year),
-          Number(month) - 1,
-          Number(day)
-        ).toLocaleDateString();
+        const fecha = new Date(fechaStr);
+
+        const dia = fecha.getDate().toString().padStart(2, "0");
+        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+        const anio = fecha.getFullYear();
+        const hora = fecha.getHours().toString().padStart(2, "0");
+        const minutos = fecha.getMinutes().toString().padStart(2, "0");
+
+        return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
       },
     },
+
     {
       id: "acciones",
       header: "Acciones",
