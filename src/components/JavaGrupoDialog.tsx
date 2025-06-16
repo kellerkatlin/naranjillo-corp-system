@@ -716,6 +716,7 @@ export default function JavaGrupoDialog({
                   <CardContent className="p-4 flex justify-center">
                     <Calendar
                       mode="single"
+                      disabled={isReproduccionIniciada || isEditing}
                       selected={
                         watch("fechaInicio") !== null
                           ? new Date(watch("fechaInicio") as Date)
@@ -749,7 +750,7 @@ export default function JavaGrupoDialog({
               }
             }}
           >
-            {isEditing ? "Finalizar Reproducción" : "Crear Java"}
+            {isEditing ? "Finalizar Reproducción" : "Inciar Reproducción"}
           </Button>
         </div>
       </DialogContent>
