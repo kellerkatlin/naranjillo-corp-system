@@ -91,8 +91,20 @@ export default function CuyDialog({
   }, [sexo, categoria, setValue]);
 
   const handleFormSubmit = (data: CuyRequest) => {
-    console.log("Form data:", data);
-    onSubmit(data);
+    // Combinar fecha y hora
+    const fecha = data.fechaRegistro;
+    const hora = data.horaRegistro;
+
+    const fechaHora = new Date(`${fecha}T${hora}:00`);
+
+    // Construimos el objeto con el datetime combinado
+    const dataToSend = {
+      ...data,
+      fechaRegistro: fechaHora.toISOString().slice(0, 19),
+    };
+
+    console.log("Form data a enviar:", dataToSend);
+    onSubmit(dataToSend);
     onOpenChange(false);
   };
 
