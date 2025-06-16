@@ -11,23 +11,13 @@ interface CardJavaProps {
 
 export default function CardJava({ java, onClickEdit }: CardJavaProps) {
   return (
-    <Card className="w-36 h-36 border-black bg-green-400 items-center justify-center relative">
+    <Card
+      onClick={onClickEdit}
+      className="w-36 h-36 border-black bg-green-400 items-center justify-center relative"
+    >
       <CardContent className="p-2 flex flex-col justify-center items-center text-center">
         <div className="font-semibold text-white text-lg">{java?.nombre}</div>
         <div className="mt-2 text-white">{java?.sexo}</div>
-
-        {/* Botón editar arriba a la derecha */}
-        {onClickEdit && (
-          <Button
-            type="button"
-            size="icon"
-            variant="secondary"
-            className="absolute top-2 right-2"
-            onClick={onClickEdit}
-          >
-            <Pencil className="w-4 h-4 text-black" />
-          </Button>
-        )}
       </CardContent>
     </Card>
   );
