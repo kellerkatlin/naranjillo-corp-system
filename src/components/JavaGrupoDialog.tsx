@@ -342,7 +342,7 @@ export default function JavaGrupoDialog({
               )}
 
               {categoria === "REPRODUCCION" && (
-                <div className="flex-1 w-full">
+                <div className="flex-1 justify-end items-center w-full">
                   <Label
                     className={`flex items-center gap-1 mb-2 ${
                       isReproduccionIniciada ? "opacity-100" : "opacity-60"
