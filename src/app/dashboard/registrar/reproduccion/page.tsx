@@ -152,6 +152,11 @@ export default function FormReproduccion() {
               key={grupo.id}
               java={grupo}
               onClickEdit={() => {
+                const padre =
+                  grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
+                const madres =
+                  grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+
                 setJavaToEdit({
                   id: grupo.id,
                   nombre: grupo.nombre,
@@ -160,8 +165,8 @@ export default function FormReproduccion() {
                   hembrasNacidas: grupo.catidadHijasHembras,
                   machosNacidos: grupo.cantidadHijosMachos,
                   muertos: grupo.cantidadHijosMuertos,
-                  padre: null,
-                  madre: [],
+                  padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
+                  madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
                   regiones: {},
                 });
                 setDialogGrupoOpen("REPRODUCCION");
