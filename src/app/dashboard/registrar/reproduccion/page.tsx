@@ -289,6 +289,7 @@ export default function FormReproduccion() {
                   machosNacidos: grupo.cantidadHijosMachos,
                   muertos: grupo.cantidadHijosMuertos,
                   padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
+                  cuyes: grupo.cuyes,
                   madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
                   regiones: {},
                 });
