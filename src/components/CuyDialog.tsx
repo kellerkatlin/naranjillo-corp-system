@@ -67,13 +67,12 @@ export default function CuyDialog({
           horaRegistro: hora,
         });
       } else {
+        const hoy = new Date();
+        const fechaLocal = hoy.toLocaleDateString("sv-SE");
         reset({
           edad: 0,
-          fechaRegistro: new Date().toISOString().split("T")[0],
-          horaRegistro: new Date().toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
+          fechaRegistro: fechaLocal,
+          horaRegistro: hoy.toTimeString().slice(0, 5), // hora local exacta HH:mm
           categoria: "",
           java: { id: 0 },
           estado: "VIVO",
@@ -99,16 +98,13 @@ export default function CuyDialog({
   }, [sexo, categoria, setValue]);
 
   const handleFormSubmit = (data: CuyRequest) => {
-    // Combinar fecha y hora
     const fecha = data.fechaRegistro;
     const hora = data.horaRegistro;
+    const fechaHora = `${fecha}T${hora}:00`;
 
-    const fechaHora = new Date(`${fecha}T${hora}:00`);
-
-    // Construimos el objeto con el datetime combinado
     const dataToSend = {
       ...data,
-      fechaRegistro: fechaHora.toISOString().slice(0, 19),
+      fechaRegistro: fechaHora,
     };
 
     console.log("Form data a enviar:", dataToSend);
