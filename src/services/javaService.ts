@@ -60,3 +60,11 @@ export const getAllJavaByCategoria = (
       "Content-Type": "application/json",
     },
   });
+
+export const getJavasDisponibles = (sexo: string): Promise<JavaRespose[]> =>
+  apiFetch(`${BASE_CUY}/javas/disponibles/sexo/${sexo}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });

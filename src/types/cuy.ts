@@ -4,12 +4,14 @@ export type Cuy = CuyRequest & {
 
 export type CuyRequest = {
   edad: number;
-  fechaRegistro: string;
-  categoria: string;
   sexo: string;
+  fechaRegistro: string;
   horaRegistro: string;
-  java: number;
+  categoria: string;
   estado: string;
+  java: {
+    id: number;
+  };
 };
 
 export type CuyPadre = {

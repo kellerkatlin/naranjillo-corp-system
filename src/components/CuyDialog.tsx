@@ -1,12 +1,12 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { Cuy } from "@/types/cuy";
+import { Cuy, CuyRequest } from "@/types/cuy";
 import {
   Select,
   SelectContent,
@@ -26,11 +26,13 @@ import {
 } from "./ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { FaExclamationCircle } from "react-icons/fa";
+import { getJavasDisponibles } from "@/services/javaService";
+import { toast } from "sonner";
 
 interface CuyDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
-  readonly onSubmit: (data: Omit<Cuy, "id">) => void;
+  readonly onSubmit: (data: CuyRequest) => void;
   readonly cuy?: Cuy | null;
 }
 
@@ -47,7 +49,10 @@ export default function CuyDialog({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<Omit<Cuy, "id">>();
+  } = useForm<CuyRequest>();
+  const [javasDisponibles, setJavasDisponibles] = useState<
+    { id: number; nombre: string }[]
+  >([]);
 
   useEffect(() => {
     if (open) {
@@ -62,6 +67,7 @@ export default function CuyDialog({
             minute: "2-digit",
           }),
           categoria: "",
+          java: { id: 0 },
           estado: "APTO",
           sexo: "",
         });
@@ -69,10 +75,19 @@ export default function CuyDialog({
     }
   }, [open, cuy, reset]);
 
-  const handleFormSubmit = (data: Omit<Cuy, "id">) => {
+  const handleFormSubmit = (data: CuyRequest) => {
     console.log("Form data:", data);
     onSubmit(data);
     onOpenChange(false);
+  };
+
+  const fetchJavasDisponibles = async (sexo: string) => {
+    try {
+      const res = await getJavasDisponibles(sexo);
+      setJavasDisponibles(res);
+    } catch {
+      toast.error("Error al cargar javas disponibles");
+    }
   };
 
   const nacidos = [
@@ -165,7 +180,11 @@ export default function CuyDialog({
             <div>
               <Label className="mb-1 block">Sexo</Label>
               <Select
-                onValueChange={(value) => setValue("sexo", value)}
+                onValueChange={(value) => {
+                  setValue("sexo", value);
+                  fetchJavasDisponibles(value);
+                  setValue("java", { id: 0 });
+                }}
                 defaultValue={watch("sexo")}
               >
                 <SelectTrigger className="w-full">
@@ -187,16 +206,19 @@ export default function CuyDialog({
               <div className="flex items-center gap-2">
                 <div className="flex-1">
                   <Select
-                    onValueChange={(value) => setValue("java", +value)}
-                    defaultValue={watch("java")?.toString() || "0"}
+                    onValueChange={(value) => setValue("java", { id: +value })}
+                    defaultValue={watch("java")?.id?.toString() || ""}
+                    disabled={!watch("sexo")}
                   >
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecciona un estado" />
+                      <SelectValue placeholder="Selecciona una Java" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Java 1</SelectItem>
-                      <SelectItem value="2">Java 2</SelectItem>
-                      <SelectItem value="3">Java 3</SelectItem>
+                      {javasDisponibles.map((java) => (
+                        <SelectItem key={java.id} value={java.id.toString()}>
+                          {java.nombre}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
