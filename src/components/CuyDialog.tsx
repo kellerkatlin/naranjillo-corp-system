@@ -75,6 +75,8 @@ export default function CuyDialog({
     }
   }, [open, cuy, reset]);
 
+  const isEditMode = !!cuy;
+
   const sexo = watch("sexo");
 
   const categoria = watch("categoria");
@@ -216,7 +218,9 @@ export default function CuyDialog({
                   <Select
                     onValueChange={(value) => {
                       setValue("java", { id: +value });
-                      setValue("estado", "VIVO"); // <-- Aquí seteamos el estado automáticamente
+                      if (!isEditMode) {
+                        setValue("estado", "VIVO");
+                      }
                     }}
                     defaultValue={watch("java")?.id?.toString() || ""}
                     disabled={!sexo || !categoria}
@@ -256,6 +260,7 @@ export default function CuyDialog({
               <Select
                 onValueChange={(value) => setValue("estado", value)}
                 value={watch("estado") || "VIVO"}
+                disabled={!isEditMode && !!watch("java")?.id}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona un estado" />
