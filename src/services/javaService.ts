@@ -34,6 +34,18 @@ export const createJavaCuyReproduccion = (data: JavaRequestReproduccion) =>
     },
   });
 
+export const updateJavaCuyReproduccion = (
+  id: number,
+  data: JavaRequestReproduccion
+) =>
+  apiFetch(`${BASE}/update/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
 export const getAllJava = (
   sexo: string,
   categoria?: string

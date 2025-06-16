@@ -33,10 +33,12 @@ interface JavaGrupoDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
   readonly mode: "REPRODUCCION" | "MACHO" | "HEMBRA";
-  readonly onSubmit: (data: DataJava) => void;
+  readonly onSubmitCreate: (data: DataJava) => void;
+  readonly onSubmitUpdate: (data: DataJava) => void;
+  readonly javaToEdit?: DataJava;
 }
-
 export type DataJava = {
+  id: number | null;
   nombre: string;
   fechaInicio: Date | null;
   padre: { id: number; sexo: string } | null;
@@ -52,11 +54,13 @@ export type DataJava = {
 export default function JavaGrupoDialog({
   open,
   onOpenChange,
-  onSubmit,
+  onSubmitCreate,
+  onSubmitUpdate,
   mode,
+  javaToEdit,
 }: JavaGrupoDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const isEditing = !!javaToEdit;
   const [isReproduccionIniciada, setIsReproduccionIniciada] = useState(false);
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
   const [madresDisponibles, setMadresDisponibles] = useState<CuyPadre[]>([]);
@@ -88,25 +92,14 @@ export default function JavaGrupoDialog({
 
   useEffect(() => {
     if (open) {
-      if (mode === "REPRODUCCION") {
-        reset({
-          nombre: "",
-          fechaInicio: null,
-          categoria: "REPRODUCCION",
-          sexo: "NA",
-          padre: null,
-          madre: [],
-          hembrasNacidas: 0,
-          machosNacidos: 0,
-          muertos: 0,
-          regiones: {},
-        });
+      if (isEditing && javaToEdit) {
+        reset(javaToEdit);
       } else {
         reset({
           nombre: "",
           fechaInicio: null,
-          categoria: "CRIA",
-          sexo: mode, // Modo es MACHO o HEMBRA
+          categoria: mode === "REPRODUCCION" ? "REPRODUCCION" : "CRIA",
+          sexo: mode === "REPRODUCCION" ? "NA" : mode,
           padre: null,
           madre: [],
           hembrasNacidas: 0,
@@ -116,7 +109,7 @@ export default function JavaGrupoDialog({
         });
       }
     }
-  }, [open, reset, mode]);
+  }, [open, reset, isEditing, javaToEdit, mode]);
 
   const categoria = watch("categoria");
 
@@ -146,8 +139,12 @@ export default function JavaGrupoDialog({
     };
     try {
       setIsSubmitting(true);
-      await onSubmit(formData);
-      onOpenChange(false); // Cerrar el modal después de enviar
+      if (isEditing) {
+        await onSubmitUpdate(formData);
+      } else {
+        await onSubmitCreate(formData);
+      }
+      onOpenChange(false);
     } catch (error) {
       console.error("Error al enviar:", error);
     } finally {

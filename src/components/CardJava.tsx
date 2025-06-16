@@ -1,18 +1,33 @@
 import React from "react";
 import { Card, CardContent } from "./ui/card";
 import { JavaRespose } from "@/types/java";
+import { Pencil } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface CardJavaProps {
   readonly java?: JavaRespose;
+  readonly onClickEdit?: () => void; // <-- agregamos el callback opcional
 }
 
-export default function CardJava({ java }: CardJavaProps) {
+export default function CardJava({ java, onClickEdit }: CardJavaProps) {
   return (
-    <Card className="w-36 h-36 border-black bg-green-400 items-center justify-center">
-      <CardContent className="p-2 ">
-        <div>{java?.nombre}</div>
-        {/* <Image src={java?.imagen} alt={java?.nombre} width={100} height={100} /> */}
-        <div>{java?.sexo}</div>
+    <Card className="w-36 h-36 border-black bg-green-400 items-center justify-center relative">
+      <CardContent className="p-2 flex flex-col justify-center items-center text-center">
+        <div className="font-semibold text-white text-lg">{java?.nombre}</div>
+        <div className="mt-2 text-white">{java?.sexo}</div>
+
+        {/* Botón editar arriba a la derecha */}
+        {onClickEdit && (
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
+            className="absolute top-2 right-2"
+            onClick={onClickEdit}
+          >
+            <Pencil className="w-4 h-4 text-black" />
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

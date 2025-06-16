@@ -7,6 +7,7 @@ import {
   createJavaCuy,
   createJavaCuyReproduccion,
   getAllJavaByCategoria,
+  updateJavaCuyReproduccion,
 } from "@/services/javaService";
 import { JavaRespose } from "@/types/java";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +21,7 @@ export default function FormReproduccion() {
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
   const [javasHembras, setJavasHembras] = useState<JavaRespose[]>([]);
   const [javasReproduccion, setJavasReproduccion] = useState<JavaRespose[]>([]);
-
+  const [javaToEdit, setJavaToEdit] = useState<DataJava | undefined>(undefined);
   const [filtroMacho, setFiltroMacho] = useState("TODOS");
   const [filtroHembra, setFiltroHembra] = useState("TODOS");
   const [dialogGrupoOpen, setDialogGrupoOpen] = useState<
@@ -68,7 +69,7 @@ export default function FormReproduccion() {
     }
   };
 
-  const handleSubmitJava = async (form: DataJava) => {
+  const handleSubmitCreate = async (form: DataJava) => {
     try {
       if (form.categoria === "REPRODUCCION") {
         await createJavaCuyReproduccion({
@@ -85,9 +86,7 @@ export default function FormReproduccion() {
             ...form.madre.map((m) => ({ id: m.id })),
           ],
         });
-        // Refresca los javas de reproducción
         fetchReproduccion();
-
         toast.success("Java de reproducción creado");
       } else {
         await createJavaCuy({
@@ -97,8 +96,6 @@ export default function FormReproduccion() {
           fechaReproduccion:
             form.fechaInicio?.toISOString().split("T")[0] ?? "",
         });
-
-        // Refresca según el sexo
         if (form.sexo === "MACHO") {
           fetchMachos();
         } else {
@@ -106,10 +103,37 @@ export default function FormReproduccion() {
         }
         toast.success("Java creado");
       }
-      setDialogGrupoOpen(false);
+      cerrarDialog();
     } catch {
       toast.error("Error al crear Java");
     }
+  };
+
+  const handleSubmitUpdate = async (form: DataJava) => {
+    try {
+      await updateJavaCuyReproduccion(form.id ?? 0, {
+        nombre: form.nombre,
+        categoria: form.categoria ?? "",
+        sexo: "NA",
+        fechaReproduccion: form.fechaInicio?.toISOString().split("T")[0] ?? "",
+        cantidadHijasHembras: form.hembrasNacidas ?? 0,
+        cantidadHijosMachos: form.machosNacidos ?? 0,
+        cantidadHijosMuertos: form.muertos ?? 0,
+        cuyes: [
+          ...(form.padre ? [{ id: form.padre.id }] : []),
+          ...form.madre.map((m) => ({ id: m.id })),
+        ],
+      });
+      fetchReproduccion();
+      toast.success("Reproducción actualizada");
+      cerrarDialog();
+    } catch {
+      toast.error("Error al actualizar reproducción");
+    }
+  };
+  const cerrarDialog = () => {
+    setDialogGrupoOpen(false);
+    setJavaToEdit(undefined);
   };
 
   return (
@@ -124,7 +148,25 @@ export default function FormReproduccion() {
         {/* CARRUSEL */}
         <div className="flex  gap-4">
           {javasReproduccion.map((grupo) => (
-            <CardJava key={grupo.id} java={grupo} />
+            <CardJava
+              key={grupo.id}
+              java={grupo}
+              onClickEdit={() => {
+                setJavaToEdit({
+                  id: grupo.id,
+                  nombre: grupo.nombre,
+                  categoria: grupo.categoria,
+                  fechaInicio: new Date(grupo.fechaReproduccion),
+                  hembrasNacidas: grupo.catidadHijasHembras,
+                  machosNacidos: grupo.cantidadHijosMachos,
+                  muertos: grupo.cantidadHijosMuertos,
+                  padre: null,
+                  madre: [],
+                  regiones: {},
+                });
+                setDialogGrupoOpen("REPRODUCCION");
+              }}
+            />
           ))}
           <Card className="w-36 h-36 border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
@@ -219,9 +261,13 @@ export default function FormReproduccion() {
 
       <JavaGrupoDialog
         open={dialogGrupoOpen !== false}
-        onOpenChange={(open) => !open && setDialogGrupoOpen(false)}
+        onOpenChange={(open) => {
+          if (!open) cerrarDialog();
+        }}
         mode={dialogGrupoOpen === false ? "REPRODUCCION" : dialogGrupoOpen}
-        onSubmit={handleSubmitJava}
+        onSubmitCreate={handleSubmitCreate}
+        onSubmitUpdate={handleSubmitUpdate}
+        javaToEdit={javaToEdit}
       />
     </div>
   );
