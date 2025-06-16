@@ -330,7 +330,9 @@ export default function JavaGrupoDialog({
                   </SelectTrigger>
                   <SelectContent>
                     {mode === "REPRODUCCION" && (
-                      <SelectItem value="NA">N/A</SelectItem>
+                      <SelectItem value="NA" className="hidden">
+                        N/A
+                      </SelectItem>
                     )}
                     {mode === "MACHO" && (
                       <SelectItem value="MACHO">MACHO</SelectItem>
