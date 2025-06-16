@@ -180,7 +180,7 @@ export default function FormReproduccion() {
             >
               <Plus className="w-8 h-8 text-green-400" />
               <div className="mt-2 font-semibold text-green-400">
-                CREAR JAVA
+                CREAR REPRODUCCIÓN
               </div>
             </CardContent>
           </Card>
@@ -219,7 +219,7 @@ export default function FormReproduccion() {
             >
               <Plus className="w-8 h-8 text-green-400" />
               <div className="mt-2 font-semibold text-green-400">
-                CREAR JAVA
+                CREAR JAVA MACHO
               </div>
             </CardContent>
           </Card>
@@ -257,7 +257,7 @@ export default function FormReproduccion() {
             >
               <Plus className="w-8 h-8 text-green-400" />
               <div className="mt-2 font-semibold text-green-400">
-                CREAR JAVA
+                CREAR JAVA HEMBRA
               </div>
             </CardContent>
           </Card>
