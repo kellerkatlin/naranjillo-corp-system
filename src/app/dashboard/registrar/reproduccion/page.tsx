@@ -289,37 +289,44 @@ export default function FormReproduccion() {
             ))}
           </div>
         </div>
-        <div className="flex  gap-4">
-          {javasHembras.map((grupo) => (
-            <CardJava
-              key={grupo.id}
-              java={grupo}
-              onClickEdit={() => {
-                const padre =
-                  grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
-                const madres =
-                  grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
 
-                setJavaToEdit({
-                  id: grupo.id,
-                  nombre: grupo.nombre,
-                  categoria: grupo.categoria,
-                  fechaInicio: new Date(grupo.fechaReproduccion),
-                  sexo: grupo.sexo,
-                  hembrasNacidas: grupo.cantidadHijasHembras,
-                  machosNacidos: grupo.cantidadHijosMachos,
-                  muertos: grupo.cantidadHijosMuertos,
-                  padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
-                  cuyes: grupo.cuyes,
-                  madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
-                  regiones: {},
-                });
+        <div className="flex gap-4 py-4">
+          {/* Scroll horizontal para las cards */}
+          <div className="flex gap-4 overflow-x-auto flex-1">
+            {javasHembras.map((grupo) => (
+              <div key={grupo.id} className="flex-shrink-0 max-w-md">
+                <CardJava
+                  java={grupo}
+                  onClickEdit={() => {
+                    const padre =
+                      grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
+                    const madres =
+                      grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
 
-                setDialogGrupoOpen("HEMBRA");
-              }}
-            />
-          ))}
-          <Card className="w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+                    setJavaToEdit({
+                      id: grupo.id,
+                      nombre: grupo.nombre,
+                      categoria: grupo.categoria,
+                      fechaInicio: new Date(grupo.fechaReproduccion),
+                      sexo: grupo.sexo,
+                      hembrasNacidas: grupo.cantidadHijasHembras,
+                      machosNacidos: grupo.cantidadHijosMachos,
+                      muertos: grupo.cantidadHijosMuertos,
+                      padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
+                      cuyes: grupo.cuyes,
+                      madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
+                      regiones: {},
+                    });
+
+                    setDialogGrupoOpen("HEMBRA");
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Botón fuera del scroll */}
+          <div className="flex-shrink-0 w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("HEMBRA")}
               className="p-2 flex flex-col items-center justify-center"
@@ -329,7 +336,7 @@ export default function FormReproduccion() {
                 CREAR JAVA HEMBRA
               </div>
             </CardContent>
-          </Card>
+          </div>
         </div>
       </Card>
 
