@@ -16,7 +16,10 @@ import {
   SelectValue,
 } from "./ui/select";
 import { JavaRespose } from "@/types/java";
-import { getAllTiposAlimentos } from "@/services/tipoAlimentoService";
+import {
+  createTipoAlimento,
+  getAllTiposAlimentos,
+} from "@/services/tipoAlimentoService";
 import { createUnidad, getAllUnidades } from "@/services/unidadMedidaService";
 
 interface AlimentacionDialogProps {
@@ -52,6 +55,9 @@ export default function AlimentacionDialog({
   const [unidadModalOpen, setUnidadModalOpen] = useState(false);
   const [nuevaUnidadNombre, setNuevaUnidadNombre] = useState("");
   const [nuevoSimbolo, setNuevoSimbolo] = useState("");
+
+  const [tipoModalOpen, setTipoModalOpen] = useState(false);
+  const [nuevoTipoNombre, setNuevoTipoNombre] = useState("");
 
   useEffect(() => {
     if (open) {
@@ -132,6 +138,20 @@ export default function AlimentacionDialog({
     }
   };
 
+  const handleAgregarTipoAlimento = async () => {
+    try {
+      const nuevo = await createTipoAlimento(nuevoTipoNombre);
+
+      setTipoAlimento((prev) => [...prev, nuevo]);
+      setValue("tipoAlimento.id", nuevo.id, { shouldValidate: true });
+
+      setTipoModalOpen(false);
+      setNuevoTipoNombre("");
+    } catch (err) {
+      console.error("Error creando tipo de alimento:", err);
+    }
+  };
+
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -184,23 +204,30 @@ export default function AlimentacionDialog({
 
             <div>
               <Label>Tipo de alimento</Label>
-              <Select
-                onValueChange={(value) =>
-                  setValue("tipoAlimento.id", +value, { shouldValidate: true })
-                }
-                value={watch("tipoAlimento.id")?.toString() || ""}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona un tipo de alimento" />
-                </SelectTrigger>
-                <SelectContent>
-                  {tipoAlimento.map((tipo) => (
-                    <SelectItem key={tipo.id} value={tipo.id.toString()}>
-                      {tipo.nombre}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <Select
+                  onValueChange={(value) =>
+                    setValue("tipoAlimento.id", +value, {
+                      shouldValidate: true,
+                    })
+                  }
+                  value={watch("tipoAlimento.id")?.toString() || ""}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona un tipo de alimento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tipoAlimento.map((tipo) => (
+                      <SelectItem key={tipo.id} value={tipo.id.toString()}>
+                        {tipo.nombre}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button type="button" onClick={() => setUnidadModalOpen(true)}>
+                  Agregar Tipo Alimento
+                </Button>
+              </div>
             </div>
 
             <div className="flex gap-4 items-end">
@@ -294,6 +321,33 @@ export default function AlimentacionDialog({
               <Button
                 onClick={handleAgregarUnidad}
                 disabled={!nuevaUnidadNombre.trim() || !nuevoSimbolo.trim()}
+              >
+                Agregar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={tipoModalOpen} onOpenChange={setTipoModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Agregar nuevo tipo de alimento</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Nombre</Label>
+              <Input
+                value={nuevoTipoNombre}
+                onChange={(e) => setNuevoTipoNombre(e.target.value)}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setTipoModalOpen(false)}>
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleAgregarTipoAlimento}
+                disabled={!nuevoTipoNombre.trim()}
               >
                 Agregar
               </Button>
