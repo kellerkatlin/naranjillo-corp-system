@@ -16,7 +16,6 @@ import { Plus } from "lucide-react";
 import JavaGrupoDialog, { DataJava } from "@/components/JavaGrupoDialog";
 
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function FormReproduccion() {
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
@@ -147,12 +146,11 @@ export default function FormReproduccion() {
           </span>
         </div>
 
-        {/* SCROLL AREA AQUI */}
-        <ScrollArea className="w-full">
-          <div className="flex gap-4 pb-2">
-            {javasReproduccion.map((grupo) => (
+        {/* Scroll horizontal con tailwind puro */}
+        <div className="flex gap-4 overflow-x-auto py-4">
+          {javasReproduccion.map((grupo) => (
+            <div key={grupo.id} className="flex-shrink-0 max-w-md w-full">
               <CardJava
-                key={grupo.id}
                 java={grupo}
                 imagen={true}
                 onClickEdit={() => {
@@ -175,17 +173,14 @@ export default function FormReproduccion() {
                     madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
                     regiones: {},
                   });
-
                   setDialogGrupoOpen("REPRODUCCION");
                 }}
               />
-            ))}
-          </div>
-        </ScrollArea>
+            </div>
+          ))}
 
-        {/* Este queda fuera del scroll */}
-        <div className="mt-4 flex">
-          <Card className="w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+          {/* El botón también dentro del scroll */}
+          <div className="flex-shrink-0 w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("REPRODUCCION")}
               className="p-2 flex flex-col items-center justify-center"
@@ -195,7 +190,7 @@ export default function FormReproduccion() {
                 CREAR REPRODUCCIÓN
               </div>
             </CardContent>
-          </Card>
+          </div>
         </div>
       </Card>
 
