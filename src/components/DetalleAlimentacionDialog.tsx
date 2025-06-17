@@ -86,15 +86,13 @@ export default function DetalleAlimentacionDialog({
           <Table>
             <TableHeader>
               <TableRow>
-                <div className="flex items-center justify-center">
-                  {columns.map((col, index) => (
-                    <TableHead key={index}>
-                      {typeof col.header === "string"
-                        ? col.header
-                        : col.header?.()}
-                    </TableHead>
-                  ))}
-                </div>
+                {columns.map((col, index) => (
+                  <TableHead key={index} className="text-center">
+                    {typeof col.header === "string"
+                      ? col.header
+                      : col.header?.()}
+                  </TableHead>
+                ))}
               </TableRow>
             </TableHeader>
 
@@ -104,7 +102,7 @@ export default function DetalleAlimentacionDialog({
                   {columns.map((col, colIndex) => {
                     if (col.cell) {
                       return (
-                        <TableCell key={colIndex}>
+                        <TableCell className="text-center" key={colIndex}>
                           {col.cell({ row: { original: item } } as any)}
                         </TableCell>
                       );
@@ -115,10 +113,16 @@ export default function DetalleAlimentacionDialog({
                         value = value?.[k];
                       });
                       return (
-                        <TableCell key={colIndex}>{value ?? "-"}</TableCell>
+                        <TableCell className="text-center" key={colIndex}>
+                          {value ?? "-"}
+                        </TableCell>
                       );
                     } else {
-                      return <TableCell key={colIndex}>-</TableCell>;
+                      return (
+                        <TableCell className="text-center" key={colIndex}>
+                          -
+                        </TableCell>
+                      );
                     }
                   })}
                 </TableRow>
