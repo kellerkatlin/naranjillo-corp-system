@@ -10,11 +10,12 @@ import {
 import { Alimentacion, AlimentacionRequest } from "@/types/alimentacion";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AlimentacionDialog from "@/components/AlimentacionDialog";
 import { toast } from "sonner";
 import { CrudTable } from "@/components/shared/CrudTable";
 import ConfirmAlert from "@/components/shared/ComfirmAlert";
+import DetalleAlimentacionDialog from "@/components/DetalleAlimentacionDialog";
 
 /**
  * Componente para gestionar la alimentación.
@@ -33,6 +34,10 @@ export default function FormAlimentacion() {
   const [itemToDelete, setItemToDelete] = useState<Alimentacion | null>(null);
   /** Estado para almacenar la lista de reproducciones disponibles. */
 
+  const [detalleOpen, setDetalleOpen] = useState(false);
+  const [detalleData, setDetalleData] = useState<Alimentacion[]>([]);
+  const [detalleJavaNombre, setDetalleJavaNombre] = useState("");
+
   /**
    * Efecto para cargar los datos iniciales de alimentaciones y reproducciones
    * cuando el componente se monta.
@@ -49,6 +54,18 @@ export default function FormAlimentacion() {
 
     fetchData();
   }, []);
+
+  const agrupados = useMemo(() => {
+    const map = new Map<string, Alimentacion>();
+
+    data.forEach((item) => {
+      if (!map.has(item.java.nombre)) {
+        map.set(item.java.nombre, item);
+      }
+    });
+
+    return Array.from(map.values());
+  }, [data]);
 
   /** Definición de las columnas para la tabla de alimentaciones. */
   const columns: ColumnDef<Alimentacion>[] = [
@@ -100,16 +117,20 @@ export default function FormAlimentacion() {
               className="cursor-pointer"
               size="sm"
               onClick={() => {
-                setEditItem(item);
-                setDialogOpen(true);
+                const javaNombre = item.java.nombre;
+                const filtrados = data.filter(
+                  (al) => al.java.nombre === javaNombre
+                );
+                setDetalleJavaNombre(javaNombre);
+                setDetalleData(filtrados);
+                setDetalleOpen(true);
               }}
             >
               Detalle
             </Button>
             <Button
-              className="cursor-pointer"
+              className="cursor-pointer bg-blue-600 hover:bg-blue-700 "
               size="sm"
-              variant="default"
               onClick={() => {
                 setItemToDelete(item);
                 setDeleteDialogOpen(true);
@@ -184,7 +205,7 @@ export default function FormAlimentacion() {
           Registrar Alimentación
         </Button>
       </div>
-      <CrudTable columns={columns} data={data} />
+      <CrudTable columns={columns} data={agrupados} />
       <ConfirmAlert
         open={deleteDialogOpen}
         title="Eliminar registro"
@@ -200,6 +221,12 @@ export default function FormAlimentacion() {
             setItemToDelete(null);
           }
         }}
+      />
+      <DetalleAlimentacionDialog
+        open={detalleOpen}
+        onOpenChange={setDetalleOpen}
+        alimentaciones={detalleData}
+        javaNombre={detalleJavaNombre}
       />
     </>
   );
