@@ -150,7 +150,7 @@ export default function FormReproduccion() {
           {/* Contenedor scrollable solo para las cards */}
           <div className="flex gap-4 overflow-x-auto flex-1">
             {javasReproduccion.map((grupo) => (
-              <div key={grupo.id} className="flex-shrink-0 max-w-md w-full">
+              <div key={grupo.id} className="flex-shrink-0 max-w-md">
                 <CardJava
                   java={grupo}
                   imagen={true}
