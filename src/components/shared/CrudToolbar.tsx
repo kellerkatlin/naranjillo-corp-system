@@ -49,7 +49,7 @@ export function CrudToolbar({
             className="bg-blue-500 hover:bg-blue-600 cursor-pointer"
             onClick={onLoadWithoutJava}
           >
-            Cargar sin Java
+            Cuyes sin Java
           </Button>
         </div>
       </div>

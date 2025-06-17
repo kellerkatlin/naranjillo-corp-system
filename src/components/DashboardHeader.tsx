@@ -9,8 +9,17 @@ import {
   MenubarMenu,
   MenubarTrigger,
 } from "./ui/menubar";
+import { useMessageStore } from "@/store/messageStore";
+import { useEffect } from "react";
+import { ScrollArea } from "./ui/scroll-area";
 export default function DashboardHeader() {
   const pathname = usePathname();
+  const { messages, fetchMessages } = useMessageStore();
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
   const breadcrumbMap: Record<string, string> = {
     sale: "VENTA",
     allsales: "VENTAS",
@@ -47,18 +56,40 @@ export default function DashboardHeader() {
       </h2>
 
       <div className="hidden md:flex items-center gap-4">
-        <button className="relative cursor-pointer">
-          <Bell className="w-5 h-5 text-gray-600" />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
-        </button>
-
-        <div className="md:flex hidden items-center gap-2">
+        <div className="hidden md:flex items-center gap-4">
           <Menubar className="border-none bg-white">
+            <MenubarMenu>
+              <MenubarTrigger className="relative cursor-pointer">
+                <Bell className="w-5 h-5 text-gray-600" />
+                {messages.length > 0 && (
+                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+              </MenubarTrigger>
+              <MenubarContent align="end">
+                <ScrollArea className="h-60 w-72 p-2">
+                  {messages.length > 0 ? (
+                    messages.map((msg) => (
+                      <div
+                        key={msg.id}
+                        className="border-b py-2 text-sm text-gray-700"
+                      >
+                        {msg.mensaje}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center text-gray-500 text-sm py-4">
+                      No hay mensajes
+                    </div>
+                  )}
+                </ScrollArea>
+              </MenubarContent>
+            </MenubarMenu>
+
             <MenubarMenu>
               <MenubarTrigger className="cursor-pointer">
                 <UserCircle className="w-6 h-6 text-primary" />
               </MenubarTrigger>
-              <MenubarContent>
+              <MenubarContent align="end">
                 <MenubarItem
                   className="cursor-pointer"
                   onClick={() => (window.location.href = "/dashboard/profile")}

@@ -1,4 +1,5 @@
 import { apiFetch } from "@/lib/api";
+import { Message } from "@/store/messageStore";
 import { Cuy, CuyRequest } from "@/types/cuy";
 
 const CUY_BASE = "/cuy";
@@ -27,4 +28,12 @@ export const updateCuy = (id: number, data: CuyRequest): Promise<Cuy> =>
 export const deleteCuy = (id: number): Promise<void> =>
   apiFetch(`${CUY_BASE}/delete/${id}`, {
     method: "DELETE",
+  });
+
+export const getMessages = (): Promise<Message[]> =>
+  apiFetch(`${CUY_BASE}/notificaciones`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
