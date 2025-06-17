@@ -224,7 +224,7 @@ export default function AlimentacionDialog({
                     ))}
                   </SelectContent>
                 </Select>
-                <Button type="button" onClick={() => setUnidadModalOpen(true)}>
+                <Button type="button" onClick={() => setTipoModalOpen(true)}>
                   Agregar Tipo Alimento
                 </Button>
               </div>
