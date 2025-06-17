@@ -16,6 +16,7 @@ import { Plus } from "lucide-react";
 import JavaGrupoDialog, { DataJava } from "@/components/JavaGrupoDialog";
 
 import { Button } from "@/components/ui/button";
+import { useMessageStore } from "@/store/messageStore";
 
 export default function FormReproduccion() {
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
@@ -86,6 +87,7 @@ export default function FormReproduccion() {
             ...form.madre.map((m) => ({ id: m.id })),
           ],
         });
+        await useMessageStore.getState().fetchMessages();
         fetchReproduccion();
         toast.success("Java de reproducción creado");
       } else {
@@ -96,6 +98,7 @@ export default function FormReproduccion() {
           fechaReproduccion:
             form.fechaInicio?.toISOString().split("T")[0] ?? "",
         });
+        await useMessageStore.getState().fetchMessages();
         if (form.sexo === "MACHO") {
           fetchMachos();
         } else {
@@ -125,6 +128,7 @@ export default function FormReproduccion() {
         ],
       });
       fetchReproduccion();
+      await useMessageStore.getState().fetchMessages();
       toast.success("Reproducción actualizada");
       cerrarDialog();
     } catch {
@@ -215,37 +219,42 @@ export default function FormReproduccion() {
           </div>
         </div>
 
-        {/* CARRUSEL */}
-        <div className="flex  gap-4">
-          {javasMachos.map((grupo) => (
-            <CardJava
-              key={grupo.id}
-              java={grupo}
-              onClickEdit={() => {
-                const padre =
-                  grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
-                const madres =
-                  grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+        <div className="flex gap-4 py-4">
+          {/* Contenedor scrollable solo para las cards */}
+          <div className="flex gap-4 overflow-x-auto flex-1">
+            {javasMachos.map((grupo) => (
+              <div key={grupo.id} className="flex-shrink-0 max-w-md">
+                <CardJava
+                  java={grupo}
+                  onClickEdit={() => {
+                    const padre =
+                      grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
+                    const madres =
+                      grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
 
-                setJavaToEdit({
-                  id: grupo.id,
-                  nombre: grupo.nombre,
-                  categoria: grupo.categoria,
-                  fechaInicio: new Date(grupo.fechaReproduccion),
-                  hembrasNacidas: grupo.cantidadHijasHembras,
-                  sexo: grupo.sexo,
-                  cuyes: grupo.cuyes,
-                  machosNacidos: grupo.cantidadHijosMachos,
-                  muertos: grupo.cantidadHijosMuertos,
-                  padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
-                  madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
-                  regiones: {},
-                });
-                setDialogGrupoOpen("MACHO");
-              }}
-            />
-          ))}
-          <Card className="w-36 h-36 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
+                    setJavaToEdit({
+                      id: grupo.id,
+                      nombre: grupo.nombre,
+                      categoria: grupo.categoria,
+                      fechaInicio: new Date(grupo.fechaReproduccion),
+                      hembrasNacidas: grupo.cantidadHijasHembras,
+                      sexo: grupo.sexo,
+                      cuyes: grupo.cuyes,
+                      machosNacidos: grupo.cantidadHijosMachos,
+                      muertos: grupo.cantidadHijosMuertos,
+                      padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
+                      madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
+                      regiones: {},
+                    });
+                    setDialogGrupoOpen("MACHO");
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Botón fijo fuera del scroll */}
+          <div className="flex-shrink-0 w-36 h-36 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("MACHO")}
               className="p-2 flex flex-col items-center justify-center"
@@ -255,7 +264,7 @@ export default function FormReproduccion() {
                 CREAR JAVA MACHO
               </div>
             </CardContent>
-          </Card>
+          </div>
         </div>
       </Card>
 
