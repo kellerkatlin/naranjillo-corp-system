@@ -16,6 +16,7 @@ import { Plus } from "lucide-react";
 import JavaGrupoDialog, { DataJava } from "@/components/JavaGrupoDialog";
 
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function FormReproduccion() {
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
@@ -145,38 +146,45 @@ export default function FormReproduccion() {
             Grupo Reproducción
           </span>
         </div>
-        {/* CARRUSEL */}
-        <div className="flex  gap-4">
-          {javasReproduccion.map((grupo) => (
-            <CardJava
-              key={grupo.id}
-              java={grupo}
-              imagen={true}
-              onClickEdit={() => {
-                const padre =
-                  grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
-                const madres =
-                  grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
 
-                setJavaToEdit({
-                  id: grupo.id,
-                  nombre: grupo.nombre,
-                  categoria: grupo.categoria,
-                  fechaInicio: new Date(grupo.fechaReproduccion),
-                  hembrasNacidas: grupo.cantidadHijasHembras,
-                  sexo: grupo.sexo,
-                  cuyes: grupo.cuyes,
+        {/* SCROLL AREA AQUI */}
+        <ScrollArea className="w-full">
+          <div className="flex gap-4 pb-2">
+            {javasReproduccion.map((grupo) => (
+              <CardJava
+                key={grupo.id}
+                java={grupo}
+                imagen={true}
+                onClickEdit={() => {
+                  const padre =
+                    grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
+                  const madres =
+                    grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
 
-                  machosNacidos: grupo.cantidadHijosMachos,
-                  muertos: grupo.cantidadHijosMuertos,
-                  padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
-                  madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
-                  regiones: {},
-                });
-                setDialogGrupoOpen("REPRODUCCION");
-              }}
-            />
-          ))}
+                  setJavaToEdit({
+                    id: grupo.id,
+                    nombre: grupo.nombre,
+                    categoria: grupo.categoria,
+                    fechaInicio: new Date(grupo.fechaReproduccion),
+                    hembrasNacidas: grupo.cantidadHijasHembras,
+                    sexo: grupo.sexo,
+                    cuyes: grupo.cuyes,
+                    machosNacidos: grupo.cantidadHijosMachos,
+                    muertos: grupo.cantidadHijosMuertos,
+                    padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
+                    madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
+                    regiones: {},
+                  });
+
+                  setDialogGrupoOpen("REPRODUCCION");
+                }}
+              />
+            ))}
+          </div>
+        </ScrollArea>
+
+        {/* Este queda fuera del scroll */}
+        <div className="mt-4 flex">
           <Card className="w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("REPRODUCCION")}
