@@ -21,6 +21,7 @@ import {
   getAllTiposAlimentos,
 } from "@/services/tipoAlimentoService";
 import { createUnidad, getAllUnidades } from "@/services/unidadMedidaService";
+import { toast } from "sonner";
 
 interface AlimentacionDialogProps {
   open: boolean;
@@ -127,6 +128,7 @@ export default function AlimentacionDialog({
         simbolo: nuevoSimbolo,
       });
 
+      toast.success("Unidad de medida creada correctamente");
       setUnidades((prev) => [...prev, nueva]);
       setValue("unidadMedida.id", nueva.id, { shouldValidate: true });
 
@@ -141,6 +143,7 @@ export default function AlimentacionDialog({
   const handleAgregarTipoAlimento = async () => {
     try {
       const nuevo = await createTipoAlimento(nuevoTipoNombre);
+      toast.success("Tipo de alimento creado correctamente");
 
       setTipoAlimento((prev) => [...prev, nuevo]);
       setValue("tipoAlimento.id", nuevo.id, { shouldValidate: true });
