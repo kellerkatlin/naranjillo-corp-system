@@ -107,7 +107,7 @@ export default function FormAlimentacion() {
       cell: ({ row }) => {
         const item = row.original;
         return (
-          <div className="flex gap-2">
+          <div className="flex justify-center items-center gap-2">
             <Button
               className="cursor-pointer"
               size="sm"
