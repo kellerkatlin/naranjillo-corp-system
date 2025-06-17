@@ -810,7 +810,8 @@ export default function JavaGrupoDialog({
             disabled={
               isSubmitting ||
               (!isEditing && !canStartReproduction()) ||
-              (isEditing && isCountersBlocked)
+              (isEditing && mode !== "REPRODUCCION") || // Deshabilitamos si es edición de macho o hembra
+              (isEditing && mode === "REPRODUCCION" && isCountersBlocked)
             }
             onClick={() => {
               if (isEditing) {
