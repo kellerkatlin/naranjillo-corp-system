@@ -7,12 +7,22 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Alimentacion } from "@/types/alimentacion";
+import { ColumnDef } from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableFooter,
+} from "@/components/ui/table";
 
 interface DetalleAlimentacionDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  alimentaciones: Alimentacion[];
-  javaNombre: string;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly alimentaciones: Alimentacion[];
+  readonly javaNombre: string;
 }
 
 export default function DetalleAlimentacionDialog({
@@ -27,46 +37,85 @@ export default function DetalleAlimentacionDialog({
   );
   const totalCosto = alimentaciones.reduce((sum, item) => sum + item.costo, 0);
 
+  // Definimos columns pero solo como referencia (usamos para renderizar las columnas dinámicamente)
+  const columns: ColumnDef<Alimentacion>[] = [
+    { header: "Fecha", cell: () => "00/00/00" },
+    { accessorKey: "java.nombre", header: "Java" },
+    {
+      accessorKey: "tipoAlimento.nombre",
+      header: "Nombre de alimento",
+      cell: ({ row }) => row.original.tipoAlimento?.nombre || "-",
+    },
+    { accessorKey: "cantidad", header: "Cantidad" },
+    {
+      accessorKey: "unidadMedida.nombre",
+      header: "U. Medida",
+      cell: ({ row }) => row.original.unidadMedida?.nombre || "-",
+    },
+    {
+      accessorKey: "costo",
+      header: "Costo",
+      cell: ({ row }) => `S/ ${row.original.costo.toFixed(2)}`,
+    },
+  ];
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="max-w-5xl">
         <DialogHeader>
           <DialogTitle>Detalle de {javaNombre}</DialogTitle>
         </DialogHeader>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead>
-              <tr className="border-b">
-                <th>Fecha</th>
-                <th>Java</th>
-                <th>Nombre de alimento</th>
-                <th>Cantidad</th>
-                <th>U. Medida</th>
-                <th>Costo</th>
-              </tr>
-            </thead>
-            <tbody>
-              {alimentaciones.map((item, index) => (
-                <tr key={index} className="border-b">
-                  <td>00/00/00</td>{" "}
-                  {/* Aquí puedes poner la fecha real si deseas */}
-                  <td>{item.java.nombre}</td>
-                  <td>{item.tipoAlimento?.nombre || "-"}</td>
-                  <td>{item.cantidad}</td>
-                  <td>{item.unidadMedida?.nombre || "-"}</td>
-                  <td>S/ {item.costo.toFixed(2)}</td>
-                </tr>
+        <div className="overflow-x-auto border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((col, index) => (
+                  <TableHead key={index}>
+                    {typeof col.header === "string"
+                      ? col.header
+                      : col.header?.()}
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {alimentaciones.map((item, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {columns.map((col, colIndex) => {
+                    if (col.cell) {
+                      return (
+                        <TableCell key={colIndex}>
+                          {col.cell({ row: { original: item } } as any)}
+                        </TableCell>
+                      );
+                    } else if (col.accessorKey) {
+                      const keys = (col.accessorKey as string).split(".");
+                      let value: any = item;
+                      keys.forEach((k) => {
+                        value = value?.[k];
+                      });
+                      return (
+                        <TableCell key={colIndex}>{value ?? "-"}</TableCell>
+                      );
+                    } else {
+                      return <TableCell key={colIndex}>-</TableCell>;
+                    }
+                  })}
+                </TableRow>
               ))}
-              <tr className="font-bold">
-                <td colSpan={2}>TOTAL</td>
-                <td>{javaNombre}</td>
-                <td>{totalCantidad}</td>
-                <td></td>
-                <td>S/ {totalCosto.toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
+            </TableBody>
+
+            <TableFooter>
+              <TableRow className="font-bold bg-gray-50">
+                <TableCell colSpan={3}>TOTAL</TableCell>
+                <TableCell>{totalCantidad}</TableCell>
+                <TableCell></TableCell>
+                <TableCell>S/ {totalCosto.toFixed(2)}</TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
         </div>
       </DialogContent>
     </Dialog>

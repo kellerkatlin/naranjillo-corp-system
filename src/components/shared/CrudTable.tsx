@@ -1,5 +1,5 @@
-// components/shared/CrudTable.tsx
 "use client";
+
 import {
   flexRender,
   getCoreRowModel,
@@ -14,6 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableFooter,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,14 +23,19 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "@/components/ui/select";
 
 interface CrudTableProps<TData> {
   columns: ColumnDef<TData>[];
   data: TData[];
+  totalColumns?: string[]; // Las columnas que quieres sumar
 }
 
-export function CrudTable<TData>({ columns, data }: CrudTableProps<TData>) {
+export function CrudTable<TData extends Record<string, any>>({
+  columns,
+  data,
+  totalColumns = [], // por defecto vacío si no se pasan columnas a sumar
+}: CrudTableProps<TData>) {
   const table = useReactTable({
     data,
     columns,
@@ -39,6 +45,18 @@ export function CrudTable<TData>({ columns, data }: CrudTableProps<TData>) {
       pagination: { pageSize: 5 },
     },
   });
+
+  // Calcular los totales (solo si totalColumns tiene algo)
+  const totals = totalColumns.reduce((acc, key) => {
+    const sum = data.reduce((s, row) => {
+      const keys = key.split(".");
+      let value: any = row;
+      keys.forEach((k) => (value = value?.[k]));
+      return s + (typeof value === "number" ? value : 0);
+    }, 0);
+    acc[key] = sum;
+    return acc;
+  }, {} as Record<string, number>);
 
   return (
     <>
@@ -58,6 +76,7 @@ export function CrudTable<TData>({ columns, data }: CrudTableProps<TData>) {
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
@@ -80,6 +99,31 @@ export function CrudTable<TData>({ columns, data }: CrudTableProps<TData>) {
               </TableRow>
             )}
           </TableBody>
+
+          {totalColumns.length > 0 && (
+            <TableFooter>
+              <TableRow className="font-bold bg-gray-50">
+                {columns.map((col, index) => {
+                  if (index === 0) {
+                    return <TableCell key={index}>TOTAL</TableCell>;
+                  }
+
+                  const accessor = col.accessorKey as string;
+                  if (totalColumns.includes(accessor)) {
+                    return (
+                      <TableCell key={index}>
+                        {totals[accessor].toLocaleString("es-PE", {
+                          minimumFractionDigits: 2,
+                        })}
+                      </TableCell>
+                    );
+                  }
+
+                  return <TableCell key={index}></TableCell>;
+                })}
+              </TableRow>
+            </TableFooter>
+          )}
         </Table>
       </div>
 
