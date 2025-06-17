@@ -85,14 +85,16 @@ export default function DetalleAlimentacionDialog({
         <div className="overflow-x-auto border rounded-md">
           <Table>
             <TableHeader>
-              <TableRow className="text-center">
-                {columns.map((col, index) => (
-                  <TableHead key={index}>
-                    {typeof col.header === "string"
-                      ? col.header
-                      : col.header?.()}
-                  </TableHead>
-                ))}
+              <TableRow>
+                <div className="text-center">
+                  {columns.map((col, index) => (
+                    <TableHead key={index}>
+                      {typeof col.header === "string"
+                        ? col.header
+                        : col.header?.()}
+                    </TableHead>
+                  ))}
+                </div>
               </TableRow>
             </TableHeader>
 
