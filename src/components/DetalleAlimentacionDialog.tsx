@@ -85,7 +85,7 @@ export default function DetalleAlimentacionDialog({
         <div className="overflow-x-auto border rounded-md">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="text-center">
                 {columns.map((col, index) => (
                   <TableHead key={index}>
                     {typeof col.header === "string"
@@ -98,7 +98,7 @@ export default function DetalleAlimentacionDialog({
 
             <TableBody>
               {alimentaciones.map((item, rowIndex) => (
-                <TableRow key={rowIndex}>
+                <TableRow className="text-center" key={rowIndex}>
                   {columns.map((col, colIndex) => {
                     if (col.cell) {
                       return (
