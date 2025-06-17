@@ -7,7 +7,8 @@ interface CrudToolbarProps {
   readonly title?: string;
   readonly setSearch?: (search: string) => void;
   readonly search?: string;
-  readonly onLoadWithoutJava?: () => void; // <-- nueva prop
+  readonly onToggleJavaFilter?: () => void;
+  readonly isFilteringSinJava?: boolean;
 }
 
 export function CrudToolbar({
@@ -15,7 +16,8 @@ export function CrudToolbar({
   title,
   setSearch,
   search,
-  onLoadWithoutJava,
+  onToggleJavaFilter,
+  isFilteringSinJava,
 }: CrudToolbarProps) {
   const [inputValue, setInputValue] = useState(search ?? "");
   return (
@@ -47,9 +49,9 @@ export function CrudToolbar({
           </Button>
           <Button
             className="bg-blue-500 hover:bg-blue-600 cursor-pointer"
-            onClick={onLoadWithoutJava}
+            onClick={onToggleJavaFilter}
           >
-            Cuyes sin Java
+            {isFilteringSinJava ? "Mostrar todos" : "Cuyes sin Java"}
           </Button>
         </div>
       </div>

@@ -26,6 +26,7 @@ export default function FormCuy() {
   const [editItem, setEditItem] = useState<Cuy | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Cuy | null>(null);
+  const [isFilteringSinJava, setIsFilteringSinJava] = useState(false);
 
   const loadData = async () => {
     try {
@@ -107,16 +108,20 @@ export default function FormCuy() {
   const onSubmit = async (form: CuyRequest) => {
     try {
       if (editItem) {
-        const updated = await updateCuy(editItem.id, form);
-        setData((prev) =>
-          prev.map((item) => (item.id === editItem.id ? updated : item))
-        );
+        await updateCuy(editItem.id, form);
         toast.success("Cuy actualizado");
       } else {
-        const created = await createCuy(form);
-        setData((prev) => [...prev, created]);
+        await createCuy(form);
         toast.success("Cuy registrado");
       }
+
+      if (isFilteringSinJava) {
+        const cuyesSinJava = await getCuyesSinJava();
+        setData(cuyesSinJava);
+      } else {
+        await loadData();
+      }
+
       setDialogOpen(false);
       setEditItem(null);
     } catch {
@@ -152,13 +157,19 @@ export default function FormCuy() {
         setSearch={setSearch}
         onCreate={() => setDialogOpen(true)}
         title="Cuy"
-        onLoadWithoutJava={async () => {
+        isFilteringSinJava={isFilteringSinJava}
+        onToggleJavaFilter={async () => {
           try {
-            const cuyesSinJava = await getCuyesSinJava();
-            setData(cuyesSinJava);
-            toast.success("Cuyes sin Java cargados");
+            if (isFilteringSinJava) {
+              await loadData();
+              setIsFilteringSinJava(false);
+            } else {
+              const cuyesSinJava = await getCuyesSinJava();
+              setData(cuyesSinJava);
+              setIsFilteringSinJava(true);
+            }
           } catch {
-            toast.error("Error al cargar cuyes sin Java");
+            toast.error("Error al cargar cuyes");
           }
         }}
       />
