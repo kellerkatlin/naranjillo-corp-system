@@ -33,6 +33,7 @@ interface AlimentacionDialogProps {
 interface AlimentacionFormValues {
   cantidad: number;
   costo: number;
+  fecha: Date; // Usamos Date para manejar la fecha internamente
   fechaInput: string;
   horaInput: string;
   java: { id: number };

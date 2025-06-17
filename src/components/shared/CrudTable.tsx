@@ -114,15 +114,20 @@ export function CrudTable<TData extends object>({
                     return <TableCell key={index}>TOTAL</TableCell>;
                   }
 
-                  const accessor = col.accessorKey as string;
-                  if (totalColumns.includes(accessor)) {
-                    return (
-                      <TableCell key={index}>
-                        {totals[accessor].toLocaleString("es-PE", {
-                          minimumFractionDigits: 2,
-                        })}
-                      </TableCell>
-                    );
+                  if (
+                    "accessorKey" in col &&
+                    typeof col.accessorKey === "string"
+                  ) {
+                    const accessor = col.accessorKey;
+                    if (totalColumns.includes(accessor)) {
+                      return (
+                        <TableCell key={index}>
+                          {totals[accessor].toLocaleString("es-PE", {
+                            minimumFractionDigits: 2,
+                          })}
+                        </TableCell>
+                      );
+                    }
                   }
 
                   return <TableCell key={index}></TableCell>;

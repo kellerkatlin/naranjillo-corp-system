@@ -6,7 +6,10 @@ export const getAllUnidades = (): Promise<
   { id: number; nombre: string; simbolo: string }[]
 > => apiFetch(`${BASE}/find/all`);
 
-export const createUnidad = (data: { nombre: string; simbolo: string }) =>
+export const createUnidad = (data: {
+  nombre: string;
+  simbolo: string;
+}): Promise<{ id: number; nombre: string; simbolo: string }> =>
   apiFetch(`${BASE}/create`, {
     method: "POST",
     body: JSON.stringify(data),
