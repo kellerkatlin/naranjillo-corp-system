@@ -231,7 +231,19 @@ export default function JavaGrupoDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-4xl h-[90vh] overflow-y-auto">
         <AlertDialogHeader>
-          <DialogTitle>Crear Java</DialogTitle>
+          <DialogTitle>
+            {mode === "REPRODUCCION"
+              ? isEditing
+                ? "Editar Reproducción"
+                : "Crear Reproducción"
+              : mode === "MACHO"
+              ? isEditing
+                ? "Editar Machos"
+                : "Crear Machos"
+              : isEditing
+              ? "Editar Hembras"
+              : "Crear Hembras"}
+          </DialogTitle>
         </AlertDialogHeader>
 
         <div className="flex gap-6 flex-col  md:justify-between md:flex-row">
@@ -808,7 +820,7 @@ export default function JavaGrupoDialog({
               }
             }}
           >
-            {isEditing ? "Finalizar Reproducción" : "Inciar Reproducción"}
+            {isEditing ? "Finalizar Reproducción" : "Iniciar Reproducción"}
           </Button>
         </div>
       </DialogContent>
