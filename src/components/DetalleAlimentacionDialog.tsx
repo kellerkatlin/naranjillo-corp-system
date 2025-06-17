@@ -39,7 +39,22 @@ export default function DetalleAlimentacionDialog({
 
   // Definimos columns pero solo como referencia (usamos para renderizar las columnas dinámicamente)
   const columns: ColumnDef<Alimentacion>[] = [
-    { header: "Fecha", cell: () => "00/00/00" },
+    {
+      accessorKey: "fechaAlimentacion",
+      header: "Fecha de Registro",
+      cell: ({ row }) => {
+        const fechaStr = row.getValue("fechaAlimentacion") as string;
+        const fecha = new Date(fechaStr);
+
+        const dia = fecha.getDate().toString().padStart(2, "0");
+        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+        const anio = fecha.getFullYear();
+        const hora = fecha.getHours().toString().padStart(2, "0");
+        const minutos = fecha.getMinutes().toString().padStart(2, "0");
+
+        return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
+      },
+    },
     { accessorKey: "java.nombre", header: "Java" },
     {
       accessorKey: "tipoAlimento.nombre",
