@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Alimentacion } from "@/types/alimentacion";
-import { ColumnDef } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -38,42 +37,6 @@ export default function DetalleAlimentacionDialog({
   const totalCosto = alimentaciones.reduce((sum, item) => sum + item.costo, 0);
 
   // Definimos columns pero solo como referencia (usamos para renderizar las columnas dinámicamente)
-  const columns: ColumnDef<Alimentacion>[] = [
-    {
-      accessorKey: "fechaAlimentacion",
-      header: "Fecha de Registro",
-      cell: ({ row }) => {
-        const fechaStr = row.original.fechaAlimentacion;
-        const fecha = new Date(fechaStr);
-
-        const dia = fecha.getDate().toString().padStart(2, "0");
-        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
-        const anio = fecha.getFullYear();
-        const hora = fecha.getHours().toString().padStart(2, "0");
-        const minutos = fecha.getMinutes().toString().padStart(2, "0");
-
-        return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
-      },
-    },
-
-    { accessorKey: "java.nombre", header: "Java" },
-    {
-      accessorKey: "tipoAlimento.nombre",
-      header: "Nombre de alimento",
-      cell: ({ row }) => row.original.tipoAlimento?.nombre || "-",
-    },
-    { accessorKey: "cantidad", header: "Cantidad" },
-    {
-      accessorKey: "unidadMedida.nombre",
-      header: "U. Medida",
-      cell: ({ row }) => row.original.unidadMedida?.nombre || "-",
-    },
-    {
-      accessorKey: "costo",
-      header: "Costo",
-      cell: ({ row }) => `S/ ${row.original.costo.toFixed(2)}`,
-    },
-  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -86,41 +49,56 @@ export default function DetalleAlimentacionDialog({
           <Table>
             <TableHeader>
               <TableRow>
-                {columns.map((col, index) => (
-                  <TableHead key={index}>
-                    {typeof col.header === "string"
-                      ? col.header
-                      : col.header?.()}
-                  </TableHead>
-                ))}
+                <TableHead className="text-center">Fecha de Registro</TableHead>
+                <TableHead className="text-center">Java</TableHead>
+                <TableHead className="text-center">
+                  Nombre de alimento
+                </TableHead>
+                <TableHead className="text-center">Cantidad</TableHead>
+                <TableHead className="text-center">U. Medida</TableHead>
+                <TableHead className="text-center">Costo</TableHead>
               </TableRow>
             </TableHeader>
 
             <TableBody>
-              {alimentaciones.map((item, rowIndex) => (
-                <TableRow key={rowIndex}>
-                  {columns.map((col, colIndex) => {
-                    if (col.cell) {
-                      return (
-                        <TableCell key={colIndex}>
-                          {col.cell({ row: { original: item } } as any)}
-                        </TableCell>
-                      );
-                    } else if (col.accessorKey) {
-                      const keys = (col.accessorKey as string).split(".");
-                      let value: any = item;
-                      keys.forEach((k) => {
-                        value = value?.[k];
-                      });
-                      return (
-                        <TableCell key={colIndex}>{value ?? "-"}</TableCell>
-                      );
-                    } else {
-                      return <TableCell key={colIndex}>-</TableCell>;
-                    }
-                  })}
-                </TableRow>
-              ))}
+              {alimentaciones.map((item, index) => {
+                const fecha = new Date(item.fechaAlimentacion);
+                const fechaFormateada = `${fecha
+                  .getDate()
+                  .toString()
+                  .padStart(2, "0")}/${(fecha.getMonth() + 1)
+                  .toString()
+                  .padStart(2, "0")}/${fecha.getFullYear()} ${fecha
+                  .getHours()
+                  .toString()
+                  .padStart(2, "0")}:${fecha
+                  .getMinutes()
+                  .toString()
+                  .padStart(2, "0")}`;
+
+                return (
+                  <TableRow key={index}>
+                    <TableCell className="text-center">
+                      {fechaFormateada}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item.java.nombre}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item.tipoAlimento?.nombre ?? "-"}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item.cantidad}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {item.unidadMedida?.nombre ?? "-"}
+                    </TableCell>
+                    <TableCell className="text-center">
+                      S/ {item.costo.toFixed(2)}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
 
             <TableFooter>

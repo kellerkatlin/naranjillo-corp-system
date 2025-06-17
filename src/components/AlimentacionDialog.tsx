@@ -24,10 +24,20 @@ import { createUnidad, getAllUnidades } from "@/services/unidadMedidaService";
 import { toast } from "sonner";
 
 interface AlimentacionDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSubmit?: (data: AlimentacionRequest) => void;
-  alimentacion?: Alimentacion | null;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  readonly onSubmit?: (data: AlimentacionRequest) => void;
+  readonly alimentacion?: Alimentacion | null;
+}
+
+interface AlimentacionFormValues {
+  cantidad: number;
+  costo: number;
+  fechaInput: string;
+  horaInput: string;
+  java: { id: number };
+  tipoAlimento: { id: number };
+  unidadMedida: { id: number };
 }
 
 export default function AlimentacionDialog({
@@ -36,14 +46,8 @@ export default function AlimentacionDialog({
   onSubmit,
   alimentacion,
 }: AlimentacionDialogProps) {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm<any>(); // <== Trabajamos con campos separados
+  const { register, handleSubmit, reset, watch, setValue } =
+    useForm<AlimentacionFormValues>(); // <== Trabajamos con campos separados
 
   const [tipoAlimento, setTipoAlimento] = useState<
     { id: number; nombre: string }[]
@@ -104,7 +108,7 @@ export default function AlimentacionDialog({
     }
   }, [open, alimentacion, reset]);
 
-  const handleFormSubmit = (data: any) => {
+  const handleFormSubmit = (data: AlimentacionFormValues) => {
     // unir fecha + hora antes de enviar
     const fechaAlimentacion = `${data.fechaInput}T${data.horaInput}:00`;
 

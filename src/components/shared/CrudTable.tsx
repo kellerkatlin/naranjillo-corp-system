@@ -31,7 +31,7 @@ interface CrudTableProps<TData> {
   totalColumns?: string[]; // Las columnas que quieres sumar
 }
 
-export function CrudTable<TData extends Record<string, any>>({
+export function CrudTable<TData extends object>({
   columns,
   data,
   totalColumns = [], // por defecto vacío si no se pasan columnas a sumar
@@ -50,8 +50,14 @@ export function CrudTable<TData extends Record<string, any>>({
   const totals = totalColumns.reduce((acc, key) => {
     const sum = data.reduce((s, row) => {
       const keys = key.split(".");
-      let value: any = row;
-      keys.forEach((k) => (value = value?.[k]));
+      let value: unknown = row;
+      keys.forEach((k) => {
+        if (typeof value === "object" && value !== null && k in value) {
+          value = (value as Record<string, unknown>)[k];
+        } else {
+          value = 0;
+        }
+      });
       return s + (typeof value === "number" ? value : 0);
     }, 0);
     acc[key] = sum;
