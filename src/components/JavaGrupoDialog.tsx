@@ -235,14 +235,14 @@ export default function JavaGrupoDialog({
             {mode === "REPRODUCCION"
               ? isEditing
                 ? "Editar Reproducción"
-                : "Crear Reproducción"
+                : "Crear Java Reproducción"
               : mode === "MACHO"
               ? isEditing
                 ? "Editar Machos"
-                : "Crear Machos"
+                : "Crear Java Machos"
               : isEditing
               ? "Editar Hembras"
-              : "Crear Hembras"}
+              : "Crear Java Hembras"}
           </DialogTitle>
         </AlertDialogHeader>
 
