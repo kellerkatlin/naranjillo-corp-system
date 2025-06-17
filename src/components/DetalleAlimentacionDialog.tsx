@@ -86,7 +86,7 @@ export default function DetalleAlimentacionDialog({
           <Table>
             <TableHeader>
               <TableRow>
-                <div className="text-center">
+                <div className="flex items-center justify-center">
                   {columns.map((col, index) => (
                     <TableHead key={index}>
                       {typeof col.header === "string"
