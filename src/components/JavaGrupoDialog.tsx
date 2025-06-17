@@ -291,8 +291,7 @@ export default function JavaGrupoDialog({
                     value={watch("categoria")}
                     onValueChange={(value) => setValue("categoria", value)}
                     disabled={
-                      isReproduccionIniciada ||
-                      watch("categoria") === "REPRODUCCION"
+                      watch("categoria") === "REPRODUCCION" || isEditing
                     }
                   >
                     <SelectTrigger className="w-full">
