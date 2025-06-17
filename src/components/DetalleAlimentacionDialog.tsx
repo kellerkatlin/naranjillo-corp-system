@@ -43,7 +43,7 @@ export default function DetalleAlimentacionDialog({
       accessorKey: "fechaAlimentacion",
       header: "Fecha de Registro",
       cell: ({ row }) => {
-        const fechaStr = row.getValue("fechaAlimentacion") as string;
+        const fechaStr = row.original.fechaAlimentacion;
         const fecha = new Date(fechaStr);
 
         const dia = fecha.getDate().toString().padStart(2, "0");
@@ -55,6 +55,7 @@ export default function DetalleAlimentacionDialog({
         return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
       },
     },
+
     { accessorKey: "java.nombre", header: "Java" },
     {
       accessorKey: "tipoAlimento.nombre",
