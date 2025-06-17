@@ -87,10 +87,7 @@ export default function DetalleAlimentacionDialog({
             <TableHeader>
               <TableRow>
                 {columns.map((col, index) => (
-                  <TableHead
-                    key={index}
-                    className="flex items-center justify-center"
-                  >
+                  <TableHead key={index}>
                     {typeof col.header === "string"
                       ? col.header
                       : col.header?.()}
@@ -101,11 +98,11 @@ export default function DetalleAlimentacionDialog({
 
             <TableBody>
               {alimentaciones.map((item, rowIndex) => (
-                <TableRow className="text-center" key={rowIndex}>
+                <TableRow key={rowIndex}>
                   {columns.map((col, colIndex) => {
                     if (col.cell) {
                       return (
-                        <TableCell className="text-center" key={colIndex}>
+                        <TableCell key={colIndex}>
                           {col.cell({ row: { original: item } } as any)}
                         </TableCell>
                       );
@@ -116,16 +113,10 @@ export default function DetalleAlimentacionDialog({
                         value = value?.[k];
                       });
                       return (
-                        <TableCell className="text-center" key={colIndex}>
-                          {value ?? "-"}
-                        </TableCell>
+                        <TableCell key={colIndex}>{value ?? "-"}</TableCell>
                       );
                     } else {
-                      return (
-                        <TableCell className="text-center" key={colIndex}>
-                          -
-                        </TableCell>
-                      );
+                      return <TableCell key={colIndex}>-</TableCell>;
                     }
                   })}
                 </TableRow>

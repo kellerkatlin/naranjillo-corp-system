@@ -66,7 +66,7 @@ export function CrudTable<TData extends Record<string, any>>({
             {table.getHeaderGroups().map((group) => (
               <TableRow key={group.id}>
                 {group.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead className="text-center" key={header.id}>
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext()
@@ -82,7 +82,7 @@ export function CrudTable<TData extends Record<string, any>>({
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell className="text-center" key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
