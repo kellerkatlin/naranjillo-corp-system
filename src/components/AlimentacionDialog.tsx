@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Alimentacion } from "@/types/alimentacion";
+import { Alimentacion, AlimentacionRequest } from "@/types/alimentacion";
 import { getAllJavas } from "@/services/javaService";
 import {
   Select,
@@ -22,7 +22,7 @@ import { createUnidad, getAllUnidades } from "@/services/unidadMedidaService";
 interface AlimentacionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit?: (data: Alimentacion) => void;
+  onSubmit?: (data: AlimentacionRequest) => void;
   alimentacion?: Alimentacion | null;
 }
 
@@ -101,8 +101,7 @@ export default function AlimentacionDialog({
     // unir fecha + hora antes de enviar
     const fechaAlimentacion = `${data.fechaInput}T${data.horaInput}:00`;
 
-    const payload: Alimentacion = {
-      id: alimentacion?.id || 0,
+    const payload: AlimentacionRequest = {
       cantidad: +data.cantidad,
       costo: +data.costo,
       fechaAlimentacion,
@@ -173,7 +172,7 @@ export default function AlimentacionDialog({
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecciona una Java" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="max-h-48 overflow-y-auto">
                   {javas.map((java) => (
                     <SelectItem key={java.id} value={java.id.toString()}>
                       {java.nombre}
