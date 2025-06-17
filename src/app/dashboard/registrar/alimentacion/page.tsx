@@ -52,30 +52,36 @@ export default function FormAlimentacion() {
 
   /** Definición de las columnas para la tabla de alimentaciones. */
   const columns: ColumnDef<Alimentacion>[] = [
-    { accessorKey: "tipoAlimento", header: "Tipo" },
-    { accessorKey: "cantidad", header: "Cantidad" },
     {
       accessorKey: "fechaAlimentacion",
-      header: "Fecha",
-      /**
-       * Formatea la fecha de alimentación para su visualización.
-       * @param {object} props - Propiedades de la celda.
-       * @param {object} props.row - Fila actual de la tabla.
-       * @returns {string} Fecha formateada.
-       */
+      header: "Fecha de Registro",
       cell: ({ row }) => {
-        const fechaStr = row.getValue("fechaAlimentacion") as string;
-        const [year, month, day] = fechaStr.split("-");
-        return new Date(
-          Number(year),
-          Number(month) - 1,
-          Number(day)
-        ).toLocaleDateString();
+        const fechaStr = row.getValue("fechaRegistro") as string;
+        const fecha = new Date(fechaStr);
+
+        const dia = fecha.getDate().toString().padStart(2, "0");
+        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+        const anio = fecha.getFullYear();
+        const hora = fecha.getHours().toString().padStart(2, "0");
+        const minutos = fecha.getMinutes().toString().padStart(2, "0");
+
+        return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
       },
     },
+    { accessorKey: "java.nombre", header: "Java" },
+    { accessorKey: "tipoAlimento.nombre", header: "Tipo de Alimento" },
+
     {
-      accessorKey: "nombreReproduccion",
-      header: "Javas",
+      accessorKey: "cantidad",
+      header: "Cantidad",
+    },
+    {
+      accessorKey: "unidadMedida.nombre",
+      header: "U.Medida",
+    },
+    {
+      accessorKey: "costo",
+      header: "Costo",
     },
     {
       id: "acciones",

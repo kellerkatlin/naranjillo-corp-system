@@ -3,12 +3,19 @@ export type Alimentacion = AlimentacionRequest & {
 };
 
 export type AlimentacionRequest = {
-  tipoAlimento: string;
-  cantidad: string;
+  cantidad: number;
   fechaAlimentacion: string;
-  unidadMedida: string;
-  nombreReproduccion?: string;
-  reproduccion: {
+  costo: number;
+  java: {
     id: number;
+    nombre: string;
+  };
+  tipoAlimento: {
+    id: number;
+    nombre: string;
+  };
+  unidadMedida: {
+    id: number;
+    nombre: string;
   };
 };
