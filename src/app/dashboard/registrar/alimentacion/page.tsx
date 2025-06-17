@@ -123,16 +123,6 @@ export default function FormAlimentacion() {
             >
               Detalle
             </Button>
-            <Button
-              className="cursor-pointer bg-blue-600 hover:bg-blue-700 "
-              size="sm"
-              onClick={() => {
-                setItemToDelete(item);
-                setDeleteDialogOpen(true);
-              }}
-            >
-              Agregar Alimento
-            </Button>
           </div>
         );
       },
