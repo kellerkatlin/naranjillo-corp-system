@@ -56,11 +56,27 @@ export default function FormAlimentacion() {
   }, []);
 
   const agrupados = useMemo(() => {
-    const map = new Map<string, Alimentacion>();
+    const map = new Map<
+      string,
+      Alimentacion & { totalCantidad: number; totalCosto: number }
+    >();
 
     data.forEach((item) => {
-      if (!map.has(item.java.nombre)) {
-        map.set(item.java.nombre, item);
+      const key = item.java.nombre;
+
+      if (!map.has(key)) {
+        map.set(key, {
+          ...item,
+          totalCantidad: item.cantidad,
+          totalCosto: item.costo,
+        });
+      } else {
+        const actual = map.get(key)!;
+        map.set(key, {
+          ...actual,
+          totalCantidad: actual.totalCantidad + item.cantidad,
+          totalCosto: actual.totalCosto + item.costo,
+        });
       }
     });
 
@@ -68,47 +84,26 @@ export default function FormAlimentacion() {
   }, [data]);
 
   /** Definición de las columnas para la tabla de alimentaciones. */
-  const columns: ColumnDef<Alimentacion>[] = [
-    // {
-    //   accessorKey: "fechaAlimentacion",
-    //   header: "Fecha de Registro",
-    //   cell: ({ row }) => {
-    //     const fechaStr = row.getValue("fechaAlimentacion") as string;
-    //     const fecha = new Date(fechaStr);
-
-    //     const dia = fecha.getDate().toString().padStart(2, "0");
-    //     const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
-    //     const anio = fecha.getFullYear();
-    //     const hora = fecha.getHours().toString().padStart(2, "0");
-    //     const minutos = fecha.getMinutes().toString().padStart(2, "0");
-
-    //     return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
-    //   },
-    // },
+  const columns: ColumnDef<
+    Alimentacion & { totalCantidad: number; totalCosto: number }
+  >[] = [
     { accessorKey: "java.nombre", header: "Java" },
-    // { accessorKey: "tipoAlimento.nombre", header: "Tipo de Alimento" },
 
     {
-      accessorKey: "cantidad",
+      accessorKey: "totalCantidad",
       header: "Cantidad",
+      cell: ({ row }) => row.original.totalCantidad,
     },
-    // {
-    //   accessorKey: "unidadMedida.nombre",
-    //   header: "U.Medida",
-    // },
+
     {
-      accessorKey: "costo",
+      accessorKey: "totalCosto",
       header: "Costo",
+      cell: ({ row }) => `S/ ${row.original.totalCosto.toFixed(2)}`,
     },
+
     {
       id: "acciones",
       header: "Acciones",
-      /**
-       * Renderiza los botones de acciones (editar, eliminar) para cada fila.
-       * @param {object} props - Propiedades de la celda.
-       * @param {object} props.row - Fila actual de la tabla.
-       * @returns {JSX.Element} Botones de acciones.
-       */
       cell: ({ row }) => {
         const item = row.original;
         return (
