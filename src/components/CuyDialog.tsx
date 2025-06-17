@@ -15,18 +15,9 @@ import {
   SelectValue,
 } from "./ui/select";
 import { Separator } from "./ui/separator";
-import { Card, CardContent } from "./ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { FaExclamationCircle } from "react-icons/fa";
-import { getCuyesSinJava, getJavasDisponibles } from "@/services/javaService";
+import { getJavasDisponibles } from "@/services/javaService";
 import { toast } from "sonner";
 
 interface CuyDialogProps {
@@ -54,7 +45,6 @@ export default function CuyDialog({
     { id: number; nombre: string }[]
   >([]);
 
-  const [cuyesSinJava, setCuyesSinJava] = useState<Cuy[]>([]);
   useEffect(() => {
     if (open) {
       if (cuy) {
@@ -80,7 +70,6 @@ export default function CuyDialog({
           sexo: "",
         });
       }
-      fetchCuyesSinJava();
     }
   }, [open, cuy, reset]);
 
@@ -95,7 +84,6 @@ export default function CuyDialog({
       fetchJavasDisponibles(sexo, categoria);
     } else {
       setJavasDisponibles([]);
-      setValue("java", { id: 0 });
     }
   }, [sexo, categoria, setValue]);
 
@@ -112,15 +100,6 @@ export default function CuyDialog({
     console.log("Form data a enviar:", dataToSend);
     onSubmit(dataToSend);
     onOpenChange(false);
-  };
-
-  const fetchCuyesSinJava = async () => {
-    try {
-      const res = await getCuyesSinJava();
-      setCuyesSinJava(res);
-    } catch {
-      toast.error("Error al cargar cuyes sin Java");
-    }
   };
 
   const fetchJavasDisponibles = async (sexo: string, categoria: string) => {
@@ -293,40 +272,6 @@ export default function CuyDialog({
               )}
             </div>
           </form>
-
-          <div className="flex justify-center items-stretch">
-            <Separator orientation="vertical" className="h-full" />
-          </div>
-
-          <div className="flex-1">
-            <h2 className="text-base font-bold mb-4">
-              Lista de Cuyes sin java
-            </h2>
-            <Card>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>SEXO</TableHead>
-                      <TableHead>JAVA</TableHead>
-                      <TableHead>Fecha</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {cuyesSinJava.map((cuy) => (
-                      <TableRow key={cuy.id}>
-                        <TableCell>{cuy.id}</TableCell>
-                        <TableCell>{cuy.sexo}</TableCell>
-                        <TableCell>sin asignar</TableCell>
-                        <TableCell>{cuy.fechaRegistro}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </div>
         </div>
 
         <div className="flex justify-end pt-4">
