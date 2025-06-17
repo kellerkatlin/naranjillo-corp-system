@@ -52,33 +52,33 @@ export default function FormAlimentacion() {
 
   /** Definición de las columnas para la tabla de alimentaciones. */
   const columns: ColumnDef<Alimentacion>[] = [
-    {
-      accessorKey: "fechaAlimentacion",
-      header: "Fecha de Registro",
-      cell: ({ row }) => {
-        const fechaStr = row.getValue("fechaRegistro") as string;
-        const fecha = new Date(fechaStr);
+    // {
+    //   accessorKey: "fechaAlimentacion",
+    //   header: "Fecha de Registro",
+    //   cell: ({ row }) => {
+    //     const fechaStr = row.getValue("fechaAlimentacion") as string;
+    //     const fecha = new Date(fechaStr);
 
-        const dia = fecha.getDate().toString().padStart(2, "0");
-        const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
-        const anio = fecha.getFullYear();
-        const hora = fecha.getHours().toString().padStart(2, "0");
-        const minutos = fecha.getMinutes().toString().padStart(2, "0");
+    //     const dia = fecha.getDate().toString().padStart(2, "0");
+    //     const mes = (fecha.getMonth() + 1).toString().padStart(2, "0");
+    //     const anio = fecha.getFullYear();
+    //     const hora = fecha.getHours().toString().padStart(2, "0");
+    //     const minutos = fecha.getMinutes().toString().padStart(2, "0");
 
-        return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
-      },
-    },
+    //     return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
+    //   },
+    // },
     { accessorKey: "java.nombre", header: "Java" },
-    { accessorKey: "tipoAlimento.nombre", header: "Tipo de Alimento" },
+    // { accessorKey: "tipoAlimento.nombre", header: "Tipo de Alimento" },
 
     {
       accessorKey: "cantidad",
       header: "Cantidad",
     },
-    {
-      accessorKey: "unidadMedida.nombre",
-      header: "U.Medida",
-    },
+    // {
+    //   accessorKey: "unidadMedida.nombre",
+    //   header: "U.Medida",
+    // },
     {
       accessorKey: "costo",
       header: "Costo",
@@ -109,7 +109,7 @@ export default function FormAlimentacion() {
             <Button
               className="cursor-pointer"
               size="sm"
-              variant="destructive"
+              variant="default"
               onClick={() => {
                 setItemToDelete(item);
                 setDeleteDialogOpen(true);
