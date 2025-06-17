@@ -103,8 +103,8 @@ export default function AlimentacionDialog({
 
     const payload: Alimentacion = {
       id: alimentacion?.id || 0,
-      cantidad: data.cantidad,
-      costo: data.costo,
+      cantidad: +data.cantidad,
+      costo: +data.costo,
       fechaAlimentacion,
       java: { id: data.java.id, nombre: "" },
       tipoAlimento: { id: data.tipoAlimento.id, nombre: "" },
