@@ -120,6 +120,7 @@ export default function JavaGrupoDialog({
         });
       }
     }
+    setSeleccionActual(null);
   }, [open, reset, isEditing, javaToEdit, mode]);
 
   const categoria = watch("categoria");
@@ -743,7 +744,7 @@ export default function JavaGrupoDialog({
                 </Card>
               </>
             )}
-            {isEditing && (
+            {isEditing && !seleccionActual && (
               <>
                 <h2 className="text-base font-bold mb-4">Cuyes de la java</h2>
                 <Card>
