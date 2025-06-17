@@ -61,7 +61,7 @@ export default function DetalleAlimentacionDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl">
+      <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>Detalle de {javaNombre}</DialogTitle>
         </DialogHeader>

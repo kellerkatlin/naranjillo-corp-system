@@ -17,5 +17,6 @@ export type AlimentacionRequest = {
   unidadMedida: {
     id: number;
     nombre: string;
+    simbolo: string;
   };
 };

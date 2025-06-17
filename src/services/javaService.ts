@@ -74,6 +74,14 @@ export const getAllJava = (
   });
 };
 
+export const getAllJavas = (): Promise<JavaRespose[]> =>
+  apiFetch(`${BASE}/find/all`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
 export const getAllJavaByCategoria = (
   categoria: string
 ): Promise<JavaRespose[]> =>
