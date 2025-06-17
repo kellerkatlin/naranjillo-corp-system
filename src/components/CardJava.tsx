@@ -16,7 +16,7 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
       className="w-36 h-36 border-black bg-green-300 border-none items-center justify-center relative cursor-pointer hover:scale-105"
     >
       <CardContent className="p-2 flex flex-col justify-center items-center text-center">
-        <div className="font-semibold text-white text-sm">{java?.nombre}</div>
+        <div className="font-semibold text-black text-sm">{java?.nombre}</div>
         <Image
           src={imagen ? "/reproduccion.png" : "/machos.png"}
           alt={imagen ? "Reproducción" : "Machos"}
@@ -24,7 +24,7 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
           width={64}
           height={64}
         />
-        <div className=" text-white">{java?.sexo !== "NA" && java?.sexo}</div>
+        <div className=" text-black">{java?.sexo !== "NA" && java?.sexo}</div>
       </CardContent>
     </Card>
   );
