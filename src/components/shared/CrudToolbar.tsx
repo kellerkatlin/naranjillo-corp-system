@@ -7,6 +7,7 @@ interface CrudToolbarProps {
   readonly title?: string;
   readonly setSearch?: (search: string) => void;
   readonly search?: string;
+  readonly onLoadWithoutJava?: () => void; // <-- nueva prop
 }
 
 export function CrudToolbar({
@@ -14,6 +15,7 @@ export function CrudToolbar({
   title,
   setSearch,
   search,
+  onLoadWithoutJava,
 }: CrudToolbarProps) {
   const [inputValue, setInputValue] = useState(search ?? "");
   return (
@@ -42,6 +44,12 @@ export function CrudToolbar({
           >
             Añadir {title ?? "Registro"}
             <Plus />
+          </Button>
+          <Button
+            className="bg-blue-500 hover:bg-blue-600 cursor-pointer"
+            onClick={onLoadWithoutJava}
+          >
+            Cargar sin Java
           </Button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { apiFetch } from "@/lib/api";
-import { CuyPadre } from "@/types/cuy";
+import { Cuy, CuyPadre } from "@/types/cuy";
 import {
   JavaRequest,
   JavaRequestReproduccion,
@@ -97,6 +97,14 @@ export const getJavasDisponibles = (
   categoria: string
 ): Promise<JavaRespose[]> =>
   apiFetch(`${BASE_CUY}/javas/categoria/${categoria}/sexo/${sexo}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+export const getCuyesSinJava = (): Promise<Cuy[]> =>
+  apiFetch(`${BASE_CUY}/sin-java`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

@@ -17,6 +17,7 @@ import { CrudToolbar } from "@/components/shared/CrudToolbar";
 import { CrudTable } from "@/components/shared/CrudTable";
 import ConfirmAlert from "@/components/shared/ComfirmAlert";
 import CuyDialog from "@/components/CuyDialog";
+import { getCuyesSinJava } from "@/services/javaService";
 
 export default function FormCuy() {
   const [data, setData] = useState<Cuy[]>([]);
@@ -151,7 +152,17 @@ export default function FormCuy() {
         setSearch={setSearch}
         onCreate={() => setDialogOpen(true)}
         title="Cuy"
+        onLoadWithoutJava={async () => {
+          try {
+            const cuyesSinJava = await getCuyesSinJava();
+            setData(cuyesSinJava);
+            toast.success("Cuyes sin Java cargados");
+          } catch {
+            toast.error("Error al cargar cuyes sin Java");
+          }
+        }}
       />
+
       <CrudTable columns={columns} data={filteredData} />
       <ConfirmAlert
         open={deleteDialogOpen}

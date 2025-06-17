@@ -26,7 +26,7 @@ import {
 } from "./ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { FaExclamationCircle } from "react-icons/fa";
-import { getJavasDisponibles } from "@/services/javaService";
+import { getCuyesSinJava, getJavasDisponibles } from "@/services/javaService";
 import { toast } from "sonner";
 
 interface CuyDialogProps {
@@ -54,6 +54,7 @@ export default function CuyDialog({
     { id: number; nombre: string }[]
   >([]);
 
+  const [cuyesSinJava, setCuyesSinJava] = useState<Cuy[]>([]);
   useEffect(() => {
     if (open) {
       if (cuy) {
@@ -79,6 +80,7 @@ export default function CuyDialog({
           sexo: "",
         });
       }
+      fetchCuyesSinJava();
     }
   }, [open, cuy, reset]);
 
@@ -112,6 +114,15 @@ export default function CuyDialog({
     onOpenChange(false);
   };
 
+  const fetchCuyesSinJava = async () => {
+    try {
+      const res = await getCuyesSinJava();
+      setCuyesSinJava(res);
+    } catch {
+      toast.error("Error al cargar cuyes sin Java");
+    }
+  };
+
   const fetchJavasDisponibles = async (sexo: string, categoria: string) => {
     try {
       const res = await getJavasDisponibles(sexo, categoria);
@@ -120,17 +131,6 @@ export default function CuyDialog({
       toast.error("Error al cargar javas disponibles");
     }
   };
-
-  const nacidos = [
-    { id: 1, sexo: "macho", java: "sin asignar", fecha: "00/00/000" },
-    { id: 2, sexo: "macho", java: "sin asignar", fecha: "00/00/000" },
-    { id: 3, sexo: "macho", java: "sin asignar", fecha: "00/00/000" },
-    { id: 4, sexo: "macho", java: "sin asignar", fecha: "00/00/000" },
-    { id: 5, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
-    { id: 6, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
-    { id: 7, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
-    { id: 8, sexo: "hembra", java: "sin asignar", fecha: "00/00/000" },
-  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -299,7 +299,9 @@ export default function CuyDialog({
           </div>
 
           <div className="flex-1">
-            <h2 className="text-base font-bold mb-4">Lista de nacidos</h2>
+            <h2 className="text-base font-bold mb-4">
+              Lista de Cuyes sin java
+            </h2>
             <Card>
               <CardContent className="p-0">
                 <Table>
@@ -312,12 +314,12 @@ export default function CuyDialog({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {nacidos.map((nacido) => (
-                      <TableRow key={nacido.id}>
-                        <TableCell>{nacido.id}</TableCell>
-                        <TableCell>{nacido.sexo}</TableCell>
-                        <TableCell>{nacido.java}</TableCell>
-                        <TableCell>{nacido.fecha}</TableCell>
+                    {cuyesSinJava.map((cuy) => (
+                      <TableRow key={cuy.id}>
+                        <TableCell>{cuy.id}</TableCell>
+                        <TableCell>{cuy.sexo}</TableCell>
+                        <TableCell>sin asignar</TableCell>
+                        <TableCell>{cuy.fechaRegistro}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
