@@ -110,3 +110,11 @@ export const getCuyesSinJava = (): Promise<Cuy[]> =>
       "Content-Type": "application/json",
     },
   });
+
+export const deleteJavaCuy = (id: number) =>
+  apiFetch(`${BASE}/delete/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
