@@ -308,9 +308,7 @@ export default function JavaGrupoDialog({
                           disabled={!isEnabled}
                           onCheckedChange={(checked) => {
                             if (checked) {
-                              setValue("padre", cuy); // seleccionar
-                            } else if (isChecked) {
-                              setValue("padre", null); // des-seleccionar
+                              setValue("padre", cuy);
                             }
                           }}
                         />
