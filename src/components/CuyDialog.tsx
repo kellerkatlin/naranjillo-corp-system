@@ -102,7 +102,7 @@ export default function CuyDialog({
   useEffect(() => {
     getCuySinJava(categoria ?? "ENGORDE")
       .then(setCuyesSinJava)
-      .catch(() => toast.error("Error al cargar cuyes sin java"));
+      .catch(() => console.error("Error al cargar cuyes sin java"));
   }, [categoria]);
 
   const handleFormSubmit = (data: CuyRequest) => {
