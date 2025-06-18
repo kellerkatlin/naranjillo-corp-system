@@ -154,6 +154,18 @@ export default function FormReproduccion() {
 
         <div className="flex gap-4 py-4">
           {/* Contenedor scrollable solo para las cards */}
+          <div className="flex-shrink-0 w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+            <CardContent
+              onClick={() => setDialogGrupoOpen("REPRODUCCION")}
+              className="p-2 flex flex-col items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-green-400" />
+              <div className="mt-2 text-xs text-center font-semibold text-green-400">
+                CREAR REPRODUCCIÓN
+              </div>
+            </CardContent>
+          </div>
+
           <div className="flex gap-4 overflow-x-auto flex-1">
             {javasReproduccion.map((grupo) => (
               <div key={grupo.id} className="flex-shrink-0 max-w-md">
@@ -186,18 +198,6 @@ export default function FormReproduccion() {
               </div>
             ))}
           </div>
-
-          <div className="flex-shrink-0 w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-            <CardContent
-              onClick={() => setDialogGrupoOpen("REPRODUCCION")}
-              className="p-2 flex flex-col items-center justify-center"
-            >
-              <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 text-xs text-center font-semibold text-green-400">
-                CREAR REPRODUCCIÓN
-              </div>
-            </CardContent>
-          </div>
         </div>
       </Card>
 
@@ -223,6 +223,17 @@ export default function FormReproduccion() {
 
         <div className="flex gap-4 py-4">
           {/* Contenedor scrollable solo para las cards */}
+          <div className="flex-shrink-0 w-36 h-36 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
+            <CardContent
+              onClick={() => setDialogGrupoOpen("MACHO")}
+              className="p-2 flex flex-col items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-green-400" />
+              <div className="mt-2 text-xs text-center font-semibold text-green-400">
+                CREAR JAVA MACHO
+              </div>
+            </CardContent>
+          </div>
           <div className="flex gap-4 overflow-x-auto flex-1">
             {javasMachos.map((grupo) => (
               <div key={grupo.id} className="flex-shrink-0 max-w-md">
@@ -256,17 +267,6 @@ export default function FormReproduccion() {
           </div>
 
           {/* Botón fijo fuera del scroll */}
-          <div className="flex-shrink-0 w-36 h-36 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
-            <CardContent
-              onClick={() => setDialogGrupoOpen("MACHO")}
-              className="p-2 flex flex-col items-center justify-center"
-            >
-              <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 text-xs text-center font-semibold text-green-400">
-                CREAR JAVA MACHO
-              </div>
-            </CardContent>
-          </div>
         </div>
       </Card>
 
@@ -294,6 +294,17 @@ export default function FormReproduccion() {
 
         <div className="flex gap-4 py-4">
           {/* Scroll horizontal para las cards */}
+          <div className="flex-shrink-0 w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+            <CardContent
+              onClick={() => setDialogGrupoOpen("HEMBRA")}
+              className="p-2 flex flex-col items-center justify-center"
+            >
+              <Plus className="w-8 h-8 text-green-400" />
+              <div className="mt-2 text-xs text-center font-semibold text-green-400">
+                CREAR JAVA HEMBRA
+              </div>
+            </CardContent>
+          </div>
           <div className="flex gap-4 overflow-x-auto flex-1">
             {javasHembras.map((grupo) => (
               <div key={grupo.id} className="flex-shrink-0 max-w-md">
@@ -328,17 +339,6 @@ export default function FormReproduccion() {
           </div>
 
           {/* Botón fuera del scroll */}
-          <div className="flex-shrink-0 w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-            <CardContent
-              onClick={() => setDialogGrupoOpen("HEMBRA")}
-              className="p-2 flex flex-col items-center justify-center"
-            >
-              <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 text-xs text-center font-semibold text-green-400">
-                CREAR JAVA HEMBRA
-              </div>
-            </CardContent>
-          </div>
         </div>
       </Card>
 
