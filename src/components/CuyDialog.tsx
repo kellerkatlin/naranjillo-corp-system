@@ -186,6 +186,7 @@ export default function CuyDialog({
               <Label className="mb-1 block">Categoría</Label>
               <Select
                 onValueChange={(value) => setValue("categoria", value)}
+                value={watch("categoria") || ""}
                 defaultValue={watch("categoria")}
               >
                 <SelectTrigger className="w-full">
@@ -335,6 +336,7 @@ export default function CuyDialog({
                                       sexo: cuy.sexo,
                                       java: { id: cuy.java?.id || 0 },
                                       estado: cuy.estado,
+                                      categoria: cuy.categoria,
 
                                       fechaRegistro: fecha,
                                       horaRegistro: hora,
