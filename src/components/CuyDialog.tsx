@@ -17,8 +17,19 @@ import {
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { FaExclamationCircle } from "react-icons/fa";
-import { getJavasDisponibles } from "@/services/javaService";
+import { getCuySinJava, getJavasDisponibles } from "@/services/javaService";
 import { toast } from "sonner";
+import { Separator } from "./ui/separator";
+import { Card, CardContent } from "./ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
+import { Checkbox } from "./ui/checkbox";
 
 interface CuyDialogProps {
   readonly open: boolean;
@@ -44,6 +55,8 @@ export default function CuyDialog({
   const [javasDisponibles, setJavasDisponibles] = useState<
     { id: number; nombre: string }[]
   >([]);
+  const [cuyesSinJava, setCuyesSinJava] = useState<Cuy[]>([]);
+  const [cuySeleccionado, setCuySeleccionado] = useState<Cuy | null>(null);
 
   useEffect(() => {
     if (open) {
@@ -71,6 +84,10 @@ export default function CuyDialog({
         });
       }
     }
+
+    getCuySinJava(watch("categoria"))
+      .then(setCuyesSinJava)
+      .catch(() => toast.error("Error al cargar cuyes sin java"));
   }, [open, cuy, reset]);
 
   const isEditMode = !!cuy;
@@ -119,8 +136,7 @@ export default function CuyDialog({
             {cuy ? `Editar cuy ${cuy.id}` : "Añadir cuy"}
           </DialogTitle>
         </DialogHeader>
-
-        <div className="flex gap-6">
+        <div className="flex gap-6 flex-col  md:justify-between md:flex-row">
           {/* Formulario a la izquierda */}
           <form
             onSubmit={handleSubmit(handleFormSubmit)}
@@ -272,6 +288,84 @@ export default function CuyDialog({
               )}
             </div>
           </form>
+          <div className="md:flex hidden justify-center items-stretch">
+            <Separator orientation="vertical" className="h-full" />
+          </div>
+
+          <div className="flex-1">
+            <Card>
+              <CardContent className="p-0">
+                {cuyesSinJava.length ? (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Sexo</TableHead>
+                        <TableHead>Sel.</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {cuyesSinJava.map((cuy) => {
+                        return (
+                          <TableRow
+                            key={cuy.id}
+                            className={
+                              cuySeleccionado?.id === cuy.id ? "bg-muted" : ""
+                            }
+                          >
+                            <TableCell>{cuy.id}</TableCell>
+                            <TableCell>{cuy.sexo}</TableCell>
+                            <TableCell>
+                              <Checkbox
+                                checked={cuySeleccionado?.id === cuy.id}
+                                onCheckedChange={(checked) => {
+                                  if (checked) {
+                                    setCuySeleccionado(cuy);
+                                    const fecha =
+                                      cuy.fechaRegistro.split("T")[0];
+                                    const hora =
+                                      cuy.fechaRegistro
+                                        .split("T")[1]
+                                        ?.substring(0, 5) ?? "00:00";
+
+                                    reset({
+                                      ...cuy,
+                                      fechaRegistro: fecha,
+                                      horaRegistro: hora,
+                                    });
+                                  } else {
+                                    setCuySeleccionado(null);
+                                    const hoy = new Date();
+                                    const fechaLocal =
+                                      hoy.toLocaleDateString("sv-SE");
+                                    reset({
+                                      edad: 0,
+                                      fechaRegistro: fechaLocal,
+                                      horaRegistro: hoy
+                                        .toTimeString()
+                                        .slice(0, 5),
+                                      categoria: "",
+                                      java: { id: 0 },
+                                      estado: "VIVO",
+                                      sexo: "",
+                                    });
+                                  }
+                                }}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                ) : (
+                  <div className="text-gray-400 text-center p-4">
+                    No hay cuyes.
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="flex justify-end pt-4">

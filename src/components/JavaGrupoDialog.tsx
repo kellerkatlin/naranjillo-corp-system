@@ -79,7 +79,6 @@ export default function JavaGrupoDialog({
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
   const [madresDisponibles, setMadresDisponibles] = useState<CuyPadre[]>([]);
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
-  const [selectedCuyId, setSelectedCuyId] = useState<number | null>(null);
   const [selectedJavaId, setSelectedJavaId] = useState<number | null>(null);
 
   const [seleccionActual, setSeleccionActual] = useState<
@@ -140,9 +139,6 @@ export default function JavaGrupoDialog({
       .then(setJavasMachos)
       .catch(() => toast.error("Error al cargar javas"));
   }, []);
-  const padreValido = padreSel
-    ? padresDisponibles.some((p) => p.id === padreSel.id)
-    : false;
 
   const canToggleCheckbox = (rowId: number) => {
     if (!padreSel) return true;
@@ -153,11 +149,6 @@ export default function JavaGrupoDialog({
 
     return false;
   };
-
-  useEffect(() => {
-    if (padreSel && padreValido) setSelectedCuyId(padreSel.id);
-    else setSelectedCuyId(null);
-  }, [padreSel?.id, padreValido]);
 
   const handleOpenPadre = async () => {
     try {
@@ -193,7 +184,6 @@ export default function JavaGrupoDialog({
       toast.success("Padre cambiado correctamente");
       // limpiar padre y selección
       setValue("padre", null);
-      setSelectedCuyId(null);
       // refrescamos padres por si acaso
       setPadresDisponibles([]);
     } catch {

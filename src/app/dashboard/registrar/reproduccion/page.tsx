@@ -186,8 +186,31 @@ export default function FormReproduccion() {
                       cuyes: grupo.cuyes,
                       machosNacidos: grupo.cantidadHijosMachos,
                       muertos: grupo.cantidadHijosMuertos,
-                      padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
-                      madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
+                      padre: padre
+                        ? {
+                            id: padre.id,
+                            sexo: padre.sexo,
+                            categoria: padre.categoria,
+                            edad: 0,
+                            estado: "ACTIVO",
+                            fechaRegistro: padre.fechaRegistro,
+                            horaRegistro: padre.fechaRegistro,
+                            nombre: padre.nombre,
+                            java: "",
+                          }
+                        : null,
+                      madre: madres.map((m) => ({
+                        id: m.id,
+                        sexo: m.sexo,
+                        nombre: m.nombre,
+                        edad: 0,
+                        fechaRegistro: m.fechaRegistro,
+                        horaRegistro: m.fechaRegistro,
+                        categoria: m.categoria ?? "",
+                        estado: "ACTIVO",
+                        java: "",
+                      })),
+
                       regiones: {},
                     });
                     setDialogGrupoOpen("REPRODUCCION");
@@ -253,8 +276,30 @@ export default function FormReproduccion() {
                       cuyes: grupo.cuyes,
                       machosNacidos: grupo.cantidadHijosMachos,
                       muertos: grupo.cantidadHijosMuertos,
-                      padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
-                      madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
+                      padre: padre
+                        ? {
+                            id: padre.id,
+                            sexo: padre.sexo,
+                            categoria: padre.categoria,
+                            edad: 0,
+                            estado: "ACTIVO",
+                            fechaRegistro: padre.fechaRegistro,
+                            horaRegistro: padre.fechaRegistro,
+                            nombre: padre.nombre,
+                            java: "",
+                          }
+                        : null,
+                      madre: madres.map((m) => ({
+                        id: m.id,
+                        sexo: m.sexo,
+                        nombre: m.nombre,
+                        edad: 0,
+                        fechaRegistro: m.fechaRegistro,
+                        horaRegistro: m.fechaRegistro,
+                        categoria: m.categoria ?? "",
+                        estado: "ACTIVO",
+                        java: "",
+                      })),
                       regiones: {},
                     });
                     setDialogGrupoOpen("MACHO");
@@ -323,9 +368,31 @@ export default function FormReproduccion() {
                       hembrasNacidas: grupo.cantidadHijasHembras,
                       machosNacidos: grupo.cantidadHijosMachos,
                       muertos: grupo.cantidadHijosMuertos,
-                      padre: padre ? { id: padre.id, sexo: padre.sexo } : null,
+                      padre: padre
+                        ? {
+                            id: padre.id,
+                            sexo: padre.sexo,
+                            categoria: padre.categoria,
+                            edad: 0,
+                            estado: "ACTIVO",
+                            fechaRegistro: padre.fechaRegistro,
+                            horaRegistro: padre.fechaRegistro,
+                            nombre: padre.nombre,
+                            java: "",
+                          }
+                        : null,
+                      madre: madres.map((m) => ({
+                        id: m.id,
+                        sexo: m.sexo,
+                        nombre: m.nombre,
+                        edad: 0,
+                        fechaRegistro: m.fechaRegistro,
+                        horaRegistro: m.fechaRegistro,
+                        categoria: m.categoria ?? "",
+                        estado: "ACTIVO",
+                        java: "",
+                      })),
                       cuyes: grupo.cuyes,
-                      madre: madres.map((m) => ({ id: m.id, sexo: m.sexo })),
                       regiones: {},
                     });
 

@@ -127,3 +127,11 @@ export const cambioPadreDeJava = (idJava: number, idCuy: number) =>
       "Content-Type": "application/json",
     },
   });
+
+export const getCuySinJava = (categoria: string): Promise<Cuy[]> =>
+  apiFetch(`${BASE_CUY}/cuyes/sin-java/categoria/${categoria}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
