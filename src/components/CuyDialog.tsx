@@ -331,6 +331,10 @@ export default function CuyDialog({
 
                                     reset({
                                       ...cuy,
+                                      sexo: cuy.sexo,
+                                      java: { id: cuy.java?.id || 0 },
+                                      estado: cuy.estado,
+
                                       fechaRegistro: fecha,
                                       horaRegistro: hora,
                                     });
