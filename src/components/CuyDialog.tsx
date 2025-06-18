@@ -85,11 +85,7 @@ export default function CuyDialog({
         });
       }
     }
-
-    getCuySinJava(categoria)
-      .then(setCuyesSinJava)
-      .catch(() => toast.error("Error al cargar cuyes sin java"));
-  }, [open, cuy, reset, categoria]);
+  }, [open, cuy, reset]);
 
   const isEditMode = !!cuy;
 
@@ -101,6 +97,9 @@ export default function CuyDialog({
     } else {
       setJavasDisponibles([]);
     }
+    getCuySinJava(categoria)
+      .then(setCuyesSinJava)
+      .catch(() => toast.error("Error al cargar cuyes sin java"));
   }, [sexo, categoria, setValue]);
 
   const handleFormSubmit = (data: CuyRequest) => {
