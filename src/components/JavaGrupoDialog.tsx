@@ -816,7 +816,7 @@ export default function JavaGrupoDialog({
             <Button
               type="button"
               variant="outline"
-              className="mr-2 bg-blue-500 hover:bg-blue-600"
+              className="mr-2 bg-blue-500 hover:bg-blue-600 text-white"
               disabled={isSubmitting}
               onClick={async () => {
                 if (!javaToEdit?.id) return;
