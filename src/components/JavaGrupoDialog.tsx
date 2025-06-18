@@ -234,7 +234,7 @@ export default function JavaGrupoDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl  overflow-y-auto">
         <AlertDialogHeader>
           <DialogTitle>
             {mode === "REPRODUCCION"
