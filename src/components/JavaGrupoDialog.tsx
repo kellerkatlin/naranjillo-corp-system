@@ -808,80 +808,79 @@ export default function JavaGrupoDialog({
         </div>
 
         <div className="flex justify-end pt-4">
-          {isEditing && (
-            <Button
-              type="button"
-              variant="outline"
-              className="mr-2 bg-blue-500 hover:bg-blue-600 text-white"
-              disabled={isSubmitting}
-              onClick={async () => {
-                if (!javaToEdit?.id) return;
+          {isEditing && categoria !== "REPRODUCCION" && (
+            <>
+              <Button
+                type="button"
+                variant="outline"
+                className="mr-2 bg-blue-500 hover:bg-blue-600 text-white hover:text-white"
+                disabled={isSubmitting}
+                onClick={async () => {
+                  if (!javaToEdit?.id) return;
 
-                // 1) Lee el formulario
-                const form = watch();
+                  // 1) Lee el formulario
+                  const form = watch();
 
-                // 2) Genera el payload con la misma estructura que usas en updateJavaCuyReproduccion
-                const payload = {
-                  nombre: form.nombre,
-                  categoria: form.categoria ?? "",
-                  sexo: "NA",
-                  fechaReproduccion: form.fechaInicio
-                    ? form.fechaInicio.toISOString().split("T")[0]
-                    : "",
-                  cantidadHijasHembras: form.hembrasNacidas ?? 0,
-                  cantidadHijosMachos: form.machosNacidos ?? 0,
-                  cantidadHijosMuertos: form.muertos ?? 0,
-                  cuyes: [
-                    ...(form.padre ? [{ id: form.padre.id }] : []),
-                    ...form.madre.map((m) => ({ id: m.id })),
-                  ],
-                };
+                  // 2) Genera el payload con la misma estructura que usas en updateJavaCuyReproduccion
+                  const payload = {
+                    nombre: form.nombre,
+                    categoria: form.categoria ?? "",
+                    sexo: "NA",
+                    fechaReproduccion: form.fechaInicio
+                      ? form.fechaInicio.toISOString().split("T")[0]
+                      : "",
+                    cantidadHijasHembras: form.hembrasNacidas ?? 0,
+                    cantidadHijosMachos: form.machosNacidos ?? 0,
+                    cantidadHijosMuertos: form.muertos ?? 0,
+                    cuyes: [
+                      ...(form.padre ? [{ id: form.padre.id }] : []),
+                      ...form.madre.map((m) => ({ id: m.id })),
+                    ],
+                  };
 
-                try {
-                  setIsSubmitting(true);
+                  try {
+                    setIsSubmitting(true);
 
-                  // 3) Llama a tu endpoint
-                  await updateJavaCuyReproduccion(javaToEdit.id, payload);
+                    // 3) Llama a tu endpoint
+                    await updateJavaCuyReproduccion(javaToEdit.id, payload);
 
-                  toast.success("Cambios guardados correctamente");
+                    toast.success("Cambios guardados correctamente");
 
-                  // 4) Cierra diálogo y resetea
-                  onOpenChange(false);
-                  reset();
-                } catch (error) {
-                  console.error("Error al guardar cambios:", error);
-                  toast.error("No se pudieron guardar los cambios");
-                } finally {
-                  setIsSubmitting(false);
+                    // 4) Cierra diálogo y resetea
+                    onOpenChange(false);
+                    reset();
+                  } catch (error) {
+                    console.error("Error al guardar cambios:", error);
+                    toast.error("No se pudieron guardar los cambios");
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+              >
+                Guardar Cambios
+              </Button>
+              <Button
+                type="button"
+                className={`${
+                  isEditing
+                    ? "bg-red-600 hover:bg-red-700"
+                    : "bg-green-600 hover:bg-green-700"
+                }`}
+                disabled={
+                  isSubmitting || (!isEditing && !canStartReproduction())
                 }
-              }}
-            >
-              Guardar Cambios
-            </Button>
+                onClick={() => {
+                  if (isEditing) {
+                    handleSubmitUpdateOnlyCounters();
+                  } else {
+                    handleFinalSubmit();
+                  }
+                }}
+              >
+                {isEditing ? "Finalizar Reproducción" : "Iniciar Reproducción"}
+              </Button>
+            </>
           )}
-          <Button
-            type="button"
-            className={`${
-              isEditing
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-green-600 hover:bg-green-700"
-            }`}
-            disabled={
-              isSubmitting ||
-              (!isEditing && !canStartReproduction()) ||
-              (isEditing && mode !== "REPRODUCCION") || // Deshabilitamos si es edición de macho o hembra
-              (isEditing && mode === "REPRODUCCION" && isCountersBlocked)
-            }
-            onClick={() => {
-              if (isEditing) {
-                handleSubmitUpdateOnlyCounters();
-              } else {
-                handleFinalSubmit();
-              }
-            }}
-          >
-            {isEditing ? "Finalizar Reproducción" : "Iniciar Reproducción"}
-          </Button>
         </div>
       </DialogContent>
     </Dialog>
