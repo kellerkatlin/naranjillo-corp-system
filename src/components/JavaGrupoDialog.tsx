@@ -424,11 +424,21 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label className="mb-2">Madres</Label>
 
-                  <Card className="w-full">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full justify-start text-center flex-col items-start"
+                    onClick={handleOpenMadre}
+                  >
+                    Seleccionar Madres
+                  </Button>
+
+                  {/* Aquí mostramos las madres seleccionadas */}
+                  <Card className="w-full mt-2">
                     <CardContent className="p-2">
-                      {javaToEdit?.madre && javaToEdit.madre.length > 0 ? (
+                      {madresSeleccionadas.length > 0 ? (
                         <div className="flex flex-col text-center font-semibold">
-                          {javaToEdit.madre.map((madre, index) => (
+                          {madresSeleccionadas.map((madre, index) => (
                             <span key={index}>
                               {madre.id} - {madre.sexo}
                             </span>
