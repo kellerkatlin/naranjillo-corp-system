@@ -348,19 +348,16 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label className="mb-2">Padre</Label>
 
-                  <Card className="w-full">
-                    <CardContent className="p-2">
-                      {watch("padre") ? (
-                        <div className="text-center font-semibold">
-                          {watch("padre")?.id} - {watch("padre")?.sexo}
-                        </div>
-                      ) : (
-                        <div className="text-center text-gray-400">
-                          No se seleccionó padre
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full cursor-pointer"
+                    onClick={handleOpenPadre}
+                  >
+                    {watch("padre")
+                      ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
+                      : "Seleccionar Padre"}
+                  </Button>
                 </div>
 
                 {categoria === "REPRODUCCION" && (
