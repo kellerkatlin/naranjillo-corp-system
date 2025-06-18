@@ -9,6 +9,7 @@ import {
   getAllJavaByCategoria,
   updateJavaCuyReproduccion,
   deleteJavaCuy,
+  finalizarJavaCuy,
 } from "@/services/javaService";
 import { JavaRespose } from "@/types/java";
 import { Card, CardContent } from "@/components/ui/card";
@@ -115,7 +116,7 @@ export default function FormReproduccion() {
 
   const handleSubmitUpdate = async (form: DataJava) => {
     try {
-      await updateJavaCuyReproduccion(form.id ?? 0, {
+      await finalizarJavaCuy(form.id ?? 0, {
         nombre: form.nombre,
         categoria: form.categoria ?? "",
         sexo: "NA",

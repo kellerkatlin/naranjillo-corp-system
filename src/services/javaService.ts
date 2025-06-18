@@ -111,9 +111,10 @@ export const getCuyesSinJava = (): Promise<Cuy[]> =>
     },
   });
 
-export const deleteJavaCuy = (id: number) =>
+export const finalizarJavaCuy = (id: number, data: JavaRequestReproduccion) =>
   apiFetch(`${BASE}/delete/${id}`, {
-    method: "DELETE",
+    method: "POST",
+    body: JSON.stringify(data),
     headers: {
       "Content-Type": "application/json",
     },
