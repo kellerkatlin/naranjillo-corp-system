@@ -23,13 +23,13 @@ const links = [
     label: "Registrar",
     href: "/dashboard/registrar/",
     icon: <FaPaw />,
-    roles: ["admin", "employee"],
+    roles: ["employee"],
   },
   {
     label: "Venta",
     href: "/dashboard/sale",
     icon: "S/. ",
-    roles: ["admin", "employee"],
+    roles: ["employee"],
   },
   // {
   //   label: "Ventas",
@@ -47,7 +47,7 @@ const links = [
     label: "Capacitacion",
     href: "/dashboard/capacitacion",
     icon: <FaBookOpen />,
-    roles: ["admin", "employee"],
+    roles: ["employee"],
   },
 ];
 
