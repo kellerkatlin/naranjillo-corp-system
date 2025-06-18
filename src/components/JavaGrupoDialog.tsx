@@ -145,8 +145,12 @@ export default function JavaGrupoDialog({
     : false;
 
   const canToggleCheckbox = (rowId: number) => {
-    if (!padreSel || !padreValido) return true;
-    return rowId === padreSel.id;
+    if (!padreActual) return true; // Aún no hay padre seleccionado → se permite seleccionar
+
+    const existeEnLista = padresDisponibles.some(
+      (p) => p.id === padreActual.id
+    );
+    return existeEnLista && rowId === padreActual.id;
   };
 
   useEffect(() => {
@@ -274,71 +278,60 @@ export default function JavaGrupoDialog({
     }
   };
 
-  const TablaPadre = () => (
-    <>
-      <h2 className="text-base font-bold mb-4">Seleccionar nuevo Padre</h2>
-      <Card>
-        <CardContent className="p-0">
-          {(watch("cuyes") ?? []).length ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Sexo</TableHead>
-                  <TableHead>Sel.</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {padresDisponibles.map((cuy) => (
-                  <TableRow key={cuy.id}>
-                    <TableCell>{cuy.id}</TableCell>
-                    <TableCell>{cuy.sexo}</TableCell>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedCuyId === cuy.id}
-                        onCheckedChange={() => setSelectedCuyId(cuy.id)}
-                        disabled={!canToggleCheckbox(cuy.id)}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="text-gray-400 text-center p-4">No hay cuyes.</div>
-          )}
-        </CardContent>
-      </Card>
+  const padreActual = watch("padre");
 
-      {/* select java destino + botón */}
-      <div className="mt-4 flex gap-2 items-center">
-        <Label>Java destino:</Label>
-        <Select
-          value={selectedJavaId?.toString()}
-          onValueChange={(v) => setSelectedJavaId(Number(v))}
-        >
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Seleccionar" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {javasMachos.map((j) => (
-                <SelectItem key={j.id} value={j.id.toString()}>
-                  {j.nombre}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Button
-          onClick={doCambioPadre}
-          disabled={!selectedJavaId || !selectedCuyId}
-        >
-          Cambiar Padre
-        </Button>
-      </div>
-    </>
-  );
+  const TablaPadre = () => {
+    return (
+      <>
+        <h2 className="text-base font-bold mb-4">Seleccionar nuevo Padre</h2>
+
+        <Card>
+          <CardContent className="p-0">
+            {padresDisponibles.length ? ( // ← usa la lista correcta
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Sexo</TableHead>
+                    <TableHead>Sel.</TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {padresDisponibles.map((cuy) => {
+                    const sePuedeSeleccionar = canToggleCheckbox(cuy.id);
+                    return (
+                      <TableRow key={cuy.id}>
+                        <TableCell>{cuy.id}</TableCell>
+                        <TableCell>{cuy.sexo}</TableCell>
+                        <TableCell>
+                          <Checkbox
+                            checked={padreActual?.id === cuy.id}
+                            disabled={!sePuedeSeleccionar}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setValue("padre", cuy);
+                              } else if (padreActual?.id === cuy.id) {
+                                setValue("padre", null);
+                              }
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="text-gray-400 text-center p-4">
+                No hay cuyes disponibles.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </>
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
