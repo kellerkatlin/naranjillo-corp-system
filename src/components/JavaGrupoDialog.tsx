@@ -386,14 +386,14 @@ export default function JavaGrupoDialog({
                   <div className="flex-1 w-full">
                     <Label
                       className={`flex items-center gap-1 mb-2  ${
-                        !isEditing ? "opacity-100" : "opacity-60"
+                        isEditing ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       Hembras Nacidas
                     </Label>
                     <div
                       className={`flex items-center gap-1  ${
-                        !isEditing ? "opacity-100" : "opacity-60"
+                        isEditing ? "opacity-100" : "opacity-60"
                       } `}
                     >
                       <Input
@@ -501,14 +501,14 @@ export default function JavaGrupoDialog({
                   <div className="flex-1 w-full mb-3">
                     <Label
                       className={`flex items-center gap-1 mb-2  ${
-                        !isEditing ? "opacity-100" : "opacity-60"
+                        isEditing ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       Machos Nacidos
                     </Label>
                     <div
                       className={`flex items-center gap-1   ${
-                        !isEditing ? "opacity-100" : "opacity-60"
+                        isEditing ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       <Input
@@ -555,14 +555,14 @@ export default function JavaGrupoDialog({
                   <div className="flex-1 w-full">
                     <Label
                       className={`flex items-center gap-1 mb-2 ${
-                        !isEditing ? "opacity-100" : "opacity-60"
+                        isEditing ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       Registrar Muertos
                     </Label>
                     <div
                       className={`flex items-center gap-1 ${
-                        !isEditing ? "opacity-100" : "opacity-60"
+                        isEditing ? "opacity-100" : "opacity-60"
                       } `}
                     >
                       <Input
