@@ -97,7 +97,7 @@ export default function CuyDialog({
     } else {
       setJavasDisponibles([]);
     }
-    getCuySinJava(categoria)
+    getCuySinJava(categoria === undefined ? "ENGORDE" : categoria)
       .then(setCuyesSinJava)
       .catch(() => toast.error("Error al cargar cuyes sin java"));
   }, [sexo, categoria, setValue]);
