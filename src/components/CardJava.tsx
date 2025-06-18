@@ -11,6 +11,16 @@ interface CardJavaProps {
 }
 
 export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
+  const diasReproduccion = java?.fechaReproduccion
+    ? Math.max(
+        0,
+        Math.ceil(
+          (new Date(java.fechaReproduccion).getTime() -
+            new Date().setHours(0, 0, 0, 0)) /
+            (1000 * 60 * 60 * 24)
+        )
+      )
+    : undefined;
   return (
     <Card
       onClick={onClickEdit}
@@ -32,7 +42,7 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
         </div>
         {java?.categoria === "REPRODUCCION" && (
           <Badge variant="secondary" className="bg-blue-500 text-white">
-            5 dias
+            {diasReproduccion !== undefined ? `Días: ${diasReproduccion}` : "-"}
           </Badge>
         )}
       </CardContent>
