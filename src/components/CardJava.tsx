@@ -15,12 +15,13 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
     ? Math.max(
         0,
         Math.ceil(
-          (new Date(java.fechaReproduccion).getTime() -
-            new Date().setHours(0, 0, 0, 0)) /
+          (new Date(new Date(java.fechaReproduccion).toDateString()).getTime() -
+            new Date(new Date().toDateString()).getTime()) /
             (1000 * 60 * 60 * 24)
         )
       )
     : undefined;
+
   return (
     <Card
       onClick={onClickEdit}
