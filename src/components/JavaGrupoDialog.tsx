@@ -140,16 +140,18 @@ export default function JavaGrupoDialog({
       .then(setJavasMachos)
       .catch(() => toast.error("Error al cargar javas"));
   }, []);
-  const padreValido = padresDisponibles.some((p) => p.id === padreSel?.id);
+  const padreValido = padreSel
+    ? padresDisponibles.some((p) => p.id === padreSel.id)
+    : false;
+
+  const canToggleCheckbox = (rowId: number) => {
+    if (!padreSel || !padreValido) return true;
+    return rowId === padreSel.id;
+  };
 
   useEffect(() => {
-    // si padre es válido: seleccionamos automáticamente cuy con el mismo id (si existe en cuyes)
-    if (padreValido) {
-      setSelectedCuyId(padreSel!.id);
-    } else {
-      // de lo contrario ningún cuy seleccionable
-      setSelectedCuyId(null);
-    }
+    if (padreSel && padreValido) setSelectedCuyId(padreSel.id);
+    else setSelectedCuyId(null);
   }, [padreSel?.id, padreValido]);
 
   const handleOpenPadre = async () => {
@@ -163,9 +165,6 @@ export default function JavaGrupoDialog({
       toast.error("Error al obtener padres");
     }
   };
-
-  const canToggleCheckbox = (cuyId: number) =>
-    padreValido && cuyId === padreSel?.id;
 
   const handleOpenMadre = async () => {
     try {
