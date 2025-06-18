@@ -8,6 +8,7 @@ import {
   createJavaCuyReproduccion,
   getAllJavaByCategoria,
   updateJavaCuyReproduccion,
+  deleteJavaCuy,
 } from "@/services/javaService";
 import { JavaRespose } from "@/types/java";
 import { Card, CardContent } from "@/components/ui/card";
@@ -88,7 +89,7 @@ export default function FormReproduccion() {
           ],
         });
         await useMessageStore.getState().fetchMessages();
-        fetchReproduccion();
+        await fetchReproduccion();
         toast.success("Java de reproducción creado");
       } else {
         await createJavaCuy({
@@ -127,7 +128,8 @@ export default function FormReproduccion() {
           ...form.madre.map((m) => ({ id: m.id })),
         ],
       });
-      fetchReproduccion();
+      deleteJavaCuy(form.id ?? 0);
+      await fetchReproduccion();
       await useMessageStore.getState().fetchMessages();
       toast.success("Reproducción actualizada");
       cerrarDialog();
