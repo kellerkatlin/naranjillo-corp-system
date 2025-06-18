@@ -186,10 +186,10 @@ export default function JavaGrupoDialog({
   };
 
   const doCambioPadre = async () => {
-    const selectedJavaId = watch("padre")?.id;
-    if (!selectedJavaId) return;
+    const selectedCuyId = watch("padre")?.id;
+    if (!selectedJavaId || !selectedCuyId) return;
     try {
-      await cambioPadreDeJava(selectedJavaId, selectedJavaId);
+      await cambioPadreDeJava(selectedJavaId, selectedCuyId);
       toast.success("Padre cambiado correctamente");
       // limpiar padre y selección
       setValue("padre", null);
