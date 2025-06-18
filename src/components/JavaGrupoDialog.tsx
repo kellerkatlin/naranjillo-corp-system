@@ -277,7 +277,7 @@ export default function JavaGrupoDialog({
       <h2 className="text-base font-bold mb-4">Seleccionar nuevo Padre</h2>
       <Card>
         <CardContent className="p-0">
-          {(watch("cuyes") ?? []).length ? (
+          {padresDisponibles.length ? (
             <Table>
               <TableHeader>
                 <TableRow>
