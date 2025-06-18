@@ -115,7 +115,10 @@ export default function CuyDialog({
       fechaRegistro: fechaHora,
     };
 
-    console.log("Form data a enviar:", dataToSend);
+    if (!data.id) {
+      delete dataToSend.id;
+    }
+
     onSubmit(dataToSend);
     onOpenChange(false);
   };
@@ -343,6 +346,7 @@ export default function CuyDialog({
 
                                     reset({
                                       ...cuy,
+                                      id: cuy.id,
                                       sexo: cuy.sexo,
                                       java: { id: cuy.java?.id || 0 },
                                       estado: cuy.estado,
@@ -360,8 +364,10 @@ export default function CuyDialog({
                                     const fechaLocal =
                                       hoy.toLocaleDateString("sv-SE");
                                     reset({
+                                      id: undefined,
                                       edad: 0,
                                       fechaRegistro: fechaLocal,
+
                                       horaRegistro: hoy
                                         .toTimeString()
                                         .slice(0, 5),

@@ -3,6 +3,7 @@ export type Cuy = CuyRequest & {
 };
 
 export type CuyRequest = {
+  id?: number | null;
   edad: number;
   sexo: string;
   fechaRegistro: string;
