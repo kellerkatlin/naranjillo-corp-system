@@ -186,9 +186,10 @@ export default function JavaGrupoDialog({
   };
 
   const doCambioPadre = async () => {
-    if (!selectedJavaId || !selectedCuyId) return;
+    const selectedJavaId = watch("padre")?.id;
+    if (!selectedJavaId) return;
     try {
-      await cambioPadreDeJava(selectedJavaId, selectedCuyId);
+      await cambioPadreDeJava(selectedJavaId, selectedJavaId);
       toast.success("Padre cambiado correctamente");
       // limpiar padre y selección
       setValue("padre", null);
@@ -326,30 +327,35 @@ export default function JavaGrupoDialog({
       </Card>
 
       {/* select java destino + botón */}
-      <div className="mt-4 flex gap-2 items-center">
-        <Label>Java destino:</Label>
-        <Select
-          value={selectedJavaId?.toString()}
-          onValueChange={(v) => setSelectedJavaId(Number(v))}
-          disabled={!padreSel || padreSel === null}
-        >
-          <SelectTrigger className="w-48">
-            <SelectValue placeholder="Seleccionar" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {javasMachos.map((j) => (
-                <SelectItem key={j.id} value={j.id.toString()}>
-                  {j.nombre}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <Button onClick={doCambioPadre} disabled={!selectedJavaId || !padreSel}>
-          Cambiar Padre
-        </Button>
-      </div>
+      {isEditing && (
+        <div className="mt-4 flex gap-2 items-center">
+          <Label>Java destino:</Label>
+          <Select
+            value={selectedJavaId?.toString()}
+            onValueChange={(v) => setSelectedJavaId(Number(v))}
+            disabled={!padreSel || padreSel === null}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Seleccionar" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {javasMachos.map((j) => (
+                  <SelectItem key={j.id} value={j.id.toString()}>
+                    {j.nombre}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={doCambioPadre}
+            disabled={!selectedJavaId || !padreSel}
+          >
+            Cambiar Padre
+          </Button>
+        </div>
+      )}
     </>
   );
 
