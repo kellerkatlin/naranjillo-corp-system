@@ -386,8 +386,7 @@ export default function JavaGrupoDialog({
                   <div className="flex-1 w-full">
                     <Label
                       className={`flex items-center gap-1 mb-2 ${
-                        (isReproduccionIniciada || isEditing) &&
-                        !isCountersBlocked
+                        isReproduccionIniciada && !isCountersBlocked
                           ? "opacity-100"
                           : "opacity-60"
                       }`}
@@ -396,8 +395,7 @@ export default function JavaGrupoDialog({
                     </Label>
                     <div
                       className={`flex items-center gap-1 ${
-                        (isReproduccionIniciada || isEditing) &&
-                        !isCountersBlocked
+                        isReproduccionIniciada && !isCountersBlocked
                           ? "opacity-100"
                           : "opacity-60"
                       }`}
@@ -511,8 +509,7 @@ export default function JavaGrupoDialog({
                   <div className="flex-1 w-full mb-3">
                     <Label
                       className={`flex items-center gap-1 mb-2 ${
-                        (isReproduccionIniciada || isEditing) &&
-                        !isCountersBlocked
+                        isReproduccionIniciada && !isCountersBlocked
                           ? "opacity-100"
                           : "opacity-60"
                       }`}
@@ -521,8 +518,7 @@ export default function JavaGrupoDialog({
                     </Label>
                     <div
                       className={`flex items-center gap-1 ${
-                        (isReproduccionIniciada || isEditing) &&
-                        !isCountersBlocked
+                        isReproduccionIniciada && !isCountersBlocked
                           ? "opacity-100"
                           : "opacity-60"
                       }`}
@@ -865,7 +861,11 @@ export default function JavaGrupoDialog({
           )}
           <Button
             type="button"
-            className="bg-green-600 hover:bg-green-700"
+            className={`${
+              isEditing
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
             disabled={
               isSubmitting ||
               (!isEditing && !canStartReproduction()) ||
