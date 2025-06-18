@@ -22,6 +22,8 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
       )
     : undefined;
 
+  console.log("diasReproduccion:", diasReproduccion);
+
   return (
     <Card
       onClick={onClickEdit}
