@@ -7,8 +7,6 @@ import {
   createJavaCuy,
   createJavaCuyReproduccion,
   getAllJavaByCategoria,
-  updateJavaCuyReproduccion,
-  deleteJavaCuy,
   finalizarJavaCuy,
 } from "@/services/javaService";
 import { JavaRespose } from "@/types/java";
@@ -129,7 +127,6 @@ export default function FormReproduccion() {
           ...form.madre.map((m) => ({ id: m.id })),
         ],
       });
-      deleteJavaCuy(form.id ?? 0);
       await fetchReproduccion();
       await useMessageStore.getState().fetchMessages();
       toast.success("Reproducción actualizada");
