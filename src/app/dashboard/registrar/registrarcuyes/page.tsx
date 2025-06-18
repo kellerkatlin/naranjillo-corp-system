@@ -50,7 +50,7 @@ export default function FormCuy() {
   const columns: ColumnDef<Cuy>[] = [
     { accessorKey: "id", header: "ID" },
 
-    { accessorKey: "edad", header: "Edad (semanas)" },
+    { accessorKey: "edad", header: "Edad (días)" },
     { accessorKey: "categoria", header: "Categoría" },
     { accessorKey: "sexo", header: "Sexo" },
     { accessorKey: "estado", header: "Estado" },
