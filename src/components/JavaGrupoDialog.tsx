@@ -808,7 +808,7 @@ export default function JavaGrupoDialog({
         </div>
 
         <div className="flex justify-end pt-4">
-          {isEditing && categoria !== "REPRODUCCION" && (
+          {isEditing && categoria === "REPRODUCCION" && (
             <>
               <Button
                 type="button"
