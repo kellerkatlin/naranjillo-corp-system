@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardContent } from "./ui/card";
 import { JavaRespose } from "@/types/java";
 import Image from "next/image";
+import { Badge } from "./ui/badge";
 
 interface CardJavaProps {
   readonly java?: JavaRespose;
@@ -29,9 +30,11 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
         <div className=" text-gray-800">
           {java?.sexo !== "NA" && java?.sexo}
         </div>
-        <div>
-          <span className="text-gray-600 text-xs">5 dias</span>
-        </div>
+        {java?.categoria === "REPRODUCCION" && (
+          <Badge variant="secondary" className="bg-blue-500 text-white">
+            5 dias
+          </Badge>
+        )}
       </CardContent>
     </Card>
   );
