@@ -331,13 +331,26 @@ export default function CuyDialog({
                                         .split("T")[1]
                                         ?.substring(0, 5) ?? "00:00";
 
+                                    // Calcular edad en semanas desde fechaRegistro hasta hoy
+                                    const fechaRegistroDate = new Date(fecha);
+                                    const hoyDate = new Date();
+                                    const diffMs =
+                                      hoyDate.getTime() -
+                                      fechaRegistroDate.getTime();
+                                    const diffDias = Math.floor(
+                                      diffMs / (1000 * 60 * 60 * 24)
+                                    );
+
                                     reset({
                                       ...cuy,
                                       sexo: cuy.sexo,
                                       java: { id: cuy.java?.id || 0 },
                                       estado: cuy.estado,
                                       categoria: cuy.categoria,
-
+                                      edad:
+                                        categoria === "ENGORDE"
+                                          ? cuy.edad
+                                          : diffDias,
                                       fechaRegistro: fecha,
                                       horaRegistro: hora,
                                     });
