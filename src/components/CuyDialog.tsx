@@ -97,10 +97,13 @@ export default function CuyDialog({
     } else {
       setJavasDisponibles([]);
     }
-    getCuySinJava(categoria === undefined ? "ENGORDE" : categoria)
+  }, [sexo, categoria, setValue]);
+
+  useEffect(() => {
+    getCuySinJava(categoria ?? "ENGORDE")
       .then(setCuyesSinJava)
       .catch(() => toast.error("Error al cargar cuyes sin java"));
-  }, [sexo, categoria, setValue]);
+  }, [categoria]);
 
   const handleFormSubmit = (data: CuyRequest) => {
     const fecha = data.fechaRegistro;
