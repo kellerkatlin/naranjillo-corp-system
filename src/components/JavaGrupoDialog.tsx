@@ -45,13 +45,13 @@ export type DataJava = {
   id: number | null;
   nombre: string;
   fechaInicio: Date | null;
-  padre: { id: number; sexo: string } | null;
+  padre: CuyPadre | null;
   hembrasNacidas?: number;
   machosNacidos?: number;
   sexo?: string;
   categoria?: string;
   muertos?: number;
-  madre: { id: number; sexo: string }[];
+  madre: CuyPadre[];
   regiones: { [key: string]: boolean };
   cuyes?: Array<{
     id: number;
@@ -142,7 +142,13 @@ export default function JavaGrupoDialog({
   const handleOpenMadre = async () => {
     try {
       const data = await getCuyesPadres("HEMBRA", "ENGORDE");
-      setMadresDisponibles(data); // usas el mismo setPadresDisponibles si quieres, o mejor aún, lo renombramos a algo más genérico
+      const seleccionadas: CuyPadre[] = watch("madre") || [];
+
+      const idsSel = new Set(seleccionadas.map((m) => m.id));
+
+      const nuevas = data.filter((item) => !idsSel.has(item.id));
+
+      setMadresDisponibles([...seleccionadas, ...nuevas]);
       setSeleccionActual("madre");
     } catch (error) {
       console.error("Error al obtener madres", error);
@@ -222,7 +228,7 @@ export default function JavaGrupoDialog({
         current.filter((m) => m.id !== item.id)
       );
     } else {
-      setValue("madre", [...current, { id: item.id, sexo: item.sexo }]);
+      setValue("madre", [...current, item]);
     }
   };
 
