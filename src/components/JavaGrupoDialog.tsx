@@ -386,18 +386,14 @@ export default function JavaGrupoDialog({
                   <div className="flex-1 w-full">
                     <Label
                       className={`flex items-center gap-1 mb-2 ${
-                        isReproduccionIniciada && !isCountersBlocked
-                          ? "opacity-100"
-                          : "opacity-60"
+                        !isCountersBlocked ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       Hembras Nacidas
                     </Label>
                     <div
                       className={`flex items-center gap-1 ${
-                        isReproduccionIniciada && !isCountersBlocked
-                          ? "opacity-100"
-                          : "opacity-60"
+                        !isCountersBlocked ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       <Input
@@ -508,18 +504,14 @@ export default function JavaGrupoDialog({
                   <div className="flex-1 w-full mb-3">
                     <Label
                       className={`flex items-center gap-1 mb-2 ${
-                        isReproduccionIniciada && !isCountersBlocked
-                          ? "opacity-100"
-                          : "opacity-60"
+                        !isCountersBlocked ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       Machos Nacidos
                     </Label>
                     <div
                       className={`flex items-center gap-1 ${
-                        isReproduccionIniciada && !isCountersBlocked
-                          ? "opacity-100"
-                          : "opacity-60"
+                        !isCountersBlocked ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       <Input
@@ -555,8 +547,7 @@ export default function JavaGrupoDialog({
                         className="cursor-pointer"
                         disabled={
                           isSubmitting ||
-                          (!isEditing && !canStartReproduction()) ||
-                          (isEditing && isCountersBlocked)
+                          (!isEditing && !canStartReproduction())
                         }
                         onClick={() => {
                           const current = watch("machosNacidos") ?? 0;
@@ -570,20 +561,14 @@ export default function JavaGrupoDialog({
                   <div className="flex-1 w-full">
                     <Label
                       className={`flex items-center gap-1 mb-2 ${
-                        (isReproduccionIniciada || isEditing) &&
-                        !isCountersBlocked
-                          ? "opacity-100"
-                          : "opacity-60"
+                        !isCountersBlocked ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       Registrar Muertos
                     </Label>
                     <div
                       className={`flex items-center gap-1 ${
-                        (isReproduccionIniciada || isEditing) &&
-                        !isCountersBlocked
-                          ? "opacity-100"
-                          : "opacity-60"
+                        !isCountersBlocked ? "opacity-100" : "opacity-60"
                       }`}
                     >
                       <Input
@@ -618,8 +603,7 @@ export default function JavaGrupoDialog({
                         variant="outline"
                         disabled={
                           isSubmitting ||
-                          (!isEditing && !canStartReproduction()) ||
-                          (isEditing && isCountersBlocked)
+                          (!isEditing && !canStartReproduction())
                         }
                         className="cursor-pointer"
                         onClick={() => {
