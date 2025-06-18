@@ -207,6 +207,7 @@ export default function CuyDialog({
               <Label className="mb-1 block">Sexo</Label>
               <Select
                 onValueChange={(value) => setValue("sexo", value)}
+                value={watch("sexo")}
                 defaultValue={sexo}
               >
                 <SelectTrigger className="w-full">
