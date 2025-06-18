@@ -11,18 +11,24 @@ interface CardJavaProps {
 }
 
 export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
-  const diasReproduccion = java?.fechaReproduccion
-    ? Math.max(
-        0,
-        Math.ceil(
-          (new Date(new Date(java.fechaReproduccion).toDateString()).getTime() -
-            new Date(new Date().toDateString()).getTime()) /
-            (1000 * 60 * 60 * 24)
-        )
-      )
-    : undefined;
+  const DIA_MS = 24 * 60 * 60 * 1000;
 
-  console.log("diasReproduccion:", diasReproduccion);
+  function normalizar(fecha: Date) {
+    return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
+  }
+
+  const diasReproduccion = java?.fechaReproduccion
+    ? (() => {
+        const inicio = normalizar(new Date(java.fechaReproduccion));
+        const hoy = normalizar(new Date());
+
+        const diffDias = Math.floor(
+          (hoy.getTime() - inicio.getTime()) / DIA_MS
+        );
+
+        return diffDias;
+      })()
+    : undefined;
 
   return (
     <Card

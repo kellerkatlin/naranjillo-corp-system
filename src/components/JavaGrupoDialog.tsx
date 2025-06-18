@@ -270,7 +270,9 @@ export default function JavaGrupoDialog({
 
   const TablaPadre = () => (
     <>
-      <h2 className="text-base font-bold mb-4">Seleccionar nuevo Padre</h2>
+      <h2 className="text-base text-center font-bold mb-4">
+        Seleccionar nuevo Padre
+      </h2>
 
       <Card>
         <CardContent className="p-0">
@@ -351,7 +353,7 @@ export default function JavaGrupoDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl py-10  overflow-y-auto">
+      <DialogContent className="max-w-4xl md:min-w-4xl  py-10  max-h-[90vh]  overflow-y-auto">
         <AlertDialogHeader>
           <DialogTitle>
             {mode === "REPRODUCCION"
@@ -368,7 +370,7 @@ export default function JavaGrupoDialog({
           </DialogTitle>
         </AlertDialogHeader>
 
-        <div className="flex gap-6 flex-col  md:justify-between md:flex-row">
+        <div className="flex  flex-col  md:justify-between md:flex-row">
           <form className="space-y-4 flex-1 ">
             <div className="flex w-full flex-col md:flex-row gap-4">
               <div className="flex-1">
@@ -400,68 +402,66 @@ export default function JavaGrupoDialog({
                 </Button>
               </div>
             </div>
-            <div className="flex items-center w-full flex-col md:flex-row gap-4">
+            <div className="flex w-full flex-col md:flex-row gap-4">
               {categoria !== "REPRODUCCION" && (
-                <div className="flex-1 w-full">
-                  <div
-                    className={`${
-                      categoria === "REPRODUCCION" ? "w-full" : "w-1/2"
-                    }`}
-                  >
-                    <Label className="mb-2">Categoria</Label>
-                    <Select
-                      value={watch("categoria")}
-                      onValueChange={(value) => setValue("categoria", value)}
-                      disabled={
-                        watch("categoria") === "REPRODUCCION" || isEditing
-                      }
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Seleccionar categoria" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {mode === "REPRODUCCION" && (
-                            <SelectItem value="REPRODUCCION">
-                              REPRODUCCION
-                            </SelectItem>
-                          )}
-                          {mode !== "REPRODUCCION" && (
-                            <>
-                              <SelectItem value="CRIA">CRIA</SelectItem>
-                              <SelectItem value="ENGORDE">ENGORDE</SelectItem>
-                            </>
-                          )}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
+                <div className="flex items-center w-full flex-col md:flex-row gap-4">
+                  <div className="flex-1 w-full">
+                    <div className={`w-full`}>
+                      <Label className="mb-2">Categoria</Label>
+                      <Select
+                        value={watch("categoria")}
+                        onValueChange={(value) => setValue("categoria", value)}
+                        disabled={
+                          watch("categoria") === "REPRODUCCION" || isEditing
+                        }
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Seleccionar categoria" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {mode === "REPRODUCCION" && (
+                              <SelectItem value="REPRODUCCION">
+                                REPRODUCCION
+                              </SelectItem>
+                            )}
+                            {mode !== "REPRODUCCION" && (
+                              <>
+                                <SelectItem value="CRIA">CRIA</SelectItem>
+                                <SelectItem value="ENGORDE">ENGORDE</SelectItem>
+                              </>
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
 
-            <div className="flex items-center w-full flex-col md:flex-row gap-4">
               {mode !== "REPRODUCCION" && (
-                <div className="flex-1 w-full">
-                  <div className="w-1/2">
-                    <Label className="mb-2">Sexo</Label>
-                    <Select
-                      disabled
-                      value={watch("sexo") ?? ""}
-                      onValueChange={(value) => setValue("sexo", value)}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Seleccionar sexo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mode === "MACHO" && (
-                          <SelectItem value="MACHO">MACHO</SelectItem>
-                        )}
-                        {mode === "HEMBRA" && (
-                          <SelectItem value="HEMBRA">HEMBRA</SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
+                <div className="flex items-center w-full flex-col md:flex-row gap-4">
+                  <div className="flex-1 w-full">
+                    <div className="w-full">
+                      <Label className="mb-2">Sexo</Label>
+                      <Select
+                        disabled
+                        value={watch("sexo") ?? ""}
+                        onValueChange={(value) => setValue("sexo", value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Seleccionar sexo" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {mode === "MACHO" && (
+                            <SelectItem value="MACHO">MACHO</SelectItem>
+                          )}
+                          {mode === "HEMBRA" && (
+                            <SelectItem value="HEMBRA">HEMBRA</SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </div>
               )}
@@ -550,7 +550,7 @@ export default function JavaGrupoDialog({
                   <Button
                     type="button"
                     variant="outline"
-                    className="w-full justify-start text-center flex-col items-start"
+                    className="w-full  text-center flex-col items-center"
                     onClick={handleOpenMadre}
                   >
                     Seleccionar Madres
@@ -690,7 +690,7 @@ export default function JavaGrupoDialog({
             )}
           </form>
 
-          <div className="md:flex hidden justify-center items-stretch">
+          <div className="md:flex hidden justify-center items-stretch px-5">
             <Separator orientation="vertical" className="h-full" />
           </div>
 
@@ -699,7 +699,9 @@ export default function JavaGrupoDialog({
 
             {seleccionActual === "madre" && (
               <>
-                <h2 className="text-base font-bold mb-4">Seleccionar Madres</h2>
+                <h2 className="text-base font-bold text-center mb-4">
+                  Seleccionar Madres
+                </h2>
                 <Card>
                   <CardContent className="p-0">
                     <Table>
@@ -739,7 +741,7 @@ export default function JavaGrupoDialog({
 
             {seleccionActual === "fecha" && (
               <>
-                <h2 className="text-base font-bold mb-4">
+                <h2 className="text-base text-center font-bold mb-4">
                   Seleccionar Fecha de Inicio
                 </h2>
                 <Card>
@@ -762,7 +764,9 @@ export default function JavaGrupoDialog({
             )}
             {isEditing && !seleccionActual && (
               <>
-                <h2 className="text-base font-bold mb-4">Cuyes de la java</h2>
+                <h2 className="text-base font-bold text-center mb-4">
+                  Cuyes de la java
+                </h2>
                 <Card>
                   <CardContent className="p-0">
                     {(watch("cuyes") ?? []).length > 0 ? (
@@ -821,7 +825,7 @@ export default function JavaGrupoDialog({
         </div>
 
         <div className="flex justify-end pt-4">
-          {categoria === "REPRODUCCION" && (
+          {categoria === "REPRODUCCION" ? (
             <>
               {isEditing && (
                 <Button
@@ -895,6 +899,19 @@ export default function JavaGrupoDialog({
                 {isEditing ? "Finalizar Reproducción" : "Iniciar Reproducción"}
               </Button>
             </>
+          ) : (
+            <Button
+              type="button"
+              className={`${
+                isEditing
+                  ? "bg-red-600 hover:bg-red-700"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
+              disabled={isSubmitting || !canStartReproduction()}
+              onClick={handleFinalSubmit}
+            >
+              Guardar Java
+            </Button>
           )}
         </div>
       </DialogContent>

@@ -164,9 +164,12 @@ export default function FormReproduccion() {
             </CardContent>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto flex-1">
+          <div className="flex gap-4 overflow-x-auto overflow-y-hidden ">
             {javasReproduccion.map((grupo) => (
-              <div key={grupo.id} className="flex-shrink-0 max-w-md">
+              <div
+                key={grupo.id}
+                className="flex-shrink-0 overflow-visible max-w-md hover:scale-105"
+              >
                 <CardJava
                   java={grupo}
                   imagen={true}

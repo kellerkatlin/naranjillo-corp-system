@@ -136,7 +136,7 @@ export default function CuyDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="max-w-4xl md:min-w-4xl  py-10  max-h-[90vh]  overflow-y-auto ">
         <DialogHeader>
           <DialogTitle>
             {cuy ? `Editar cuy ${cuy.id}` : "Añadir cuy"}

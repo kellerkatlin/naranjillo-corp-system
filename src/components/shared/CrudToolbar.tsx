@@ -21,39 +21,38 @@ export function CrudToolbar({
 }: CrudToolbarProps) {
   const [inputValue, setInputValue] = useState(search ?? "");
   return (
-    <div className="flex items-center justify-between mb-4 p-2">
-      <div className="flex items-center justify-between p-4">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            className="border px-3 py-2 rounded-md text-sm"
-          />
+    <div className="flex flex-col md:flex-row items-center justify-between mb-4 p-2 w-full">
+      <div className="flex flex-wrap gap-2 w-full">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          className="border px-3 py-2 rounded-md text-sm flex-grow min-w-[100px]"
+        />
 
-          <Button
-            className="bg-white cursor-pointer hover:bg-gray-50 border"
-            onClick={() => setSearch?.(inputValue)}
-            disabled={!inputValue}
-          >
-            <Search className="w-4 h-4 text-black" />
-          </Button>
+        <Button
+          className="bg-white cursor-pointer hover:bg-gray-50 border"
+          onClick={() => setSearch?.(inputValue)}
+          disabled={!inputValue}
+        >
+          <Search className="w-4 h-4 text-black" />
+        </Button>
 
-          <Button
-            className="bg-green-500 hover:bg-green-600 cursor-pointer"
-            onClick={onCreate}
-          >
-            Añadir {title ?? "Registro"}
-            <Plus />
-          </Button>
-          <Button
-            className="bg-blue-500 hover:bg-blue-600 cursor-pointer"
-            onClick={onToggleJavaFilter}
-          >
-            {isFilteringSinJava ? "Mostrar todos" : "Cuyes sin Java"}
-          </Button>
-        </div>
+        <Button
+          className="bg-green-500 hover:bg-green-600 cursor-pointer whitespace-nowrap"
+          onClick={onCreate}
+        >
+          Añadir {title ?? "Registro"}
+          <Plus className="ml-1" />
+        </Button>
+
+        <Button
+          className="bg-blue-500 hover:bg-blue-600 cursor-pointer whitespace-nowrap"
+          onClick={onToggleJavaFilter}
+        >
+          {isFilteringSinJava ? "Mostrar todos" : "Cuyes sin Java"}
+        </Button>
       </div>
     </div>
   );
