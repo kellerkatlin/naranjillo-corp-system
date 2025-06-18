@@ -170,7 +170,7 @@ export default function CuyDialog({
               </div>
             </div>
             <div>
-              <Label className="mb-1 block">Edad (semanas)</Label>
+              <Label className="mb-1 block">Edad (días)</Label>
               <Input
                 type="number"
                 placeholder="Edad"
