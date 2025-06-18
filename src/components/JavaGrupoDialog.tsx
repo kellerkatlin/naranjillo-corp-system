@@ -290,7 +290,7 @@ export default function JavaGrupoDialog({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {(watch("cuyes") ?? []).map((cuy) => (
+                {padresDisponibles.map((cuy) => (
                   <TableRow key={cuy.id}>
                     <TableCell>{cuy.id}</TableCell>
                     <TableCell>{cuy.sexo}</TableCell>
