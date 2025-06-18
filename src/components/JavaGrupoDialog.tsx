@@ -424,55 +424,23 @@ export default function JavaGrupoDialog({
                 <div className="flex-1 w-full">
                   <Label className="mb-2">Madres</Label>
 
-                  {isEditing ? (
-                    <Card className="w-full">
-                      <CardContent className="p-2">
-                        {javaToEdit?.madre && javaToEdit.madre.length > 0 ? (
-                          <div className="flex flex-col text-center font-semibold">
-                            {javaToEdit.madre.map((madre, index) => (
-                              <span key={index}>
-                                {madre.id} - {madre.sexo}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center text-gray-400">
-                            No se seleccionaron madres
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full justify-start text-center flex-col items-start"
-                        onClick={handleOpenMadre}
-                      >
-                        Seleccionar Madres
-                      </Button>
-
-                      {/* Aquí mostramos las madres seleccionadas */}
-                      <Card className="w-full mt-2">
-                        <CardContent className="p-2">
-                          {madresSeleccionadas.length > 0 ? (
-                            <div className="flex flex-col text-center font-semibold">
-                              {madresSeleccionadas.map((madre, index) => (
-                                <span key={index}>
-                                  {madre.id} - {madre.sexo}
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center text-gray-400">
-                              No se seleccionaron madres
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </>
-                  )}
+                  <Card className="w-full">
+                    <CardContent className="p-2">
+                      {javaToEdit?.madre && javaToEdit.madre.length > 0 ? (
+                        <div className="flex flex-col text-center font-semibold">
+                          {javaToEdit.madre.map((madre, index) => (
+                            <span key={index}>
+                              {madre.id} - {madre.sexo}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center text-gray-400">
+                          No se seleccionaron madres
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
 
                 <div className="flex-1 flex-col ">
