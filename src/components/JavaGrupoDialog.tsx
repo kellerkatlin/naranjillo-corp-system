@@ -331,6 +331,7 @@ export default function JavaGrupoDialog({
         <Select
           value={selectedJavaId?.toString()}
           onValueChange={(v) => setSelectedJavaId(Number(v))}
+          disabled={!padreSel || padreSel === null}
         >
           <SelectTrigger className="w-48">
             <SelectValue placeholder="Seleccionar" />
@@ -345,10 +346,7 @@ export default function JavaGrupoDialog({
             </SelectGroup>
           </SelectContent>
         </Select>
-        <Button
-          onClick={doCambioPadre}
-          disabled={!selectedJavaId || !selectedCuyId}
-        >
+        <Button onClick={doCambioPadre} disabled={!selectedJavaId || !padreSel}>
           Cambiar Padre
         </Button>
       </div>
