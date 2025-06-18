@@ -29,6 +29,9 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
         <div className=" text-gray-800">
           {java?.sexo !== "NA" && java?.sexo}
         </div>
+        <div>
+          <span className="text-gray-600 text-xs">5 dias</span>
+        </div>
       </CardContent>
     </Card>
   );
