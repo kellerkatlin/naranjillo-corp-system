@@ -280,104 +280,40 @@ export default function JavaGrupoDialog({
               </div>
             </div>
             <div className="flex items-center w-full flex-col md:flex-row gap-4">
-              <div className="flex-1 w-full">
-                <div
-                  className={`${
-                    categoria === "REPRODUCCION" ? "w-full" : "w-1/2"
-                  }`}
-                >
-                  <Label className="mb-2">Categoria</Label>
-                  <Select
-                    value={watch("categoria")}
-                    onValueChange={(value) => setValue("categoria", value)}
-                    disabled={
-                      watch("categoria") === "REPRODUCCION" || isEditing
-                    }
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Seleccionar categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {mode === "REPRODUCCION" && (
-                          <SelectItem value="REPRODUCCION">
-                            REPRODUCCION
-                          </SelectItem>
-                        )}
-                        {mode !== "REPRODUCCION" && (
-                          <>
-                            <SelectItem value="CRIA">CRIA</SelectItem>
-                            <SelectItem value="ENGORDE">ENGORDE</SelectItem>
-                          </>
-                        )}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              {categoria === "REPRODUCCION" && (
+              {categoria !== "REPRODUCCION" && (
                 <div className="flex-1 w-full">
-                  <Label
-                    className={`flex items-center gap-1 mb-2 ${
-                      (isReproduccionIniciada || isEditing) &&
-                      !isCountersBlocked
-                        ? "opacity-100"
-                        : "opacity-60"
-                    }`}
-                  >
-                    Hembras Nacidas
-                  </Label>
                   <div
-                    className={`flex items-center gap-1 ${
-                      (isReproduccionIniciada || isEditing) &&
-                      !isCountersBlocked
-                        ? "opacity-100"
-                        : "opacity-60"
+                    className={`${
+                      categoria === "REPRODUCCION" ? "w-full" : "w-1/2"
                     }`}
                   >
-                    <Input
-                      type="number"
-                      value={watch("hembrasNacidas") ?? 0}
-                      disabled
-                      className="text-center   disabled:opacity-100 bg-pink-400"
-                    />
-                    {errors.hembrasNacidas && (
-                      <p className="text-red-500 text-sm mt-1">
-                        Este campo es requerido
-                      </p>
-                    )}
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const current = watch("hembrasNacidas") ?? 0;
-                        if (current > 0) {
-                          setValue("hembrasNacidas", current - 1);
-                        }
-                      }}
-                      disabled={(watch("hembrasNacidas") ?? 0) <= 0}
-                    >
-                      <Minus />
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
+                    <Label className="mb-2">Categoria</Label>
+                    <Select
+                      value={watch("categoria")}
+                      onValueChange={(value) => setValue("categoria", value)}
                       disabled={
-                        isSubmitting ||
-                        (!isEditing && !canStartReproduction()) ||
-                        (isEditing && isCountersBlocked)
+                        watch("categoria") === "REPRODUCCION" || isEditing
                       }
-                      onClick={() => {
-                        const current = watch("hembrasNacidas") ?? 0;
-                        setValue("hembrasNacidas", current + 1);
-                      }}
                     >
-                      <Plus />
-                    </Button>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Seleccionar categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {mode === "REPRODUCCION" && (
+                            <SelectItem value="REPRODUCCION">
+                              REPRODUCCION
+                            </SelectItem>
+                          )}
+                          {mode !== "REPRODUCCION" && (
+                            <>
+                              <SelectItem value="CRIA">CRIA</SelectItem>
+                              <SelectItem value="ENGORDE">ENGORDE</SelectItem>
+                            </>
+                          )}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               )}
@@ -442,70 +378,72 @@ export default function JavaGrupoDialog({
                   )}
                 </div>
 
-                <div className="flex-1 w-full">
-                  <Label
-                    className={`flex items-center gap-1 mb-2 ${
-                      (isReproduccionIniciada || isEditing) &&
-                      !isCountersBlocked
-                        ? "opacity-100"
-                        : "opacity-60"
-                    }`}
-                  >
-                    Machos Nacidos
-                  </Label>
-                  <div
-                    className={`flex items-center gap-1 ${
-                      (isReproduccionIniciada || isEditing) &&
-                      !isCountersBlocked
-                        ? "opacity-100"
-                        : "opacity-60"
-                    }`}
-                  >
-                    <Input
-                      type="number"
-                      value={watch("machosNacidos") ?? 0}
-                      disabled
-                      className=" text-center  disabled:opacity-100 bg-purple-400"
-                    />
-                    {errors.machosNacidos && (
-                      <p className="text-red-500 text-sm mt-1">
-                        Este campo es requerido
-                      </p>
-                    )}
+                {categoria === "REPRODUCCION" && (
+                  <div className="flex-1 w-full">
+                    <Label
+                      className={`flex items-center gap-1 mb-2 ${
+                        (isReproduccionIniciada || isEditing) &&
+                        !isCountersBlocked
+                          ? "opacity-100"
+                          : "opacity-60"
+                      }`}
+                    >
+                      Hembras Nacidas
+                    </Label>
+                    <div
+                      className={`flex items-center gap-1 ${
+                        (isReproduccionIniciada || isEditing) &&
+                        !isCountersBlocked
+                          ? "opacity-100"
+                          : "opacity-60"
+                      }`}
+                    >
+                      <Input
+                        type="number"
+                        value={watch("hembrasNacidas") ?? 0}
+                        disabled
+                        className="text-center   disabled:opacity-100 bg-pink-400"
+                      />
+                      {errors.hembrasNacidas && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Este campo es requerido
+                        </p>
+                      )}
 
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const current = watch("machosNacidos") ?? 0;
-                        if (current > 0) {
-                          setValue("machosNacidos", current - 1);
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const current = watch("hembrasNacidas") ?? 0;
+                          if (current > 0) {
+                            setValue("hembrasNacidas", current - 1);
+                          }
+                        }}
+                        disabled={(watch("hembrasNacidas") ?? 0) <= 0}
+                      >
+                        <Minus />
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        disabled={
+                          isSubmitting ||
+                          (!isEditing && !canStartReproduction()) ||
+                          (isEditing && isCountersBlocked)
                         }
-                      }}
-                      disabled={(watch("machosNacidos") ?? 0) <= 0}
-                    >
-                      <Minus />
-                    </Button>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      disabled={
-                        isSubmitting ||
-                        (!isEditing && !canStartReproduction()) ||
-                        (isEditing && isCountersBlocked)
-                      }
-                      onClick={() => {
-                        const current = watch("machosNacidos") ?? 0;
-                        setValue("machosNacidos", current + 1);
-                      }}
-                    >
-                      <Plus />
-                    </Button>
+                        onClick={() => {
+                          const current = watch("hembrasNacidas") ?? 0;
+                          setValue("hembrasNacidas", current + 1);
+                        }}
+                      >
+                        <Plus />
+                      </Button>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -565,68 +503,134 @@ export default function JavaGrupoDialog({
                   )}
                 </div>
 
-                <div className="flex-1 w-full">
-                  <Label
-                    className={`flex items-center gap-1 mb-2 ${
-                      (isReproduccionIniciada || isEditing) &&
-                      !isCountersBlocked
-                        ? "opacity-100"
-                        : "opacity-60"
-                    }`}
-                  >
-                    Registrar Muertos
-                  </Label>
-                  <div
-                    className={`flex items-center gap-1 ${
-                      (isReproduccionIniciada || isEditing) &&
-                      !isCountersBlocked
-                        ? "opacity-100"
-                        : "opacity-60"
-                    }`}
-                  >
-                    <Input
-                      type="number"
-                      value={watch("muertos") ?? 0}
-                      disabled
-                      className=" text-center bg-gray-400 disabled:opacity-100"
-                    />
-                    {errors.muertos && (
-                      <p className="text-red-500 text-sm mt-1">
-                        Este campo es requerido
-                      </p>
-                    )}
+                <div className="flex-1 flex-col ">
+                  <div className="flex-1 w-full mb-3">
+                    <Label
+                      className={`flex items-center gap-1 mb-2 ${
+                        (isReproduccionIniciada || isEditing) &&
+                        !isCountersBlocked
+                          ? "opacity-100"
+                          : "opacity-60"
+                      }`}
+                    >
+                      Machos Nacidos
+                    </Label>
+                    <div
+                      className={`flex items-center gap-1 ${
+                        (isReproduccionIniciada || isEditing) &&
+                        !isCountersBlocked
+                          ? "opacity-100"
+                          : "opacity-60"
+                      }`}
+                    >
+                      <Input
+                        type="number"
+                        value={watch("machosNacidos") ?? 0}
+                        disabled
+                        className=" text-center  disabled:opacity-100 bg-purple-400"
+                      />
+                      {errors.machosNacidos && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Este campo es requerido
+                        </p>
+                      )}
 
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const current = watch("muertos") ?? 0;
-                        if (current > 0) {
-                          setValue("muertos", current - 1);
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const current = watch("machosNacidos") ?? 0;
+                          if (current > 0) {
+                            setValue("machosNacidos", current - 1);
+                          }
+                        }}
+                        disabled={(watch("machosNacidos") ?? 0) <= 0}
+                      >
+                        <Minus />
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        disabled={
+                          isSubmitting ||
+                          (!isEditing && !canStartReproduction()) ||
+                          (isEditing && isCountersBlocked)
                         }
-                      }}
-                      disabled={(watch("muertos") ?? 0) <= 0}
+                        onClick={() => {
+                          const current = watch("machosNacidos") ?? 0;
+                          setValue("machosNacidos", current + 1);
+                        }}
+                      >
+                        <Plus />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex-1 w-full">
+                    <Label
+                      className={`flex items-center gap-1 mb-2 ${
+                        (isReproduccionIniciada || isEditing) &&
+                        !isCountersBlocked
+                          ? "opacity-100"
+                          : "opacity-60"
+                      }`}
                     >
-                      <Minus />
-                    </Button>
+                      Registrar Muertos
+                    </Label>
+                    <div
+                      className={`flex items-center gap-1 ${
+                        (isReproduccionIniciada || isEditing) &&
+                        !isCountersBlocked
+                          ? "opacity-100"
+                          : "opacity-60"
+                      }`}
+                    >
+                      <Input
+                        type="number"
+                        value={watch("muertos") ?? 0}
+                        disabled
+                        className=" text-center bg-gray-400 disabled:opacity-100"
+                      />
+                      {errors.muertos && (
+                        <p className="text-red-500 text-sm mt-1">
+                          Este campo es requerido
+                        </p>
+                      )}
 
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={
-                        isSubmitting ||
-                        (!isEditing && !canStartReproduction()) ||
-                        (isEditing && isCountersBlocked)
-                      }
-                      className="cursor-pointer"
-                      onClick={() => {
-                        const current = watch("muertos") ?? 0;
-                        setValue("muertos", current + 1);
-                      }}
-                    >
-                      <Plus />
-                    </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const current = watch("muertos") ?? 0;
+                          if (current > 0) {
+                            setValue("muertos", current - 1);
+                          }
+                        }}
+                        disabled={(watch("muertos") ?? 0) <= 0}
+                      >
+                        <Minus />
+                      </Button>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={
+                          isSubmitting ||
+                          (!isEditing && !canStartReproduction()) ||
+                          (isEditing && isCountersBlocked)
+                        }
+                        className="cursor-pointer"
+                        onClick={() => {
+                          const current = watch("muertos") ?? 0;
+                          setValue("muertos", current + 1);
+                        }}
+                      >
+                        <Plus />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
