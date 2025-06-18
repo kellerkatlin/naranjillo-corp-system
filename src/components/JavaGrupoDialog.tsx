@@ -284,29 +284,22 @@ export default function JavaGrupoDialog({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Sel.</TableHead>
                   <TableHead>ID</TableHead>
                   <TableHead>Sexo</TableHead>
-                  <TableHead>Fecha</TableHead>
+                  <TableHead>Sel.</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {(watch("cuyes") ?? []).map((cuy) => (
                   <TableRow key={cuy.id}>
+                    <TableCell>{cuy.id}</TableCell>
+                    <TableCell>{cuy.sexo}</TableCell>
                     <TableCell>
                       <Checkbox
                         checked={selectedCuyId === cuy.id}
                         onCheckedChange={() => setSelectedCuyId(cuy.id)}
                         disabled={!canToggleCheckbox(cuy.id)}
                       />
-                    </TableCell>
-                    <TableCell>{cuy.id}</TableCell>
-                    <TableCell>{cuy.sexo}</TableCell>
-                    <TableCell>
-                      {new Date(cuy.fechaRegistro).toLocaleString("es-PE", {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })}
                     </TableCell>
                   </TableRow>
                 ))}
