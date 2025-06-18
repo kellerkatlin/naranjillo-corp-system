@@ -41,7 +41,7 @@ export default function FormReproduccion() {
     fetchMachos();
     fetchHembras();
     fetchReproduccion();
-  }, []);
+  }, [dialogGrupoOpen]);
 
   const fetchMachos = async () => {
     try {
