@@ -234,7 +234,7 @@ export default function JavaGrupoDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-4xl  overflow-y-auto">
+      <DialogContent className="sm:max-w-4xl py-10  overflow-y-auto">
         <AlertDialogHeader>
           <DialogTitle>
             {mode === "REPRODUCCION"
@@ -433,8 +433,7 @@ export default function JavaGrupoDialog({
                         className="cursor-pointer"
                         disabled={
                           isSubmitting ||
-                          (!isEditing && !canStartReproduction()) ||
-                          (isEditing && isCountersBlocked)
+                          (!isEditing && !canStartReproduction())
                         }
                         onClick={() => {
                           const current = watch("hembrasNacidas") ?? 0;
