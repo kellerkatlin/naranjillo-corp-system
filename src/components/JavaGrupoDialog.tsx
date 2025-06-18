@@ -384,10 +384,18 @@ export default function JavaGrupoDialog({
 
                 {categoria === "REPRODUCCION" && (
                   <div className="flex-1 w-full">
-                    <Label className={`flex items-center gap-1 mb-2`}>
+                    <Label
+                      className={`flex items-center gap-1 mb-2  ${
+                        !isEditing ? "opacity-100" : "opacity-60"
+                      }`}
+                    >
                       Hembras Nacidas
                     </Label>
-                    <div className={`flex items-center gap-1 `}>
+                    <div
+                      className={`flex items-center gap-1  ${
+                        !isEditing ? "opacity-100" : "opacity-60"
+                      } `}
+                    >
                       <Input
                         type="number"
                         value={watch("hembrasNacidas") ?? 0}
@@ -419,6 +427,7 @@ export default function JavaGrupoDialog({
                         type="button"
                         variant="outline"
                         className="cursor-pointer"
+                        disabled={!isEditing}
                         onClick={() => {
                           const current = watch("hembrasNacidas") ?? 0;
                           setValue("hembrasNacidas", current + 1);
@@ -490,10 +499,18 @@ export default function JavaGrupoDialog({
 
                 <div className="flex-1 flex-col ">
                   <div className="flex-1 w-full mb-3">
-                    <Label className={`flex items-center gap-1 mb-2`}>
+                    <Label
+                      className={`flex items-center gap-1 mb-2  ${
+                        !isEditing ? "opacity-100" : "opacity-60"
+                      }`}
+                    >
                       Machos Nacidos
                     </Label>
-                    <div className={`flex items-center gap-1 `}>
+                    <div
+                      className={`flex items-center gap-1   ${
+                        !isEditing ? "opacity-100" : "opacity-60"
+                      }`}
+                    >
                       <Input
                         type="number"
                         value={watch("machosNacidos") ?? 0}
@@ -525,6 +542,7 @@ export default function JavaGrupoDialog({
                         type="button"
                         variant="outline"
                         className="cursor-pointer"
+                        disabled={!isEditing}
                         onClick={() => {
                           const current = watch("machosNacidos") ?? 0;
                           setValue("machosNacidos", current + 1);
@@ -535,10 +553,18 @@ export default function JavaGrupoDialog({
                     </div>
                   </div>
                   <div className="flex-1 w-full">
-                    <Label className={`flex items-center gap-1 mb-2 `}>
+                    <Label
+                      className={`flex items-center gap-1 mb-2 ${
+                        !isEditing ? "opacity-100" : "opacity-60"
+                      }`}
+                    >
                       Registrar Muertos
                     </Label>
-                    <div className={`flex items-center gap-1 `}>
+                    <div
+                      className={`flex items-center gap-1 ${
+                        !isEditing ? "opacity-100" : "opacity-60"
+                      } `}
+                    >
                       <Input
                         type="number"
                         value={watch("muertos") ?? 0}
@@ -569,6 +595,7 @@ export default function JavaGrupoDialog({
                       <Button
                         type="button"
                         variant="outline"
+                        disabled={!isEditing}
                         className="cursor-pointer"
                         onClick={() => {
                           const current = watch("muertos") ?? 0;
