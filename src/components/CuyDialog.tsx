@@ -57,6 +57,7 @@ export default function CuyDialog({
   >([]);
   const [cuyesSinJava, setCuyesSinJava] = useState<Cuy[]>([]);
   const [cuySeleccionado, setCuySeleccionado] = useState<Cuy | null>(null);
+  const categoria = watch("categoria");
 
   useEffect(() => {
     if (open) {
@@ -85,16 +86,14 @@ export default function CuyDialog({
       }
     }
 
-    getCuySinJava(watch("categoria"))
+    getCuySinJava(categoria)
       .then(setCuyesSinJava)
       .catch(() => toast.error("Error al cargar cuyes sin java"));
-  }, [open, cuy, reset]);
+  }, [open, cuy, reset, categoria]);
 
   const isEditMode = !!cuy;
 
   const sexo = watch("sexo");
-
-  const categoria = watch("categoria");
 
   useEffect(() => {
     if (sexo && categoria) {
