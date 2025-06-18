@@ -100,9 +100,11 @@ export default function CuyDialog({
   }, [sexo, categoria, setValue]);
 
   useEffect(() => {
-    getCuySinJava(categoria ?? "ENGORDE")
-      .then(setCuyesSinJava)
-      .catch(() => console.error("Error al cargar cuyes sin java"));
+    if (categoria !== "") {
+      getCuySinJava(categoria ?? "ENGORDE")
+        .then(setCuyesSinJava)
+        .catch(() => console.error("Error al cargar cuyes sin java"));
+    }
   }, [categoria]);
 
   const handleFormSubmit = (data: CuyRequest) => {
