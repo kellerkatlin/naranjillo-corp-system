@@ -301,99 +301,101 @@ export default function CuyDialog({
           </div>
 
           <div className="flex-1">
-            <Card>
-              <CardContent className="p-0">
-                {cuyesSinJava.length ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Sexo</TableHead>
-                        <TableHead>Sel.</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {cuyesSinJava.map((cuy) => {
-                        return (
-                          <TableRow
-                            key={cuy.id}
-                            className={
-                              cuySeleccionado?.id === cuy.id ? "bg-muted" : ""
-                            }
-                          >
-                            <TableCell>{cuy.id}</TableCell>
-                            <TableCell>{cuy.sexo}</TableCell>
-                            <TableCell>
-                              <Checkbox
-                                checked={cuySeleccionado?.id === cuy.id}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setCuySeleccionado(cuy);
-                                    const fecha =
-                                      cuy.fechaRegistro.split("T")[0];
-                                    const hora =
-                                      cuy.fechaRegistro
-                                        .split("T")[1]
-                                        ?.substring(0, 5) ?? "00:00";
+            {categoria !== "" && (
+              <Card>
+                <CardContent className="p-0">
+                  {cuyesSinJava.length ? (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>ID</TableHead>
+                          <TableHead>Sexo</TableHead>
+                          <TableHead>Sel.</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {cuyesSinJava.map((cuy) => {
+                          return (
+                            <TableRow
+                              key={cuy.id}
+                              className={
+                                cuySeleccionado?.id === cuy.id ? "bg-muted" : ""
+                              }
+                            >
+                              <TableCell>{cuy.id}</TableCell>
+                              <TableCell>{cuy.sexo}</TableCell>
+                              <TableCell>
+                                <Checkbox
+                                  checked={cuySeleccionado?.id === cuy.id}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setCuySeleccionado(cuy);
+                                      const fecha =
+                                        cuy.fechaRegistro.split("T")[0];
+                                      const hora =
+                                        cuy.fechaRegistro
+                                          .split("T")[1]
+                                          ?.substring(0, 5) ?? "00:00";
 
-                                    // Calcular edad en semanas desde fechaRegistro hasta hoy
-                                    const fechaRegistroDate = new Date(fecha);
-                                    const hoyDate = new Date();
-                                    const diffMs =
-                                      hoyDate.getTime() -
-                                      fechaRegistroDate.getTime();
-                                    const diffDias = Math.floor(
-                                      diffMs / (1000 * 60 * 60 * 24)
-                                    );
+                                      // Calcular edad en semanas desde fechaRegistro hasta hoy
+                                      const fechaRegistroDate = new Date(fecha);
+                                      const hoyDate = new Date();
+                                      const diffMs =
+                                        hoyDate.getTime() -
+                                        fechaRegistroDate.getTime();
+                                      const diffDias = Math.floor(
+                                        diffMs / (1000 * 60 * 60 * 24)
+                                      );
 
-                                    reset({
-                                      ...cuy,
-                                      id: cuy.id,
-                                      sexo: cuy.sexo,
-                                      java: { id: cuy.java?.id || 0 },
-                                      estado: cuy.estado,
-                                      categoria: cuy.categoria,
-                                      edad:
-                                        categoria === "ENGORDE"
-                                          ? cuy.edad
-                                          : diffDias,
-                                      fechaRegistro: fecha,
-                                      horaRegistro: hora,
-                                    });
-                                  } else {
-                                    setCuySeleccionado(null);
-                                    const hoy = new Date();
-                                    const fechaLocal =
-                                      hoy.toLocaleDateString("sv-SE");
-                                    reset({
-                                      id: undefined,
-                                      edad: 0,
-                                      fechaRegistro: fechaLocal,
+                                      reset({
+                                        ...cuy,
+                                        id: cuy.id,
+                                        sexo: cuy.sexo,
+                                        java: { id: cuy.java?.id || 0 },
+                                        estado: cuy.estado,
+                                        categoria: cuy.categoria,
+                                        edad:
+                                          categoria === "ENGORDE"
+                                            ? cuy.edad
+                                            : diffDias,
+                                        fechaRegistro: fecha,
+                                        horaRegistro: hora,
+                                      });
+                                    } else {
+                                      setCuySeleccionado(null);
+                                      const hoy = new Date();
+                                      const fechaLocal =
+                                        hoy.toLocaleDateString("sv-SE");
+                                      reset({
+                                        id: undefined,
+                                        edad: 0,
+                                        fechaRegistro: fechaLocal,
 
-                                      horaRegistro: hoy
-                                        .toTimeString()
-                                        .slice(0, 5),
-                                      categoria: "",
-                                      java: { id: 0 },
-                                      estado: "VIVO",
-                                      sexo: "",
-                                    });
-                                  }
-                                }}
-                              />
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="text-gray-400 text-center p-4">
-                    No hay cuyes.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                                        horaRegistro: hoy
+                                          .toTimeString()
+                                          .slice(0, 5),
+                                        categoria: "",
+                                        java: { id: 0 },
+                                        estado: "VIVO",
+                                        sexo: "",
+                                      });
+                                    }
+                                  }}
+                                />
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="text-gray-400 text-center p-4">
+                      No hay cuyes.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
