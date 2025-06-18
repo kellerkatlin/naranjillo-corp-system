@@ -145,8 +145,13 @@ export default function JavaGrupoDialog({
     : false;
 
   const canToggleCheckbox = (rowId: number) => {
-    if (!padreSel || !padreValido) return true;
-    return rowId === padreSel.id;
+    if (!padreSel) return true;
+
+    const existeEnLista = padresDisponibles.some((p) => p.id === padreSel.id);
+
+    if (existeEnLista) return rowId === padreSel.id;
+
+    return false;
   };
 
   useEffect(() => {
@@ -275,6 +280,7 @@ export default function JavaGrupoDialog({
   const TablaPadre = () => (
     <>
       <h2 className="text-base font-bold mb-4">Seleccionar nuevo Padre</h2>
+
       <Card>
         <CardContent className="p-0">
           {padresDisponibles.length ? (
@@ -287,18 +293,30 @@ export default function JavaGrupoDialog({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {padresDisponibles.map((cuy) => (
-                  <TableRow key={cuy.id}>
-                    <TableCell>{cuy.id}</TableCell>
-                    <TableCell>{cuy.sexo}</TableCell>
-                    <TableCell>
-                      <Checkbox
-                        disabled={!canToggleCheckbox(cuy.id)}
-                        onCheckedChange={() => setValue("padre", cuy)}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {padresDisponibles.map((cuy) => {
+                  const isChecked = padreSel?.id === cuy.id;
+                  const isEnabled = canToggleCheckbox(cuy.id);
+
+                  return (
+                    <TableRow key={cuy.id}>
+                      <TableCell>{cuy.id}</TableCell>
+                      <TableCell>{cuy.sexo}</TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={isChecked}
+                          disabled={!isEnabled}
+                          onCheckedChange={(checked) => {
+                            if (checked) {
+                              setValue("padre", cuy); // seleccionar
+                            } else if (isChecked) {
+                              setValue("padre", null); // des-seleccionar
+                            }
+                          }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           ) : (
