@@ -26,12 +26,15 @@ import {
   SelectValue,
 } from "./ui/select";
 import {
+  cambioPadreDeJava,
+  getAllJava,
   getCuyesPadres,
   updateJavaCuyReproduccion,
 } from "@/services/javaService";
 import { CuyPadre } from "@/types/cuy";
 import { Calendar } from "./ui/calendar";
 import { toast } from "sonner";
+import { JavaRespose } from "@/types/java";
 
 interface JavaGrupoDialogProps {
   readonly open: boolean;
@@ -75,11 +78,13 @@ export default function JavaGrupoDialog({
   const [isReproduccionIniciada] = useState(false);
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
   const [madresDisponibles, setMadresDisponibles] = useState<CuyPadre[]>([]);
+  const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
+  const [selectedCuyId, setSelectedCuyId] = useState<number | null>(null);
+  const [selectedJavaId, setSelectedJavaId] = useState<number | null>(null);
 
   const [seleccionActual, setSeleccionActual] = useState<
     "padre" | "madre" | "fecha" | null
   >(null);
-
   const {
     register,
     watch,
@@ -100,6 +105,7 @@ export default function JavaGrupoDialog({
       regiones: {},
     },
   });
+  const padreSel = watch("padre");
 
   useEffect(() => {
     if (open) {
@@ -129,16 +135,30 @@ export default function JavaGrupoDialog({
 
   const categoria = watch("categoria");
 
+  useEffect(() => {
+    getAllJava("MACHO", "ENGORDE")
+      .then(setJavasMachos)
+      .catch(() => toast.error("Error al cargar javas"));
+  }, []);
+
+  useEffect(() => {
+    setSelectedCuyId(null);
+  }, [padreSel?.id]);
+
+  const padreValido = padresDisponibles.some((p) => p.id === padreSel?.id);
+
   const handleOpenPadre = async () => {
     try {
       const data = await getCuyesPadres("MACHO", "ENGORDE");
-      setPadresDisponibles(data);
+      const pre = padreSel ? [padreSel] : [];
+      const idsPre = new Set(pre.map((p) => p.id));
+      const nuevas = data.filter((d) => !idsPre.has(d.id));
+      setPadresDisponibles([...pre, ...nuevas]);
       setSeleccionActual("padre");
-    } catch (error) {
-      console.error("Error al obtener padres", error);
+    } catch {
+      toast.error("Error al obtener padres");
     }
   };
-
   const handleOpenMadre = async () => {
     try {
       const data = await getCuyesPadres("HEMBRA", "ENGORDE");
@@ -152,6 +172,21 @@ export default function JavaGrupoDialog({
       setSeleccionActual("madre");
     } catch (error) {
       console.error("Error al obtener madres", error);
+    }
+  };
+
+  const doCambioPadre = async () => {
+    if (!selectedJavaId || !selectedCuyId) return;
+    try {
+      await cambioPadreDeJava(selectedJavaId, selectedCuyId);
+      toast.success("Padre cambiado correctamente");
+      // limpiar padre y selección
+      setValue("padre", null);
+      setSelectedCuyId(null);
+      // refrescamos padres por si acaso
+      setPadresDisponibles([]);
+    } catch {
+      toast.error("Error al cambiar padre");
     }
   };
 
@@ -584,39 +619,77 @@ export default function JavaGrupoDialog({
                 <h2 className="text-base font-bold mb-4">Seleccionar Padre</h2>
                 <Card>
                   <CardContent className="p-0">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Id</TableHead>
-                          <TableHead>Sexo</TableHead>
-                          <TableHead>Check</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {padresDisponibles.map((item) => {
-                          return (
-                            <TableRow key={item.id}>
-                              <TableCell>{item.id}</TableCell>
-                              <TableCell>{item.sexo}</TableCell>
+                    {(watch("cuyes") ?? []).length > 0 ? (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Sel.</TableHead>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Sexo</TableHead>
+                            <TableHead>Fecha Registro</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {(watch("cuyes") ?? []).map((cuy) => (
+                            <TableRow key={cuy.id}>
                               <TableCell>
                                 <Checkbox
-                                  disabled={isReproduccionIniciada}
-                                  checked={watch("padre")?.id === item.id}
+                                  checked={selectedCuyId === cuy.id}
                                   onCheckedChange={() =>
-                                    setValue("padre", {
-                                      id: item.id,
-                                      sexo: item.sexo,
-                                    })
+                                    setSelectedCuyId(cuy.id)
                                   }
+                                  disabled={!padreValido}
                                 />
                               </TableCell>
+                              <TableCell>{cuy.id}</TableCell>
+                              <TableCell>{cuy.sexo}</TableCell>
+                              <TableCell>
+                                {new Date(cuy.fechaRegistro).toLocaleString(
+                                  "es-PE",
+                                  {
+                                    dateStyle: "short",
+                                    timeStyle: "short",
+                                  }
+                                )}
+                              </TableCell>
                             </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    ) : (
+                      <div className="text-gray-400 text-center p-4">
+                        No hay cuyes en esta java.
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
+
+                <div className="mt-4 flex gap-2 items-center">
+                  <Label>Java destino:</Label>
+                  <Select
+                    value={selectedJavaId?.toString()}
+                    onValueChange={(v) => setSelectedJavaId(Number(v))}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Seleccionar Java" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {javasMachos.map((j) => (
+                          <SelectItem key={j.id} value={j.id.toString()}>
+                            {j.nombre}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    onClick={doCambioPadre}
+                    disabled={!selectedJavaId || !selectedCuyId}
+                  >
+                    Cambiar Padre
+                  </Button>
+                </div>
               </>
             )}
 
