@@ -303,9 +303,7 @@ export default function CuyDialog({
           <div className="flex-1">
             <div className="flex flex-col">
               <Label className="mb-3 block text-center">
-                {categoria === "CRIA"
-                  ? "Crias sin Java"
-                  : "Cuyes Padres sin Java"}
+                {categoria === "CRIA" ? "Crias sin Java" : "Cuyes sin Java"}
               </Label>
               {categoria !== "" && (
                 <Card>
