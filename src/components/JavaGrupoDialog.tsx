@@ -79,6 +79,7 @@ export default function JavaGrupoDialog({
   const [padresDisponibles, setPadresDisponibles] = useState<CuyPadre[]>([]);
   const [madresDisponibles, setMadresDisponibles] = useState<CuyPadre[]>([]);
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
+  const [javasHembras, setJavasHembras] = useState<JavaRespose[]>([]);
   const [selectedJavaId, setSelectedJavaId] = useState<number | null>(null);
 
   const [seleccionActual, setSeleccionActual] = useState<
@@ -138,6 +139,9 @@ export default function JavaGrupoDialog({
     getAllJava("MACHO", "ENGORDE")
       .then(setJavasMachos)
       .catch(() => toast.error("Error al cargar javas"));
+    getAllJava("HEMBRA", "ENGORDE")
+      .then(setJavasHembras)
+      .catch(() => toast.error("Error al cargar javas hembras"));
   }, []);
 
   const canToggleCheckbox = (rowId: number) => {
@@ -188,6 +192,29 @@ export default function JavaGrupoDialog({
       setPadresDisponibles([]);
     } catch {
       toast.error("Error al cambiar padre");
+    }
+  };
+
+  const doCambioMadre = async () => {
+    const madresSel: CuyPadre[] = watch("madre") || [];
+    if (!selectedJavaId || madresSel.length === 0) return;
+
+    // Tomamos la primera madre para enviar y el resto
+    const [madreEnviada, ...otrasMadres] = madresSel;
+
+    try {
+      await cambioPadreDeJava(selectedJavaId, madreEnviada.id);
+      toast.success("Madre cambiada correctamente");
+
+      // 1) Quitamos sólo la enviada del campo 'madre'
+      setValue("madre", otrasMadres);
+
+      // 2) (Opcional) Removemos también de la lista de disponibles
+      setMadresDisponibles((prev) =>
+        prev.filter((m) => m.id !== madreEnviada.id)
+      );
+    } catch {
+      toast.error("Error al cambiar madre");
     }
   };
 
@@ -345,6 +372,85 @@ export default function JavaGrupoDialog({
             disabled={!selectedJavaId || !padreSel}
           >
             Cambiar Padre
+          </Button>
+        </div>
+      )}
+    </>
+  );
+
+  const TablaMadre = () => (
+    <>
+      <h2 className="text-base text-center font-bold mb-4">
+        Seleccionar Madres
+      </h2>
+
+      <Card>
+        <CardContent className="p-0">
+          {madresDisponibles.length ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ID</TableHead>
+                  <TableHead>Sexo</TableHead>
+                  <TableHead>Sel.</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {madresDisponibles.map((item) => {
+                  const isChecked = madresSeleccionadas.some(
+                    (m) => m.id === item.id
+                  );
+                  const isEnabled = !isReproduccionIniciada;
+
+                  return (
+                    <TableRow key={item.id}>
+                      <TableCell>{item.id}</TableCell>
+                      <TableCell>{item.sexo}</TableCell>
+                      <TableCell>
+                        <Checkbox
+                          checked={isChecked}
+                          disabled={!isEnabled}
+                          onCheckedChange={() => handleSeleccionMadre(item)}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-gray-400 text-center p-4">No hay cuyes.</div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* select java destino + botón, si quieres replicar también este bloque */}
+      {isEditing && (
+        <div className="mt-4 flex gap-2 items-center">
+          <Label>Java destino:</Label>
+          <Select
+            value={selectedJavaId?.toString()}
+            onValueChange={(v) => setSelectedJavaId(Number(v))}
+            disabled={madresSeleccionadas.length === 0}
+          >
+            <SelectTrigger className="w-48">
+              <SelectValue placeholder="Seleccionar" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {javasHembras.map((j) => (
+                  <SelectItem key={j.id} value={j.id.toString()}>
+                    {j.nombre}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Button
+            onClick={doCambioMadre}
+            disabled={madresSeleccionadas.length === 0 || !selectedJavaId}
+          >
+            Cambiar Madres
           </Button>
         </div>
       )}
@@ -697,47 +803,7 @@ export default function JavaGrupoDialog({
           <div className="flex-1">
             {seleccionActual === "padre" && <TablaPadre />}
 
-            {seleccionActual === "madre" && (
-              <>
-                <h2 className="text-base font-bold text-center mb-4">
-                  Seleccionar Madres
-                </h2>
-                <Card>
-                  <CardContent className="p-0">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Id</TableHead>
-                          <TableHead>Sexo</TableHead>
-                          <TableHead>Check</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {madresDisponibles.map((item) => {
-                          return (
-                            <TableRow key={item.id}>
-                              <TableCell>{item.id}</TableCell>
-                              <TableCell>{item.sexo}</TableCell>
-                              <TableCell>
-                                <Checkbox
-                                  disabled={isReproduccionIniciada}
-                                  checked={madresSeleccionadas.some(
-                                    (m) => m.id === item.id
-                                  )}
-                                  onCheckedChange={() =>
-                                    handleSeleccionMadre(item)
-                                  }
-                                />
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </>
-            )}
+            {seleccionActual === "madre" && <TablaMadre />}
 
             {seleccionActual === "fecha" && (
               <>
