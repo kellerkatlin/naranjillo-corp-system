@@ -186,9 +186,7 @@ export default function JavaGrupoDialog({
     try {
       await cambioPadreDeJava(selectedJavaId, selectedCuyId);
       toast.success("Padre cambiado correctamente");
-      // limpiar padre y selección
       setValue("padre", null);
-      // refrescamos padres por si acaso
       setPadresDisponibles([]);
     } catch {
       toast.error("Error al cambiar padre");
@@ -210,9 +208,9 @@ export default function JavaGrupoDialog({
       setValue("madre", otrasMadres);
 
       // 2) (Opcional) Removemos también de la lista de disponibles
-      setMadresDisponibles((prev) =>
-        prev.filter((m) => m.id !== madreEnviada.id)
-      );
+      // setMadresDisponibles((prev) =>
+      //   prev.filter((m) => m.id !== madreEnviada.id)
+      // );
     } catch {
       toast.error("Error al cambiar madre");
     }
