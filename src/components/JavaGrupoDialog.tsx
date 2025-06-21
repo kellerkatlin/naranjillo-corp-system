@@ -342,7 +342,8 @@ export default function JavaGrupoDialog({
         fechaRegistro: fechaStr,
       });
     }
-
+    setShowCrias(true);
+    setSeleccionActual("crias");
     setCrias(nuevas);
   };
 
@@ -926,14 +927,12 @@ export default function JavaGrupoDialog({
                         >
                           Registrar
                         </Button>
+
                         <Button
                           type="button"
                           disabled={!isEditing}
                           className="bg-gray-400 w-full mt-3 hover:bg-gray-300"
-                          onClick={() => {
-                            setShowCrias(true);
-                            setSeleccionActual("crias");
-                          }}
+                          onClick={handleRegistrarCrias}
                         >
                           Ver crías
                         </Button>
