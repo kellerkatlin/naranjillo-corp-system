@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -51,6 +51,13 @@ interface JavaGrupoDialogProps {
   readonly onSubmitUpdate: (data: DataJava) => void;
   readonly javaToEdit?: DataJava;
 }
+
+type Cria = {
+  id: number;
+  sexo: "HEMBRA" | "MACHO";
+  peso: number;
+  fechaRegistro: string;
+};
 export type DataJava = {
   id: number | null;
   nombre: string;
@@ -89,9 +96,13 @@ export default function JavaGrupoDialog({
   const [javasHembras, setJavasHembras] = useState<JavaRespose[]>([]);
   const [selectedJavaId, setSelectedJavaId] = useState<number | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [crias, setCrias] = useState<Cria[]>([]);
+  const nextCriaId = useRef(1);
+  const [showCrias, setShowCrias] = useState(false);
   const [seleccionActual, setSeleccionActual] = useState<
-    "padre" | "madre" | "fecha" | null
+    "padre" | "madre" | "fecha" | "crias" | null
   >(null);
+
   const {
     register,
     watch,
@@ -298,6 +309,45 @@ export default function JavaGrupoDialog({
     } else {
       setValue("madre", [...current, item]);
     }
+  };
+
+  const handleRegistrarCrias = () => {
+    // Reiniciamos el contador de ID (opcional)
+    nextCriaId.current = 1;
+
+    const hembras = watch("hembrasNacidas") ?? 0;
+    const machos = watch("machosNacidos") ?? 0;
+
+    // Fecha/hora formateada
+    const now = new Date();
+    const dd = String(now.getDate()).padStart(2, "0");
+    const mm = String(now.getMonth() + 1).padStart(2, "0");
+    const yyyy = now.getFullYear();
+    const hh = String(now.getHours()).padStart(2, "0");
+    const min = String(now.getMinutes()).padStart(2, "0");
+    const fechaStr = `${dd}/${mm}/${yyyy} ${hh}:${min}`;
+
+    // Generamos *solo* el array que nos interesa
+    const nuevas: Cria[] = [];
+    for (let i = 0; i < hembras; i++) {
+      nuevas.push({
+        id: nextCriaId.current++,
+        sexo: "HEMBRA",
+        peso: 0,
+        fechaRegistro: fechaStr,
+      });
+    }
+    for (let i = 0; i < machos; i++) {
+      nuevas.push({
+        id: nextCriaId.current++,
+        sexo: "MACHO",
+        peso: 0,
+        fechaRegistro: fechaStr,
+      });
+    }
+
+    // Reemplazamos el estado en lugar de acumularlo
+    setCrias(nuevas);
   };
 
   const TablaPadre = () => (
@@ -621,224 +671,244 @@ export default function JavaGrupoDialog({
               )}
             </div>
             {categoria === "REPRODUCCION" && (
-              <div className="flex items-start w-full flex-col md:flex-row gap-4">
-                <div className="flex-1 w-full">
-                  <Label className="mb-2">Padre</Label>
+              <div className="flex gap-2">
+                <div className="flex-1 w-full flex-col gap-4">
+                  <div className="flex-1 w-full">
+                    <Label className="mb-2">Padre</Label>
 
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full cursor-pointer"
-                    onClick={handleOpenPadre}
-                  >
-                    {watch("padre")
-                      ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
-                      : "Seleccionar Padre"}
-                  </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full cursor-pointer"
+                      onClick={handleOpenPadre}
+                    >
+                      {watch("padre")
+                        ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
+                        : "Seleccionar Padre"}
+                    </Button>
+                  </div>
+                  <div className="flex-1 w-full">
+                    <Label className="mb-2">Madres</Label>
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="w-full  text-center flex-col items-center"
+                      onClick={handleOpenMadre}
+                    >
+                      Seleccionar Madres
+                    </Button>
+
+                    {/* Aquí mostramos las madres seleccionadas */}
+                    <Card className="w-full mt-2">
+                      <CardContent className="p-2">
+                        {madresSeleccionadas.length > 0 ? (
+                          <div className="flex flex-col text-center font-semibold">
+                            {madresSeleccionadas.map((madre, index) => (
+                              <span key={index}>
+                                {madre.id} - {madre.sexo}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center text-gray-400">
+                            No se seleccionaron madres
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
                 </div>
 
-                {categoria === "REPRODUCCION" && (
-                  <div className="flex-1 w-full">
-                    <Label
-                      className={`flex items-center gap-1 mb-2  ${
-                        isEditing ? "opacity-100" : "opacity-60"
-                      }`}
-                    >
-                      Hembras Nacidas
-                    </Label>
-                    <div
-                      className={`flex items-center gap-1  ${
-                        isEditing ? "opacity-100" : "opacity-60"
-                      } `}
-                    >
-                      <Input
-                        type="number"
-                        value={watch("hembrasNacidas") ?? 0}
-                        disabled
-                        className="text-center   disabled:opacity-100 bg-pink-400"
-                      />
-                      {errors.hembrasNacidas && (
-                        <p className="text-red-500 text-sm mt-1">
-                          Este campo es requerido
-                        </p>
-                      )}
+                <div className="flex-1 w-full">
+                  <Label className="mb-2"> Registrar crias</Label>
 
+                  <Card>
+                    <div className="p-1">
+                      <div>
+                        <Label
+                          className={`flex items-center gap-1 mb-2  ${
+                            isEditing ? "opacity-100" : "opacity-60"
+                          }`}
+                        >
+                          Hembras Nacidas
+                        </Label>
+                        <div
+                          className={`flex items-center gap-1  ${
+                            isEditing ? "opacity-100" : "opacity-60"
+                          } `}
+                        >
+                          <Input
+                            type="number"
+                            value={watch("hembrasNacidas") ?? 0}
+                            disabled
+                            className="text-center   disabled:opacity-100 bg-pink-400"
+                          />
+                          {errors.hembrasNacidas && (
+                            <p className="text-red-500 text-sm mt-1">
+                              Este campo es requerido
+                            </p>
+                          )}
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                            onClick={() => {
+                              const current = watch("hembrasNacidas") ?? 0;
+                              if (current > 0) {
+                                setValue("hembrasNacidas", current - 1);
+                              }
+                            }}
+                            disabled={(watch("hembrasNacidas") ?? 0) <= 0}
+                          >
+                            <Minus />
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                            disabled={!isEditing}
+                            onClick={() => {
+                              const current = watch("hembrasNacidas") ?? 0;
+                              setValue("hembrasNacidas", current + 1);
+                            }}
+                          >
+                            <Plus />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label
+                          className={`flex items-center gap-1 mb-2  ${
+                            isEditing ? "opacity-100" : "opacity-60"
+                          }`}
+                        >
+                          Machos Nacidos
+                        </Label>
+                        <div
+                          className={`flex items-center gap-1   ${
+                            isEditing ? "opacity-100" : "opacity-60"
+                          }`}
+                        >
+                          <Input
+                            type="number"
+                            value={watch("machosNacidos") ?? 0}
+                            disabled
+                            className=" text-center  disabled:opacity-100 bg-purple-400"
+                          />
+                          {errors.machosNacidos && (
+                            <p className="text-red-500 text-sm mt-1">
+                              Este campo es requerido
+                            </p>
+                          )}
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                            onClick={() => {
+                              const current = watch("machosNacidos") ?? 0;
+                              if (current > 0) {
+                                setValue("machosNacidos", current - 1);
+                              }
+                            }}
+                            disabled={(watch("machosNacidos") ?? 0) <= 0}
+                          >
+                            <Minus />
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                            disabled={!isEditing}
+                            onClick={() => {
+                              const current = watch("machosNacidos") ?? 0;
+                              setValue("machosNacidos", current + 1);
+                            }}
+                          >
+                            <Plus />
+                          </Button>
+                        </div>
+                      </div>
+                      <div>
+                        <Label
+                          className={`flex items-center gap-1 mb-2 ${
+                            isEditing ? "opacity-100" : "opacity-60"
+                          }`}
+                        >
+                          Registrar Muertos
+                        </Label>
+                        <div
+                          className={`flex items-center gap-1 ${
+                            isEditing ? "opacity-100" : "opacity-60"
+                          } `}
+                        >
+                          <Input
+                            type="number"
+                            value={watch("muertos") ?? 0}
+                            disabled
+                            className=" text-center bg-gray-400 disabled:opacity-100"
+                          />
+                          {errors.muertos && (
+                            <p className="text-red-500 text-sm mt-1">
+                              Este campo es requerido
+                            </p>
+                          )}
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            className="cursor-pointer"
+                            onClick={() => {
+                              const current = watch("muertos") ?? 0;
+                              if (current > 0) {
+                                setValue("muertos", current - 1);
+                              }
+                            }}
+                            disabled={(watch("muertos") ?? 0) <= 0}
+                          >
+                            <Minus />
+                          </Button>
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled={!isEditing}
+                            className="cursor-pointer"
+                            onClick={() => {
+                              const current = watch("muertos") ?? 0;
+                              setValue("muertos", current + 1);
+                            }}
+                          >
+                            <Plus />
+                          </Button>
+                        </div>
+                      </div>
                       <Button
                         type="button"
-                        variant="outline"
-                        className="cursor-pointer"
-                        onClick={() => {
-                          const current = watch("hembrasNacidas") ?? 0;
-                          if (current > 0) {
-                            setValue("hembrasNacidas", current - 1);
-                          }
-                        }}
-                        disabled={(watch("hembrasNacidas") ?? 0) <= 0}
-                      >
-                        <Minus />
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="cursor-pointer"
                         disabled={!isEditing}
+                        className="bg-green-400 w-full mt-3 hover:bg-green-300"
+                        onClick={handleRegistrarCrias}
+                      >
+                        Registrar
+                      </Button>
+                      <Button
+                        type="button"
+                        disabled={!isEditing}
+                        className="bg-gray-400 w-full mt-3 hover:bg-gray-300"
                         onClick={() => {
-                          const current = watch("hembrasNacidas") ?? 0;
-                          setValue("hembrasNacidas", current + 1);
+                          setShowCrias(true);
+                          setSeleccionActual("crias");
                         }}
                       >
-                        <Plus />
+                        Ver crías
                       </Button>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {categoria === "REPRODUCCION" && (
-              <div className="flex items-start w-full flex-col md:flex-row gap-4">
-                <div className="flex-1 w-full">
-                  <Label className="mb-2">Madres</Label>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full  text-center flex-col items-center"
-                    onClick={handleOpenMadre}
-                  >
-                    Seleccionar Madres
-                  </Button>
-
-                  {/* Aquí mostramos las madres seleccionadas */}
-                  <Card className="w-full mt-2">
-                    <CardContent className="p-2">
-                      {madresSeleccionadas.length > 0 ? (
-                        <div className="flex flex-col text-center font-semibold">
-                          {madresSeleccionadas.map((madre, index) => (
-                            <span key={index}>
-                              {madre.id} - {madre.sexo}
-                            </span>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center text-gray-400">
-                          No se seleccionaron madres
-                        </div>
-                      )}
-                    </CardContent>
                   </Card>
-                </div>
-
-                <div className="flex-1 flex-col ">
-                  <div className="flex-1 w-full mb-3">
-                    <Label
-                      className={`flex items-center gap-1 mb-2  ${
-                        isEditing ? "opacity-100" : "opacity-60"
-                      }`}
-                    >
-                      Machos Nacidos
-                    </Label>
-                    <div
-                      className={`flex items-center gap-1   ${
-                        isEditing ? "opacity-100" : "opacity-60"
-                      }`}
-                    >
-                      <Input
-                        type="number"
-                        value={watch("machosNacidos") ?? 0}
-                        disabled
-                        className=" text-center  disabled:opacity-100 bg-purple-400"
-                      />
-                      {errors.machosNacidos && (
-                        <p className="text-red-500 text-sm mt-1">
-                          Este campo es requerido
-                        </p>
-                      )}
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="cursor-pointer"
-                        onClick={() => {
-                          const current = watch("machosNacidos") ?? 0;
-                          if (current > 0) {
-                            setValue("machosNacidos", current - 1);
-                          }
-                        }}
-                        disabled={(watch("machosNacidos") ?? 0) <= 0}
-                      >
-                        <Minus />
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="cursor-pointer"
-                        disabled={!isEditing}
-                        onClick={() => {
-                          const current = watch("machosNacidos") ?? 0;
-                          setValue("machosNacidos", current + 1);
-                        }}
-                      >
-                        <Plus />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex-1 w-full">
-                    <Label
-                      className={`flex items-center gap-1 mb-2 ${
-                        isEditing ? "opacity-100" : "opacity-60"
-                      }`}
-                    >
-                      Registrar Muertos
-                    </Label>
-                    <div
-                      className={`flex items-center gap-1 ${
-                        isEditing ? "opacity-100" : "opacity-60"
-                      } `}
-                    >
-                      <Input
-                        type="number"
-                        value={watch("muertos") ?? 0}
-                        disabled
-                        className=" text-center bg-gray-400 disabled:opacity-100"
-                      />
-                      {errors.muertos && (
-                        <p className="text-red-500 text-sm mt-1">
-                          Este campo es requerido
-                        </p>
-                      )}
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="cursor-pointer"
-                        onClick={() => {
-                          const current = watch("muertos") ?? 0;
-                          if (current > 0) {
-                            setValue("muertos", current - 1);
-                          }
-                        }}
-                        disabled={(watch("muertos") ?? 0) <= 0}
-                      >
-                        <Minus />
-                      </Button>
-
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={!isEditing}
-                        className="cursor-pointer"
-                        onClick={() => {
-                          const current = watch("muertos") ?? 0;
-                          setValue("muertos", current + 1);
-                        }}
-                      >
-                        <Plus />
-                      </Button>
-                    </div>
-                  </div>
                 </div>
               </div>
             )}
@@ -876,6 +946,49 @@ export default function JavaGrupoDialog({
                 </Card>
               </>
             )}
+
+            {showCrias && seleccionActual === "crias" && (
+              <>
+                <h2 className="text-base font-bold text-center mb-4">
+                  Lista de crías
+                </h2>
+                <Card>
+                  <CardContent className="p-0">
+                    <div className="max-h-64 overflow-y-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Sexo</TableHead>
+                            <TableHead>Peso (Gr)</TableHead>
+                            <TableHead>Fecha Registrar</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {crias.map((c) => (
+                            <TableRow key={c.id}>
+                              <TableCell>{c.id}</TableCell>
+                              <TableCell
+                                className={
+                                  c.sexo === "MACHO"
+                                    ? "text-blue-600"
+                                    : "text-pink-600"
+                                }
+                              >
+                                {c.sexo}
+                              </TableCell>
+                              <TableCell>{c.peso}</TableCell>
+                              <TableCell>{c.fechaRegistro}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </>
+            )}
+
             {isEditing && !seleccionActual && (
               <>
                 <h2 className="text-base font-bold text-center mb-4">
@@ -883,54 +996,64 @@ export default function JavaGrupoDialog({
                 </h2>
                 <Card>
                   <CardContent className="p-0">
-                    {(watch("cuyes") ?? []).length > 0 ? (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>ID</TableHead>
-                            <TableHead>Sexo</TableHead>
-                            <TableHead>Fecha y Hora</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {(watch("cuyes") ?? []).map((cuy) => (
-                            <TableRow key={cuy.id}>
-                              <TableCell>{cuy.id}</TableCell>
-                              <TableCell>{cuy.sexo}</TableCell>
-                              <TableCell>
-                                {(() => {
-                                  const fechaStr = cuy.fechaRegistro;
-                                  const fecha = new Date(fechaStr);
-
-                                  const dia = fecha
-                                    .getDate()
-                                    .toString()
-                                    .padStart(2, "0");
-                                  const mes = (fecha.getMonth() + 1)
-                                    .toString()
-                                    .padStart(2, "0");
-                                  const anio = fecha.getFullYear();
-                                  const hora = fecha
-                                    .getHours()
-                                    .toString()
-                                    .padStart(2, "0");
-                                  const minutos = fecha
-                                    .getMinutes()
-                                    .toString()
-                                    .padStart(2, "0");
-
-                                  return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
-                                })()}
-                              </TableCell>
+                    <div className="max-h-64 overflow-y-auto">
+                      {(watch("cuyes") ?? []).length > 0 ? (
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>ID</TableHead>
+                              <TableHead>Sexo</TableHead>
+                              <TableHead>Fecha y Hora</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    ) : (
-                      <div className="text-gray-400 text-center p-4">
-                        No hay cuyes en esta java.
-                      </div>
-                    )}
+                          </TableHeader>
+                          <TableBody>
+                            {(watch("cuyes") ?? []).map((cuy) => (
+                              <TableRow key={cuy.id}>
+                                <TableCell>{cuy.id}</TableCell>
+                                <TableCell
+                                  className={`${
+                                    cuy.sexo === "MACHO"
+                                      ? "text-blue-600"
+                                      : "text-pink-600"
+                                  }`}
+                                >
+                                  {cuy.sexo}
+                                </TableCell>
+                                <TableCell>
+                                  {(() => {
+                                    const fechaStr = cuy.fechaRegistro;
+                                    const fecha = new Date(fechaStr);
+
+                                    const dia = fecha
+                                      .getDate()
+                                      .toString()
+                                      .padStart(2, "0");
+                                    const mes = (fecha.getMonth() + 1)
+                                      .toString()
+                                      .padStart(2, "0");
+                                    const anio = fecha.getFullYear();
+                                    const hora = fecha
+                                      .getHours()
+                                      .toString()
+                                      .padStart(2, "0");
+                                    const minutos = fecha
+                                      .getMinutes()
+                                      .toString()
+                                      .padStart(2, "0");
+
+                                    return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
+                                  })()}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      ) : (
+                        <div className="text-gray-400 text-center p-4">
+                          No hay cuyes en esta java.
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </>
