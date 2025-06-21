@@ -145,7 +145,7 @@ export default function CuyDialog({
           </DialogHeader>
           <div className="flex gap-6 flex-col  md:justify-between md:flex-row">
             {/* Formulario a la izquierda */}
-            <div className="space-y-4 flex-1">
+            <div className="space-y-4 flex-1 mt-5">
               <div className="flex gap-4 w-full flex-col md:flex-row">
                 <div className="flex-1">
                   <Label className="mb-1 block">Fecha de Registro</Label>
@@ -444,7 +444,6 @@ export default function CuyDialog({
             <Button
               type="submit"
               className="bg-primary cursor-pointer hover:bg-orange-400"
-              onClick={() => handleSubmit(handleFormSubmit)()}
             >
               {cuy ? "Actualizar" : "Guardar"}
             </Button>

@@ -24,7 +24,7 @@ export interface JavaRespose {
   categoria: string;
   sexo: string;
   fechaReproduccion: string;
-
+  nombreJavaOrigen: string;
   cantidadHijasHembras: number;
   cantidadHijosMachos: number;
   cantidadHijosMuertos: number;
@@ -33,6 +33,7 @@ export interface JavaRespose {
     nombre: string;
     sexo: string;
     categoria: string;
+    nombreJavaOrigen: string;
     fechaRegistro: string;
   }>;
 }

@@ -50,6 +50,7 @@ interface JavaGrupoDialogProps {
   readonly mode: "REPRODUCCION" | "MACHO" | "HEMBRA";
   readonly onSubmitCreate: (data: DataJava) => void;
   readonly onSubmitUpdate: (data: DataJava) => void;
+  readonly onSubmitUpdateCuy: (data: DataJava) => void;
   readonly javaToEdit?: DataJava;
 }
 
@@ -85,6 +86,7 @@ export default function JavaGrupoDialog({
   onOpenChange,
   onSubmitCreate,
   onSubmitUpdate,
+  onSubmitUpdateCuy,
   mode,
   javaToEdit,
 }: JavaGrupoDialogProps) {
@@ -113,7 +115,7 @@ export default function JavaGrupoDialog({
   } = useForm<DataJava>({
     defaultValues: {
       nombre: "",
-      fechaReproduccion: null,
+      fechaReproduccion: new Date(),
       categoria: "REPRODUCCION",
       sexo: "",
       padre: null,
@@ -137,7 +139,7 @@ export default function JavaGrupoDialog({
       } else {
         reset({
           nombre: "",
-          fechaReproduccion: null,
+          fechaReproduccion: new Date(),
           categoria: mode === "REPRODUCCION" ? "REPRODUCCION" : "CRIA",
           sexo: mode === "REPRODUCCION" ? "NA" : mode,
           padre: null,
@@ -266,7 +268,7 @@ export default function JavaGrupoDialog({
     try {
       setIsSubmitting(true);
       if (isEditing) {
-        await onSubmitUpdate(formData);
+        await onSubmitUpdateCuy(formData);
       } else {
         await onSubmitCreate(formData);
       }
@@ -372,7 +374,7 @@ export default function JavaGrupoDialog({
                   return (
                     <TableRow key={cuy.id}>
                       <TableCell>{cuy.id}</TableCell>
-                      <TableCell>{cuy.sexo}</TableCell>
+                      <TableCell>{cuy.nombreJavaOrigen}</TableCell>
                       <TableCell>
                         <Checkbox
                           checked={isChecked}
@@ -456,7 +458,7 @@ export default function JavaGrupoDialog({
                   return (
                     <TableRow key={item.id}>
                       <TableCell>{item.id}</TableCell>
-                      <TableCell>{item.sexo}</TableCell>
+                      <TableCell>{item.nombreJavaOrigen}</TableCell>
                       <TableCell>
                         <Checkbox
                           checked={isChecked}
@@ -714,7 +716,9 @@ export default function JavaGrupoDialog({
                         onClick={handleOpenPadre}
                       >
                         {watch("padre")
-                          ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
+                          ? `${watch("padre")?.id} - ${
+                              watch("padre")?.nombreJavaOrigen
+                            }`
                           : "Seleccionar Padre"}
                       </Button>
                     </div>
@@ -737,7 +741,7 @@ export default function JavaGrupoDialog({
                             <div className="flex flex-col text-center font-semibold">
                               {madresSeleccionadas.map((madre, index) => (
                                 <span key={index}>
-                                  {madre.id} - {madre.sexo}
+                                  {madre.id} - {madre.nombreJavaOrigen}
                                 </span>
                               ))}
                             </div>
@@ -1179,7 +1183,7 @@ export default function JavaGrupoDialog({
                 disabled={isSubmitting || !canStartReproduction()}
                 onClick={handleFinalSubmit}
               >
-                Guardar Cambios
+                {isEditing ? "Actualizar Cambios" : "Guardar Cambios"}
               </Button>
             )}
           </div>

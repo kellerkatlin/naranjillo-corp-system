@@ -120,6 +120,15 @@ export const finalizarJavaCuy = (id: number, data: JavaRequestReproduccion) =>
     },
   });
 
+export const updateJavaCuy = (id: number, data: JavaRequestReproduccion) =>
+  apiFetch(`${BASE}/update/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
 export const cambioPadreDeJava = (idJava: number, idCuy: number) =>
   apiFetch(`${BASE}/update/java/${idJava}/cuy/${idCuy}`, {
     method: "POST",

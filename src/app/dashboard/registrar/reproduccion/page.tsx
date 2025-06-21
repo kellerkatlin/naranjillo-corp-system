@@ -8,6 +8,7 @@ import {
   createJavaCuyReproduccion,
   getAllJavaByCategoria,
   finalizarJavaCuy,
+  updateJavaCuy,
 } from "@/services/javaService";
 import { JavaRespose } from "@/types/java";
 import { Card, CardContent } from "@/components/ui/card";
@@ -112,6 +113,30 @@ export default function FormReproduccion() {
     }
   };
 
+  const handleSubmitUpdateCuy = async (form: DataJava) => {
+    try {
+      await updateJavaCuy(form.id ?? 0, {
+        nombre: form.nombre,
+        categoria: form.categoria ?? "",
+        sexo: form.sexo ?? "",
+        fechaReproduccion:
+          form.fechaReproduccion?.toISOString().split("T")[0] ?? "",
+        cantidadHijasHembras: form.hembrasNacidas ?? 0,
+        cantidadHijosMachos: form.machosNacidos ?? 0,
+        cantidadHijosMuertos: form.muertos ?? 0,
+        cuyes: [
+          ...(form.padre ? [{ id: form.padre.id }] : []),
+          ...form.madre.map((m) => ({ id: m.id })),
+        ],
+      });
+      await fetchReproduccion();
+      await useMessageStore.getState().fetchMessages();
+      toast.success("Reproducción actualizada");
+      cerrarDialog();
+    } catch {
+      toast.error("Error al actualizar reproducción");
+    }
+  };
   const handleSubmitUpdate = async (form: DataJava) => {
     try {
       await finalizarJavaCuy(form.id ?? 0, {
@@ -179,12 +204,16 @@ export default function FormReproduccion() {
                       grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
                     const madres =
                       grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+                    const [y, m, d] = grupo.fechaReproduccion
+                      .split("-")
+                      .map(Number);
+                    const fechaLocal = new Date(y, m - 1, d); // año, mesIndexado(0–11), día
 
                     setJavaToEdit({
                       id: grupo.id,
                       nombre: grupo.nombre,
                       categoria: grupo.categoria,
-                      fechaReproduccion: new Date(grupo.fechaReproduccion),
+                      fechaReproduccion: fechaLocal,
                       hembrasNacidas: grupo.cantidadHijasHembras,
                       sexo: grupo.sexo,
                       cuyes: grupo.cuyes,
@@ -196,6 +225,7 @@ export default function FormReproduccion() {
                             sexo: padre.sexo,
                             categoria: padre.categoria,
                             edad: 0,
+                            nombreJavaOrigen: padre.nombreJavaOrigen,
                             estado: "ACTIVO",
                             fechaRegistro: padre.fechaRegistro,
                             horaRegistro: padre.fechaRegistro,
@@ -208,6 +238,7 @@ export default function FormReproduccion() {
                         sexo: m.sexo,
                         nombre: m.nombre,
                         edad: 0,
+                        nombreJavaOrigen: m.nombreJavaOrigen,
                         fechaRegistro: m.fechaRegistro,
                         horaRegistro: m.fechaRegistro,
                         categoria: m.categoria ?? "",
@@ -294,6 +325,7 @@ export default function FormReproduccion() {
                             fechaRegistro: padre.fechaRegistro,
                             horaRegistro: padre.fechaRegistro,
                             nombre: padre.nombre,
+                            nombreJavaOrigen: padre.nombreJavaOrigen,
                             java: "",
                           }
                         : null,
@@ -303,6 +335,7 @@ export default function FormReproduccion() {
                         nombre: m.nombre,
                         edad: 0,
                         fechaRegistro: m.fechaRegistro,
+                        nombreJavaOrigen: m.nombreJavaOrigen,
                         horaRegistro: m.fechaRegistro,
                         categoria: m.categoria ?? "",
                         estado: "ACTIVO",
@@ -366,12 +399,16 @@ export default function FormReproduccion() {
                       grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
                     const madres =
                       grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+                    const [y, m, d] = grupo.fechaReproduccion
+                      .split("-")
+                      .map(Number);
+                    const fechaLocal = new Date(y, m - 1, d); // año, mesIndexado(0–11), día
 
                     setJavaToEdit({
                       id: grupo.id,
                       nombre: grupo.nombre,
                       categoria: grupo.categoria,
-                      fechaReproduccion: new Date(grupo.fechaReproduccion),
+                      fechaReproduccion: fechaLocal,
                       sexo: grupo.sexo,
                       hembrasNacidas: grupo.cantidadHijasHembras,
                       machosNacidos: grupo.cantidadHijosMachos,
@@ -380,6 +417,7 @@ export default function FormReproduccion() {
                         ? {
                             id: padre.id,
                             sexo: padre.sexo,
+                            nombreJavaOrigen: padre.nombreJavaOrigen,
                             categoria: padre.categoria,
                             edad: 0,
                             estado: "ACTIVO",
@@ -394,6 +432,7 @@ export default function FormReproduccion() {
                         sexo: m.sexo,
                         nombre: m.nombre,
                         edad: 0,
+                        nombreJavaOrigen: m.nombreJavaOrigen,
                         fechaRegistro: m.fechaRegistro,
                         horaRegistro: m.fechaRegistro,
                         categoria: m.categoria ?? "",
@@ -423,6 +462,7 @@ export default function FormReproduccion() {
         mode={dialogGrupoOpen === false ? "REPRODUCCION" : dialogGrupoOpen}
         onSubmitCreate={handleSubmitCreate}
         onSubmitUpdate={handleSubmitUpdate}
+        onSubmitUpdateCuy={handleSubmitUpdateCuy}
         javaToEdit={javaToEdit}
       />
     </div>

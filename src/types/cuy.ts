@@ -22,6 +22,7 @@ export type CuyPadre = {
   nombre: string;
   sexo: string;
   edad: number;
+  nombreJavaOrigen: string;
   fechaRegistro: string;
   horaRegistro: string;
   java: string;
