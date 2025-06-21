@@ -1174,7 +1174,7 @@ export default function JavaGrupoDialog({
                 type="button"
                 className={`${
                   isEditing
-                    ? "bg-red-600 hover:bg-red-700"
+                    ? "bg-green-600 hover:bg-green-700"
                     : "bg-green-600 hover:bg-green-700"
                 }`}
                 disabled={isSubmitting || !canStartReproduction()}
