@@ -46,10 +46,8 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
           width={64}
           height={64}
         />
-        <div className=" text-gray-800">
-          {java?.sexo !== "NA" && java?.sexo}
-        </div>
-        {java?.categoria === "REPRODUCCION" && (
+
+        {java?.categoria && (
           <Badge variant="secondary" className="bg-blue-500 text-white">
             {diasReproduccion !== undefined ? `Días: ${diasReproduccion}` : "-"}
           </Badge>

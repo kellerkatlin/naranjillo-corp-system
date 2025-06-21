@@ -78,7 +78,7 @@ export default function FormReproduccion() {
           categoria: form.categoria,
           sexo: "NA",
           fechaReproduccion:
-            form.fechaInicio?.toISOString().split("T")[0] ?? "",
+            form.fechaReproduccion?.toISOString().split("T")[0] ?? "",
           cantidadHijasHembras: form.hembrasNacidas ?? 0,
           cantidadHijosMachos: form.machosNacidos ?? 0,
           cantidadHijosMuertos: form.muertos ?? 0,
@@ -96,7 +96,7 @@ export default function FormReproduccion() {
           categoria: form.categoria ?? "",
           sexo: form.sexo ?? "",
           fechaReproduccion:
-            form.fechaInicio?.toISOString().split("T")[0] ?? "",
+            form.fechaReproduccion?.toISOString().split("T")[0] ?? "",
         });
         await useMessageStore.getState().fetchMessages();
         if (form.sexo === "MACHO") {
@@ -118,7 +118,8 @@ export default function FormReproduccion() {
         nombre: form.nombre,
         categoria: form.categoria ?? "",
         sexo: "NA",
-        fechaReproduccion: form.fechaInicio?.toISOString().split("T")[0] ?? "",
+        fechaReproduccion:
+          form.fechaReproduccion?.toISOString().split("T")[0] ?? "",
         cantidadHijasHembras: form.hembrasNacidas ?? 0,
         cantidadHijosMachos: form.machosNacidos ?? 0,
         cantidadHijosMuertos: form.muertos ?? 0,
@@ -183,7 +184,7 @@ export default function FormReproduccion() {
                       id: grupo.id,
                       nombre: grupo.nombre,
                       categoria: grupo.categoria,
-                      fechaInicio: new Date(grupo.fechaReproduccion),
+                      fechaReproduccion: new Date(grupo.fechaReproduccion),
                       hembrasNacidas: grupo.cantidadHijasHembras,
                       sexo: grupo.sexo,
                       cuyes: grupo.cuyes,
@@ -228,7 +229,7 @@ export default function FormReproduccion() {
       {/* GRUPO MACHOS */}
       <Card className="p-3 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {["TODOS", "ENGORDE", "CRIA"].map((cat) => (
               <Button
                 key={cat}
@@ -239,7 +240,7 @@ export default function FormReproduccion() {
                 }`}
                 onClick={() => setFiltroMacho(cat)}
               >
-                {cat}
+                {cat === "TODOS" ? "TODOS CUYES MACHOS" : cat}
               </Button>
             ))}
           </div>
@@ -268,12 +269,16 @@ export default function FormReproduccion() {
                       grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
                     const madres =
                       grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+                    const [y, m, d] = grupo.fechaReproduccion
+                      .split("-")
+                      .map(Number);
+                    const fechaLocal = new Date(y, m - 1, d); // año, mesIndexado(0–11), día
 
                     setJavaToEdit({
                       id: grupo.id,
                       nombre: grupo.nombre,
                       categoria: grupo.categoria,
-                      fechaInicio: new Date(grupo.fechaReproduccion),
+                      fechaReproduccion: fechaLocal,
                       hembrasNacidas: grupo.cantidadHijasHembras,
                       sexo: grupo.sexo,
                       cuyes: grupo.cuyes,
@@ -320,7 +325,7 @@ export default function FormReproduccion() {
 
       <Card className="p-3 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {["TODOS", "ENGORDE", "CRIA"].map((cat) => (
               <Button
                 key={cat}
@@ -332,7 +337,7 @@ export default function FormReproduccion() {
                 variant={filtroHembra === cat ? "default" : "outline"}
                 onClick={() => setFiltroHembra(cat)}
               >
-                {cat}
+                {cat === "TODOS" ? "TODOS CUYES HEMBRAS" : cat}
               </Button>
             ))}
           </div>
@@ -366,7 +371,7 @@ export default function FormReproduccion() {
                       id: grupo.id,
                       nombre: grupo.nombre,
                       categoria: grupo.categoria,
-                      fechaInicio: new Date(grupo.fechaReproduccion),
+                      fechaReproduccion: new Date(grupo.fechaReproduccion),
                       sexo: grupo.sexo,
                       hembrasNacidas: grupo.cantidadHijasHembras,
                       machosNacidos: grupo.cantidadHijosMachos,

@@ -53,7 +53,7 @@ export default function FormCuy() {
     { accessorKey: "edad", header: "Edad (días)" },
     { accessorKey: "categoria", header: "Categoría" },
     { accessorKey: "sexo", header: "Sexo" },
-    { accessorKey: "estado", header: "Estado" },
+    { accessorKey: "java.nombre", header: "Java" },
     {
       accessorKey: "fechaRegistro",
       header: "Fecha de Registro",

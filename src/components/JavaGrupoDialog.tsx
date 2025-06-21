@@ -42,6 +42,7 @@ import { CuyPadre } from "@/types/cuy";
 import { Calendar } from "./ui/calendar";
 import { toast } from "sonner";
 import { JavaRespose } from "@/types/java";
+import { TimeLine } from "./TimeLine";
 
 interface JavaGrupoDialogProps {
   readonly open: boolean;
@@ -61,7 +62,7 @@ type Cria = {
 export type DataJava = {
   id: number | null;
   nombre: string;
-  fechaInicio: Date | null;
+  fechaReproduccion: Date | null;
   padre: CuyPadre | null;
   hembrasNacidas?: number;
   machosNacidos?: number;
@@ -100,8 +101,8 @@ export default function JavaGrupoDialog({
   const nextCriaId = useRef(1);
   const [showCrias, setShowCrias] = useState(false);
   const [seleccionActual, setSeleccionActual] = useState<
-    "padre" | "madre" | "fecha" | "crias" | null
-  >(null);
+    "padre" | "madre" | "fecha" | "crias" | "lista" | null
+  >("lista");
 
   const {
     register,
@@ -112,7 +113,7 @@ export default function JavaGrupoDialog({
   } = useForm<DataJava>({
     defaultValues: {
       nombre: "",
-      fechaInicio: null,
+      fechaReproduccion: null,
       categoria: "REPRODUCCION",
       sexo: "",
       padre: null,
@@ -136,7 +137,7 @@ export default function JavaGrupoDialog({
       } else {
         reset({
           nombre: "",
-          fechaInicio: null,
+          fechaReproduccion: null,
           categoria: mode === "REPRODUCCION" ? "REPRODUCCION" : "CRIA",
           sexo: mode === "REPRODUCCION" ? "NA" : mode,
           padre: null,
@@ -148,7 +149,7 @@ export default function JavaGrupoDialog({
         });
       }
     }
-    setSeleccionActual(null);
+    setSeleccionActual("lista");
   }, [open, reset, isEditing, javaToEdit, mode]);
 
   const categoria = watch("categoria");
@@ -241,7 +242,7 @@ export default function JavaGrupoDialog({
         id: javaToEdit?.id ?? null,
         nombre: javaToEdit?.nombre ?? "", // Lo que ya tienes
         categoria: javaToEdit?.categoria ?? "",
-        fechaInicio: javaToEdit?.fechaInicio ?? null,
+        fechaReproduccion: javaToEdit?.fechaReproduccion ?? null,
         padre: javaToEdit?.padre ?? null,
         madre: javaToEdit?.madre ?? [],
         regiones: javaToEdit?.regiones ?? {},
@@ -281,13 +282,13 @@ export default function JavaGrupoDialog({
 
   const canStartReproduction = () => {
     const nombre = watch("nombre");
-    const fechaInicio = watch("fechaInicio");
+    const fechaReproduccion = watch("fechaReproduccion");
     const categoria = watch("categoria");
     const sexo = watch("sexo");
     const padre = watch("padre");
     const madre = watch("madre");
 
-    if (!nombre || !fechaInicio || !categoria || !sexo) {
+    if (!nombre || !fechaReproduccion || !categoria || !sexo) {
       return false;
     }
 
@@ -312,13 +313,10 @@ export default function JavaGrupoDialog({
   };
 
   const handleRegistrarCrias = () => {
-    // Reiniciamos el contador de ID (opcional)
     nextCriaId.current = 1;
 
     const hembras = watch("hembrasNacidas") ?? 0;
     const machos = watch("machosNacidos") ?? 0;
-
-    // Fecha/hora formateada
     const now = new Date();
     const dd = String(now.getDate()).padStart(2, "0");
     const mm = String(now.getMonth() + 1).padStart(2, "0");
@@ -327,7 +325,6 @@ export default function JavaGrupoDialog({
     const min = String(now.getMinutes()).padStart(2, "0");
     const fechaStr = `${dd}/${mm}/${yyyy} ${hh}:${min}`;
 
-    // Generamos *solo* el array que nos interesa
     const nuevas: Cria[] = [];
     for (let i = 0; i < hembras; i++) {
       nuevas.push({
@@ -346,7 +343,6 @@ export default function JavaGrupoDialog({
       });
     }
 
-    // Reemplazamos el estado en lugar de acumularlo
     setCrias(nuevas);
   };
 
@@ -400,7 +396,6 @@ export default function JavaGrupoDialog({
         </CardContent>
       </Card>
 
-      {/* select java destino + botón */}
       {isEditing && (
         <div className="mt-4 flex gap-2 items-center">
           <Label>Java destino:</Label>
@@ -514,7 +509,7 @@ export default function JavaGrupoDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl md:min-w-4xl  py-10  max-h-[90vh]  overflow-y-auto">
+      <DialogContent className="max-w-4xl md:min-w-4xl  py-10  min-h-[90vh]  overflow-y-auto">
         <AlertDialogHeader>
           <DialogTitle>
             {mode === "REPRODUCCION"
@@ -531,121 +526,156 @@ export default function JavaGrupoDialog({
           </DialogTitle>
         </AlertDialogHeader>
 
-        <div className="flex  flex-col  md:justify-between md:flex-row">
-          <form className="space-y-4 flex-1 ">
-            <div className="flex w-full flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <Label className="mb-1 block">Nombre de Java</Label>
-                <div className="flex items-center gap-1">
-                  <Input
-                    {...register("nombre", { required: true })}
-                    placeholder="Nombre"
-                    disabled={isReproduccionIniciada || isEditing}
-                  />
-                  {errors.nombre && (
-                    <p className="text-red-500 text-sm mt-1">
-                      Este campo es requerido
-                    </p>
-                  )}
-
-                  <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-                    <DialogTrigger asChild>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="bg-primary hover:bg-primary/60 text-white"
-                        disabled={isReproduccionIniciada}
-                      >
-                        <Pen />
-                      </Button>
-                    </DialogTrigger>
-
-                    <DialogContent className="sm:max-w-[400px]">
-                      <DialogHeader>
-                        <DialogTitle>Editar Nombre</DialogTitle>
-                      </DialogHeader>
-
-                      <div className="mt-4">
-                        {/* Usamos watch y setValue para ligar al mismo form */}
-                        <Input
-                          value={watch("nombre")}
-                          onChange={(e) => setValue("nombre", e.target.value)}
-                          placeholder="Nuevo nombre"
-                        />
-                      </div>
-
-                      <DialogFooter className="mt-6 flex justify-end space-x-2">
-                        <Button
-                          variant="ghost"
-                          onClick={() => setModalOpen(false)}
-                        >
-                          Cancelar
-                        </Button>
-                        {/* Aquí ya no es submit, solo cierra y deja el valor */}
-                        <Button onClick={() => setModalOpen(false)}>
-                          Guardar
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </div>
-
-              <div className="flex-1">
-                <Label className="mb-1 block">Fecha de Inicio</Label>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => setSeleccionActual("fecha")}
-                  disabled={isReproduccionIniciada}
-                >
-                  {watch("fechaInicio")
-                    ? watch("fechaInicio")?.toLocaleDateString("es-PE")
-                    : "Seleccionar fecha"}
-                </Button>
-              </div>
-            </div>
-            <div className="flex w-full flex-col md:flex-row gap-4">
-              {categoria !== "REPRODUCCION" && (
-                <div className="flex items-center w-full flex-col md:flex-row gap-4">
-                  <div className="flex-1 w-full">
-                    <div className={`w-full`}>
-                      <Label className="mb-2">Categoria</Label>
-                      <Select
-                        value={watch("categoria")}
-                        onValueChange={(value) => setValue("categoria", value)}
-                        disabled={
-                          watch("categoria") === "REPRODUCCION" || isEditing
-                        }
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Seleccionar categoria" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {mode === "REPRODUCCION" && (
-                              <SelectItem value="REPRODUCCION">
-                                REPRODUCCION
-                              </SelectItem>
-                            )}
-                            {mode !== "REPRODUCCION" && (
-                              <>
-                                <SelectItem value="CRIA">CRIA</SelectItem>
-                                <SelectItem value="ENGORDE">ENGORDE</SelectItem>
-                              </>
-                            )}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
+        <div className="flex flex-col h-full  md:justify-between md:flex-row">
+          <form className=" flex-1 flex flex-col h-full justify-between ">
+            <div className="flex-1 space-y-4">
+              {isEditing && categoria !== "REPRODUCCION" && (
+                <div>
+                  <Button
+                    type="button"
+                    onClick={() => setSeleccionActual("lista")}
+                    className="w-full bg-blue-600 hover:bg-blue-500 cursor-pointer"
+                  >
+                    Ver cuyes
+                  </Button>
                 </div>
               )}
+              <div className="flex w-full flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <Label className="mb-1 block">Nombre de Java</Label>
+                  <div className="flex items-center gap-1">
+                    <Input
+                      {...register("nombre", { required: true })}
+                      placeholder="Nombre"
+                      disabled={isReproduccionIniciada || isEditing}
+                    />
+                    {errors.nombre && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Este campo es requerido
+                      </p>
+                    )}
 
-              {mode !== "REPRODUCCION" && (
-                <div className="flex items-center w-full flex-col md:flex-row gap-4">
-                  <div className="flex-1 w-full">
+                    <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-primary hover:bg-primary/60 text-white"
+                          disabled={isReproduccionIniciada}
+                        >
+                          <Pen />
+                        </Button>
+                      </DialogTrigger>
+
+                      <DialogContent className="sm:max-w-[400px]">
+                        <DialogHeader>
+                          <DialogTitle>Editar Nombre</DialogTitle>
+                        </DialogHeader>
+
+                        <div className="mt-4">
+                          {/* Usamos watch y setValue para ligar al mismo form */}
+                          <Input
+                            value={watch("nombre")}
+                            onChange={(e) => setValue("nombre", e.target.value)}
+                            placeholder="Nuevo nombre"
+                          />
+                        </div>
+
+                        <DialogFooter className="mt-6 flex justify-end space-x-2">
+                          <Button
+                            variant="ghost"
+                            onClick={() => setModalOpen(false)}
+                          >
+                            Cancelar
+                          </Button>
+                          {/* Aquí ya no es submit, solo cierra y deja el valor */}
+                          <Button onClick={() => setModalOpen(false)}>
+                            Guardar
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <Label className="mb-1 block">Fecha de Inicio</Label>
+                  {(() => {
+                    const fechaReproduccion = watch("fechaReproduccion");
+                    let fechaReproduccionStr = "Seleccionar fecha";
+                    if (fechaReproduccion) {
+                      if (fechaReproduccion instanceof Date) {
+                        fechaReproduccionStr =
+                          fechaReproduccion.toLocaleDateString("es-PE");
+                      } else if (
+                        typeof fechaReproduccion === "string" ||
+                        typeof fechaReproduccion === "number"
+                      ) {
+                        const dateObj = new Date(fechaReproduccion);
+                        if (!isNaN(dateObj.getTime())) {
+                          fechaReproduccionStr =
+                            dateObj.toLocaleDateString("es-PE");
+                        }
+                      }
+                    }
+                    return (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => setSeleccionActual("fecha")}
+                        disabled={isReproduccionIniciada}
+                      >
+                        {fechaReproduccionStr}
+                      </Button>
+                    );
+                  })()}
+                </div>
+              </div>
+              <div className="flex w-full flex-col md:flex-row gap-4">
+                {categoria !== "REPRODUCCION" && (
+                  <div className="flex items-center w-full flex-col md:flex-row gap-4">
+                    <div className="flex-1 w-full">
+                      <div className={`w-full`}>
+                        <Label className="mb-2">Categoria</Label>
+                        <Select
+                          value={watch("categoria")}
+                          onValueChange={(value) =>
+                            setValue("categoria", value)
+                          }
+                          disabled={
+                            watch("categoria") === "REPRODUCCION" || isEditing
+                          }
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Seleccionar categoria" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {mode === "REPRODUCCION" && (
+                                <SelectItem value="REPRODUCCION">
+                                  REPRODUCCION
+                                </SelectItem>
+                              )}
+                              {mode !== "REPRODUCCION" && (
+                                <>
+                                  <SelectItem value="CRIA">CRIA</SelectItem>
+                                  <SelectItem value="ENGORDE">
+                                    ENGORDE
+                                  </SelectItem>
+                                </>
+                              )}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {mode !== "REPRODUCCION" && (
+                  <div className="flex items-center w-full flex-col md:flex-row gap-4">
+                    {/* <div className="flex-1 w-full">
                     <div className="w-full">
                       <Label className="mb-2">Sexo</Label>
                       <Select
@@ -666,259 +696,260 @@ export default function JavaGrupoDialog({
                         </SelectContent>
                       </Select>
                     </div>
+                  </div> */}
+                  </div>
+                )}
+              </div>
+              {categoria === "REPRODUCCION" && (
+                <div className="flex gap-2">
+                  <div className="flex-1 w-full flex-col gap-4">
+                    <div className="flex-1 w-full">
+                      <Label className="mb-2">Padre</Label>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full cursor-pointer"
+                        onClick={handleOpenPadre}
+                      >
+                        {watch("padre")
+                          ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
+                          : "Seleccionar Padre"}
+                      </Button>
+                    </div>
+                    <div className="flex-1 w-full">
+                      <Label className="mb-2">Madres</Label>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full  text-center flex-col items-center"
+                        onClick={handleOpenMadre}
+                      >
+                        Seleccionar Madres
+                      </Button>
+
+                      {/* Aquí mostramos las madres seleccionadas */}
+                      <Card className="w-full mt-2">
+                        <CardContent className="p-2">
+                          {madresSeleccionadas.length > 0 ? (
+                            <div className="flex flex-col text-center font-semibold">
+                              {madresSeleccionadas.map((madre, index) => (
+                                <span key={index}>
+                                  {madre.id} - {madre.sexo}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center text-gray-400">
+                              No se seleccionaron madres
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+
+                  <div className="flex-1 w-full">
+                    <Label className="mb-2"> Registrar crias</Label>
+
+                    <Card>
+                      <div className="p-1">
+                        <div>
+                          <Label
+                            className={`flex items-center gap-1 mb-2  ${
+                              isEditing ? "opacity-100" : "opacity-60"
+                            }`}
+                          >
+                            Hembras Nacidas
+                          </Label>
+                          <div
+                            className={`flex items-center gap-1  ${
+                              isEditing ? "opacity-100" : "opacity-60"
+                            } `}
+                          >
+                            <Input
+                              type="number"
+                              value={watch("hembrasNacidas") ?? 0}
+                              disabled
+                              className="text-center   disabled:opacity-100 bg-pink-400"
+                            />
+                            {errors.hembrasNacidas && (
+                              <p className="text-red-500 text-sm mt-1">
+                                Este campo es requerido
+                              </p>
+                            )}
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="cursor-pointer"
+                              onClick={() => {
+                                const current = watch("hembrasNacidas") ?? 0;
+                                if (current > 0) {
+                                  setValue("hembrasNacidas", current - 1);
+                                }
+                              }}
+                              disabled={(watch("hembrasNacidas") ?? 0) <= 0}
+                            >
+                              <Minus />
+                            </Button>
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="cursor-pointer"
+                              disabled={!isEditing}
+                              onClick={() => {
+                                const current = watch("hembrasNacidas") ?? 0;
+                                setValue("hembrasNacidas", current + 1);
+                              }}
+                            >
+                              <Plus />
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <Label
+                            className={`flex items-center gap-1 mb-2  ${
+                              isEditing ? "opacity-100" : "opacity-60"
+                            }`}
+                          >
+                            Machos Nacidos
+                          </Label>
+                          <div
+                            className={`flex items-center gap-1   ${
+                              isEditing ? "opacity-100" : "opacity-60"
+                            }`}
+                          >
+                            <Input
+                              type="number"
+                              value={watch("machosNacidos") ?? 0}
+                              disabled
+                              className=" text-center  disabled:opacity-100 bg-purple-400"
+                            />
+                            {errors.machosNacidos && (
+                              <p className="text-red-500 text-sm mt-1">
+                                Este campo es requerido
+                              </p>
+                            )}
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="cursor-pointer"
+                              onClick={() => {
+                                const current = watch("machosNacidos") ?? 0;
+                                if (current > 0) {
+                                  setValue("machosNacidos", current - 1);
+                                }
+                              }}
+                              disabled={(watch("machosNacidos") ?? 0) <= 0}
+                            >
+                              <Minus />
+                            </Button>
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="cursor-pointer"
+                              disabled={!isEditing}
+                              onClick={() => {
+                                const current = watch("machosNacidos") ?? 0;
+                                setValue("machosNacidos", current + 1);
+                              }}
+                            >
+                              <Plus />
+                            </Button>
+                          </div>
+                        </div>
+                        <div>
+                          <Label
+                            className={`flex items-center gap-1 mb-2 ${
+                              isEditing ? "opacity-100" : "opacity-60"
+                            }`}
+                          >
+                            Registrar Muertos
+                          </Label>
+                          <div
+                            className={`flex items-center gap-1 ${
+                              isEditing ? "opacity-100" : "opacity-60"
+                            } `}
+                          >
+                            <Input
+                              type="number"
+                              value={watch("muertos") ?? 0}
+                              disabled
+                              className=" text-center bg-gray-400 disabled:opacity-100"
+                            />
+                            {errors.muertos && (
+                              <p className="text-red-500 text-sm mt-1">
+                                Este campo es requerido
+                              </p>
+                            )}
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              className="cursor-pointer"
+                              onClick={() => {
+                                const current = watch("muertos") ?? 0;
+                                if (current > 0) {
+                                  setValue("muertos", current - 1);
+                                }
+                              }}
+                              disabled={(watch("muertos") ?? 0) <= 0}
+                            >
+                              <Minus />
+                            </Button>
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              disabled={!isEditing}
+                              className="cursor-pointer"
+                              onClick={() => {
+                                const current = watch("muertos") ?? 0;
+                                setValue("muertos", current + 1);
+                              }}
+                            >
+                              <Plus />
+                            </Button>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          disabled={!isEditing}
+                          className="bg-green-400 w-full mt-3 hover:bg-green-300"
+                          onClick={handleRegistrarCrias}
+                        >
+                          Registrar
+                        </Button>
+                        <Button
+                          type="button"
+                          disabled={!isEditing}
+                          className="bg-gray-400 w-full mt-3 hover:bg-gray-300"
+                          onClick={() => {
+                            setShowCrias(true);
+                            setSeleccionActual("crias");
+                          }}
+                        >
+                          Ver crías
+                        </Button>
+                      </div>
+                    </Card>
                   </div>
                 </div>
               )}
             </div>
-            {categoria === "REPRODUCCION" && (
-              <div className="flex gap-2">
-                <div className="flex-1 w-full flex-col gap-4">
-                  <div className="flex-1 w-full">
-                    <Label className="mb-2">Padre</Label>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full cursor-pointer"
-                      onClick={handleOpenPadre}
-                    >
-                      {watch("padre")
-                        ? `${watch("padre")?.id} - ${watch("padre")?.sexo}`
-                        : "Seleccionar Padre"}
-                    </Button>
-                  </div>
-                  <div className="flex-1 w-full">
-                    <Label className="mb-2">Madres</Label>
-
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full  text-center flex-col items-center"
-                      onClick={handleOpenMadre}
-                    >
-                      Seleccionar Madres
-                    </Button>
-
-                    {/* Aquí mostramos las madres seleccionadas */}
-                    <Card className="w-full mt-2">
-                      <CardContent className="p-2">
-                        {madresSeleccionadas.length > 0 ? (
-                          <div className="flex flex-col text-center font-semibold">
-                            {madresSeleccionadas.map((madre, index) => (
-                              <span key={index}>
-                                {madre.id} - {madre.sexo}
-                              </span>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center text-gray-400">
-                            No se seleccionaron madres
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-
-                <div className="flex-1 w-full">
-                  <Label className="mb-2"> Registrar crias</Label>
-
-                  <Card>
-                    <div className="p-1">
-                      <div>
-                        <Label
-                          className={`flex items-center gap-1 mb-2  ${
-                            isEditing ? "opacity-100" : "opacity-60"
-                          }`}
-                        >
-                          Hembras Nacidas
-                        </Label>
-                        <div
-                          className={`flex items-center gap-1  ${
-                            isEditing ? "opacity-100" : "opacity-60"
-                          } `}
-                        >
-                          <Input
-                            type="number"
-                            value={watch("hembrasNacidas") ?? 0}
-                            disabled
-                            className="text-center   disabled:opacity-100 bg-pink-400"
-                          />
-                          {errors.hembrasNacidas && (
-                            <p className="text-red-500 text-sm mt-1">
-                              Este campo es requerido
-                            </p>
-                          )}
-
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="cursor-pointer"
-                            onClick={() => {
-                              const current = watch("hembrasNacidas") ?? 0;
-                              if (current > 0) {
-                                setValue("hembrasNacidas", current - 1);
-                              }
-                            }}
-                            disabled={(watch("hembrasNacidas") ?? 0) <= 0}
-                          >
-                            <Minus />
-                          </Button>
-
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="cursor-pointer"
-                            disabled={!isEditing}
-                            onClick={() => {
-                              const current = watch("hembrasNacidas") ?? 0;
-                              setValue("hembrasNacidas", current + 1);
-                            }}
-                          >
-                            <Plus />
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div>
-                        <Label
-                          className={`flex items-center gap-1 mb-2  ${
-                            isEditing ? "opacity-100" : "opacity-60"
-                          }`}
-                        >
-                          Machos Nacidos
-                        </Label>
-                        <div
-                          className={`flex items-center gap-1   ${
-                            isEditing ? "opacity-100" : "opacity-60"
-                          }`}
-                        >
-                          <Input
-                            type="number"
-                            value={watch("machosNacidos") ?? 0}
-                            disabled
-                            className=" text-center  disabled:opacity-100 bg-purple-400"
-                          />
-                          {errors.machosNacidos && (
-                            <p className="text-red-500 text-sm mt-1">
-                              Este campo es requerido
-                            </p>
-                          )}
-
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="cursor-pointer"
-                            onClick={() => {
-                              const current = watch("machosNacidos") ?? 0;
-                              if (current > 0) {
-                                setValue("machosNacidos", current - 1);
-                              }
-                            }}
-                            disabled={(watch("machosNacidos") ?? 0) <= 0}
-                          >
-                            <Minus />
-                          </Button>
-
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="cursor-pointer"
-                            disabled={!isEditing}
-                            onClick={() => {
-                              const current = watch("machosNacidos") ?? 0;
-                              setValue("machosNacidos", current + 1);
-                            }}
-                          >
-                            <Plus />
-                          </Button>
-                        </div>
-                      </div>
-                      <div>
-                        <Label
-                          className={`flex items-center gap-1 mb-2 ${
-                            isEditing ? "opacity-100" : "opacity-60"
-                          }`}
-                        >
-                          Registrar Muertos
-                        </Label>
-                        <div
-                          className={`flex items-center gap-1 ${
-                            isEditing ? "opacity-100" : "opacity-60"
-                          } `}
-                        >
-                          <Input
-                            type="number"
-                            value={watch("muertos") ?? 0}
-                            disabled
-                            className=" text-center bg-gray-400 disabled:opacity-100"
-                          />
-                          {errors.muertos && (
-                            <p className="text-red-500 text-sm mt-1">
-                              Este campo es requerido
-                            </p>
-                          )}
-
-                          <Button
-                            type="button"
-                            variant="outline"
-                            className="cursor-pointer"
-                            onClick={() => {
-                              const current = watch("muertos") ?? 0;
-                              if (current > 0) {
-                                setValue("muertos", current - 1);
-                              }
-                            }}
-                            disabled={(watch("muertos") ?? 0) <= 0}
-                          >
-                            <Minus />
-                          </Button>
-
-                          <Button
-                            type="button"
-                            variant="outline"
-                            disabled={!isEditing}
-                            className="cursor-pointer"
-                            onClick={() => {
-                              const current = watch("muertos") ?? 0;
-                              setValue("muertos", current + 1);
-                            }}
-                          >
-                            <Plus />
-                          </Button>
-                        </div>
-                      </div>
-                      <Button
-                        type="button"
-                        disabled={!isEditing}
-                        className="bg-green-400 w-full mt-3 hover:bg-green-300"
-                        onClick={handleRegistrarCrias}
-                      >
-                        Registrar
-                      </Button>
-                      <Button
-                        type="button"
-                        disabled={!isEditing}
-                        className="bg-gray-400 w-full mt-3 hover:bg-gray-300"
-                        onClick={() => {
-                          setShowCrias(true);
-                          setSeleccionActual("crias");
-                        }}
-                      >
-                        Ver crías
-                      </Button>
-                    </div>
-                  </Card>
-                </div>
-              </div>
-            )}
           </form>
 
-          <div className="md:flex hidden justify-center items-stretch px-5">
+          <div className=" md:flex hidden justify-center items-stretch px-5">
             <Separator orientation="vertical" className="h-full" />
           </div>
 
-          <div className="flex-1">
+          <div className="flex-1 h-96">
             {seleccionActual === "padre" && <TablaPadre />}
 
             {seleccionActual === "madre" && <TablaMadre />}
@@ -934,12 +965,12 @@ export default function JavaGrupoDialog({
                       mode="single"
                       disabled={isReproduccionIniciada || isEditing}
                       selected={
-                        watch("fechaInicio") !== null
-                          ? new Date(watch("fechaInicio") as Date)
+                        watch("fechaReproduccion") !== null
+                          ? new Date(watch("fechaReproduccion") as Date)
                           : undefined
                       }
                       onSelect={(date) => {
-                        setValue("fechaInicio", date ?? null);
+                        setValue("fechaReproduccion", date ?? null);
                       }}
                     />
                   </CardContent>
@@ -989,14 +1020,14 @@ export default function JavaGrupoDialog({
               </>
             )}
 
-            {isEditing && !seleccionActual && (
+            {isEditing && seleccionActual === "lista" && (
               <>
                 <h2 className="text-base font-bold text-center mb-4">
                   Cuyes de la java
                 </h2>
                 <Card>
                   <CardContent className="p-0">
-                    <div className="max-h-64 overflow-y-auto">
+                    <div className="overflow-y-auto">
                       {(watch("cuyes") ?? []).length > 0 ? (
                         <Table>
                           <TableHeader>
@@ -1061,60 +1092,84 @@ export default function JavaGrupoDialog({
           </div>
         </div>
 
-        <div className="flex justify-end pt-4">
-          {categoria === "REPRODUCCION" ? (
-            <>
-              {isEditing && (
+        <div className="flex  justify-between pt-4">
+          {categoria !== "REPRODUCCION" && (
+            <TimeLine fechaInicio={watch("fechaReproduccion")!} />
+          )}
+          <div className="flex w-full justify-end">
+            {categoria === "REPRODUCCION" ? (
+              <>
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mr-2 bg-blue-500 hover:bg-blue-600 text-white hover:text-white"
+                    disabled={isSubmitting}
+                    onClick={async () => {
+                      if (!javaToEdit?.id) return;
+
+                      const form = watch();
+
+                      const payload = {
+                        nombre: form.nombre,
+                        categoria: form.categoria ?? "",
+                        sexo: "NA",
+                        fechaReproduccion: form.fechaReproduccion
+                          ? form.fechaReproduccion.toISOString().split("T")[0]
+                          : "",
+                        cantidadHijasHembras: form.hembrasNacidas ?? 0,
+                        cantidadHijosMachos: form.machosNacidos ?? 0,
+                        cantidadHijosMuertos: form.muertos ?? 0,
+                        cuyes: [
+                          ...(form.padre ? [{ id: form.padre.id }] : []),
+                          ...form.madre.map((m) => ({ id: m.id })),
+                        ],
+                      };
+
+                      try {
+                        setIsSubmitting(true);
+
+                        await updateJavaCuyReproduccion(javaToEdit.id, payload);
+
+                        toast.success("Cambios guardados correctamente");
+
+                        onOpenChange(false);
+                        reset();
+                      } catch (error) {
+                        console.error("Error al guardar cambios:", error);
+                        toast.error("No se pudieron guardar los cambios");
+                      } finally {
+                        setIsSubmitting(false);
+                      }
+                    }}
+                  >
+                    Guardar Cambios
+                  </Button>
+                )}
                 <Button
                   type="button"
-                  variant="outline"
-                  className="mr-2 bg-blue-500 hover:bg-blue-600 text-white hover:text-white"
-                  disabled={isSubmitting}
-                  onClick={async () => {
-                    if (!javaToEdit?.id) return;
-
-                    // 1) Lee el formulario
-                    const form = watch();
-
-                    // 2) Genera el payload con la misma estructura que usas en updateJavaCuyReproduccion
-                    const payload = {
-                      nombre: form.nombre,
-                      categoria: form.categoria ?? "",
-                      sexo: "NA",
-                      fechaReproduccion: form.fechaInicio
-                        ? form.fechaInicio.toISOString().split("T")[0]
-                        : "",
-                      cantidadHijasHembras: form.hembrasNacidas ?? 0,
-                      cantidadHijosMachos: form.machosNacidos ?? 0,
-                      cantidadHijosMuertos: form.muertos ?? 0,
-                      cuyes: [
-                        ...(form.padre ? [{ id: form.padre.id }] : []),
-                        ...form.madre.map((m) => ({ id: m.id })),
-                      ],
-                    };
-
-                    try {
-                      setIsSubmitting(true);
-
-                      // 3) Llama a tu endpoint
-                      await updateJavaCuyReproduccion(javaToEdit.id, payload);
-
-                      toast.success("Cambios guardados correctamente");
-
-                      // 4) Cierra diálogo y resetea
-                      onOpenChange(false);
-                      reset();
-                    } catch (error) {
-                      console.error("Error al guardar cambios:", error);
-                      toast.error("No se pudieron guardar los cambios");
-                    } finally {
-                      setIsSubmitting(false);
+                  className={`${
+                    isEditing
+                      ? "bg-red-600 hover:bg-red-700"
+                      : "bg-green-600 hover:bg-green-700"
+                  }`}
+                  disabled={
+                    isSubmitting || (!isEditing && !canStartReproduction())
+                  }
+                  onClick={() => {
+                    if (isEditing) {
+                      handleSubmitUpdateOnlyCounters();
+                    } else {
+                      handleFinalSubmit();
                     }
                   }}
                 >
-                  Guardar Cambios
+                  {isEditing
+                    ? "Finalizar Reproducción"
+                    : "Iniciar Reproducción"}
                 </Button>
-              )}
+              </>
+            ) : (
               <Button
                 type="button"
                 className={`${
@@ -1122,34 +1177,13 @@ export default function JavaGrupoDialog({
                     ? "bg-red-600 hover:bg-red-700"
                     : "bg-green-600 hover:bg-green-700"
                 }`}
-                disabled={
-                  isSubmitting || (!isEditing && !canStartReproduction())
-                }
-                onClick={() => {
-                  if (isEditing) {
-                    handleSubmitUpdateOnlyCounters();
-                  } else {
-                    handleFinalSubmit();
-                  }
-                }}
+                disabled={isSubmitting || !canStartReproduction()}
+                onClick={handleFinalSubmit}
               >
-                {isEditing ? "Finalizar Reproducción" : "Iniciar Reproducción"}
+                Guardar Cambios
               </Button>
-            </>
-          ) : (
-            <Button
-              type="button"
-              className={`${
-                isEditing
-                  ? "bg-red-600 hover:bg-red-700"
-                  : "bg-green-600 hover:bg-green-700"
-              }`}
-              disabled={isSubmitting || !canStartReproduction()}
-              onClick={handleFinalSubmit}
-            >
-              Guardar Java
-            </Button>
-          )}
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>

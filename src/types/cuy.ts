@@ -5,6 +5,7 @@ export type Cuy = CuyRequest & {
 export type CuyRequest = {
   id?: number | null;
   edad: number;
+  peso: number;
   sexo: string;
   fechaRegistro: string;
   horaRegistro: string;
@@ -12,6 +13,7 @@ export type CuyRequest = {
   estado: string;
   java: {
     id: number;
+    nombre?: string;
   };
 };
 

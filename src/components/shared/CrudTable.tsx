@@ -17,13 +17,6 @@ import {
   TableFooter,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 interface CrudTableProps<TData> {
   columns: ColumnDef<TData>[];
@@ -42,7 +35,7 @@ export function CrudTable<TData extends object>({
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     initialState: {
-      pagination: { pageSize: 5 },
+      pagination: { pageSize: 20 },
     },
   });
 
@@ -139,7 +132,7 @@ export function CrudTable<TData extends object>({
       </div>
 
       <div className="flex justify-end space-x-2 py-4">
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <span className="text-sm">Filas:</span>
           <Select
             value={table.getState().pagination.pageSize.toString()}
@@ -154,7 +147,7 @@ export function CrudTable<TData extends object>({
               <SelectItem value="15">15</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
         <Button
           variant="outline"
           size="sm"
