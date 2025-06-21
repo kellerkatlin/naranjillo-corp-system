@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import { AlertDialogHeader } from "./ui/alert-dialog";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
@@ -16,7 +23,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { Checkbox } from "./ui/checkbox";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Pen, Plus } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -81,7 +88,7 @@ export default function JavaGrupoDialog({
   const [javasMachos, setJavasMachos] = useState<JavaRespose[]>([]);
   const [javasHembras, setJavasHembras] = useState<JavaRespose[]>([]);
   const [selectedJavaId, setSelectedJavaId] = useState<number | null>(null);
-
+  const [modalOpen, setModalOpen] = useState(false);
   const [seleccionActual, setSeleccionActual] = useState<
     "padre" | "madre" | "fecha" | null
   >(null);
@@ -306,7 +313,7 @@ export default function JavaGrupoDialog({
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
-                  <TableHead>Sexo</TableHead>
+                  <TableHead>Java</TableHead>
                   <TableHead>Sel.</TableHead>
                 </TableRow>
               </TableHeader>
@@ -389,7 +396,7 @@ export default function JavaGrupoDialog({
               <TableHeader>
                 <TableRow>
                   <TableHead>ID</TableHead>
-                  <TableHead>Sexo</TableHead>
+                  <TableHead>Java</TableHead>
                   <TableHead>Sel.</TableHead>
                 </TableRow>
               </TableHeader>
@@ -479,16 +486,59 @@ export default function JavaGrupoDialog({
             <div className="flex w-full flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <Label className="mb-1 block">Nombre de Java</Label>
-                <Input
-                  {...register("nombre", { required: true })}
-                  placeholder="Nombre"
-                  disabled={isReproduccionIniciada || isEditing}
-                />
-                {errors.nombre && (
-                  <p className="text-red-500 text-sm mt-1">
-                    Este campo es requerido
-                  </p>
-                )}
+                <div className="flex items-center gap-1">
+                  <Input
+                    {...register("nombre", { required: true })}
+                    placeholder="Nombre"
+                    disabled={isReproduccionIniciada || isEditing}
+                  />
+                  {errors.nombre && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Este campo es requerido
+                    </p>
+                  )}
+
+                  <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="bg-primary hover:bg-primary/60 text-white"
+                        disabled={isReproduccionIniciada}
+                      >
+                        <Pen />
+                      </Button>
+                    </DialogTrigger>
+
+                    <DialogContent className="sm:max-w-[400px]">
+                      <DialogHeader>
+                        <DialogTitle>Editar Nombre</DialogTitle>
+                      </DialogHeader>
+
+                      <div className="mt-4">
+                        {/* Usamos watch y setValue para ligar al mismo form */}
+                        <Input
+                          value={watch("nombre")}
+                          onChange={(e) => setValue("nombre", e.target.value)}
+                          placeholder="Nuevo nombre"
+                        />
+                      </div>
+
+                      <DialogFooter className="mt-6 flex justify-end space-x-2">
+                        <Button
+                          variant="ghost"
+                          onClick={() => setModalOpen(false)}
+                        >
+                          Cancelar
+                        </Button>
+                        {/* Aquí ya no es submit, solo cierra y deja el valor */}
+                        <Button onClick={() => setModalOpen(false)}>
+                          Guardar
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
 
               <div className="flex-1">
@@ -839,7 +889,7 @@ export default function JavaGrupoDialog({
                           <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Sexo</TableHead>
-                            <TableHead>Fecha Registro</TableHead>
+                            <TableHead>Fecha y Hora</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
