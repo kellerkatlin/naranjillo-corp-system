@@ -27,7 +27,7 @@ import DetalleAlimentacionDialog from "@/components/DetalleAlimentacionDialog";
 export default function FormAlimentacion() {
   /** Estado para almacenar la lista de alimentaciones. */
   const [data, setData] = useState<AlimentacionResponse[]>([]);
-  /** Estado para controlar la visibilidad del diálogo de registro/edición. */
+  /** Estado para controlar laAlimentacionDialog  visibilidad del diálogo de registro/edición. */
   const [dialogOpen, setDialogOpen] = useState(false);
   /** Estado para almacenar el ítem de alimentación que se está editando. */
   const [editItem, setEditItem] = useState<AlimentacionResponse | null>(null);
@@ -48,17 +48,17 @@ export default function FormAlimentacion() {
    * cuando el componente se monta.
    */
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getAllAlimentaciones();
-        setData(res);
-      } catch {
-        toast.error("Error al cargar datos");
-      }
-    };
-
     fetchData();
   }, []);
+
+  const fetchData = async () => {
+    try {
+      const res = await getAllAlimentaciones();
+      setData(res);
+    } catch {
+      toast.error("Error al cargar datos");
+    }
+  };
 
   const agrupados = useMemo(() => {
     const map = new Map<
@@ -67,7 +67,7 @@ export default function FormAlimentacion() {
     >();
 
     data.forEach((item) => {
-      const key = item.java.nombre;
+      const key = item.java?.nombre ?? "";
 
       if (!map.has(key)) {
         map.set(key, {
@@ -103,7 +103,7 @@ export default function FormAlimentacion() {
     {
       accessorKey: "totalCosto",
       header: "Costo",
-      cell: ({ row }) => `S/ ${row.original.totalCosto.toFixed(2)}`,
+      cell: ({ row }) => `S/ ${row.original.totalCosto?.toFixed(2)}`,
     },
 
     {
@@ -142,16 +142,13 @@ export default function FormAlimentacion() {
   const onSubmit = async (form: AlimentacionRequest) => {
     try {
       if (editItem) {
-        const updated = await updateAlimentacion(editItem.id, form);
-        setData((prev) =>
-          prev.map((item) => (item.id === editItem.id ? updated : item))
-        );
-
+        await updateAlimentacion(editItem.id, form);
+        await fetchData();
         toast.success("Actualizado");
       } else {
-        const created = await createAlimentacion(form);
+        await createAlimentacion(form);
 
-        setData((prev) => [...prev, created]);
+        await fetchData();
 
         toast.success("Registrado");
       }
