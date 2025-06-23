@@ -8,15 +8,8 @@ export type AlimentacionRequest = {
   costo: number;
   javaIds: number[];
 
-  tipoAlimentoId: {
-    id: number;
-    nombre: string;
-  };
-  unidadMedidaId: {
-    id: number;
-    nombre: string;
-    simbolo: string;
-  };
+  tipoAlimentoId: number;
+  unidadMedidaId: number;
 };
 
 export type AlimentacionResponse = {
