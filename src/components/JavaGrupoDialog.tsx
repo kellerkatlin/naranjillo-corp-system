@@ -722,7 +722,7 @@ export default function JavaGrupoDialog({
                           : "Seleccionar Padre"}
                       </Button>
                     </div>
-                    <div className="flex-1 w-full">
+                    <div className="flex-1 w-full mt-3">
                       <Label className="mb-2">Madres</Label>
 
                       <Button
@@ -736,11 +736,18 @@ export default function JavaGrupoDialog({
 
                       {/* Aquí mostramos las madres seleccionadas */}
                       <Card className="w-full mt-2">
-                        <CardContent className="p-2">
+                        <CardContent className="px-2">
                           {madresSeleccionadas.length > 0 ? (
-                            <div className="flex flex-col text-center font-semibold">
+                            <div className="flex flex-col -mt-3 text-center ">
+                              <div className="flex text-xl font-semibold gap-10 ">
+                                <span>ID</span>
+                                <span> JAVA</span>
+                              </div>
                               {madresSeleccionadas.map((madre, index) => (
-                                <span key={index}>
+                                <span
+                                  key={index}
+                                  className="flex justify-between"
+                                >
                                   {madre.id} - {madre.nombreJavaOrigen}
                                 </span>
                               ))}
@@ -995,6 +1002,7 @@ export default function JavaGrupoDialog({
                             <TableHead>ID</TableHead>
                             <TableHead>Sexo</TableHead>
                             <TableHead>Peso (Gr)</TableHead>
+                            <TableHead>Java</TableHead>
                             <TableHead>Fecha Registrar</TableHead>
                           </TableRow>
                         </TableHeader>
@@ -1012,6 +1020,8 @@ export default function JavaGrupoDialog({
                                 {c.sexo}
                               </TableCell>
                               <TableCell>{c.peso}</TableCell>
+                              <TableCell>No asignado</TableCell>
+
                               <TableCell>{c.fechaRegistro}</TableCell>
                             </TableRow>
                           ))}

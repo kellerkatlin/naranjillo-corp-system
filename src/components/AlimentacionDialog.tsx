@@ -6,7 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { Alimentacion, AlimentacionRequest } from "@/types/alimentacion";
+import {
+  AlimentacionRequest,
+  AlimentacionResponse,
+} from "@/types/alimentacion";
 import { getAllJavas } from "@/services/javaService";
 import {
   Select,
@@ -22,12 +25,17 @@ import {
 } from "@/services/tipoAlimentoService";
 import { createUnidad, getAllUnidades } from "@/services/unidadMedidaService";
 import { toast } from "sonner";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Badge } from "./ui/badge";
+import { cn } from "@/lib/utils";
+
+import { Checkbox } from "./ui/checkbox";
 
 interface AlimentacionDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
   readonly onSubmit?: (data: AlimentacionRequest) => void;
-  readonly alimentacion?: Alimentacion | null;
+  readonly alimentacion?: AlimentacionResponse | null;
 }
 
 interface AlimentacionFormValues {
@@ -36,9 +44,9 @@ interface AlimentacionFormValues {
   fecha: Date; // Usamos Date para manejar la fecha internamente
   fechaInput: string;
   horaInput: string;
-  java: { id: number };
-  tipoAlimento: { id: number };
-  unidadMedida: { id: number };
+  javaIds: { id: number }[];
+  tipoAlimentoId: { id: number };
+  unidadMedidaId: { id: number };
 }
 
 export default function AlimentacionDialog({
@@ -48,7 +56,7 @@ export default function AlimentacionDialog({
   alimentacion,
 }: AlimentacionDialogProps) {
   const { register, handleSubmit, reset, watch, setValue } =
-    useForm<AlimentacionFormValues>(); // <== Trabajamos con campos separados
+    useForm<AlimentacionFormValues>();
 
   const [tipoAlimento, setTipoAlimento] = useState<
     { id: number; nombre: string }[]
@@ -88,9 +96,9 @@ export default function AlimentacionDialog({
               fechaInput: fechaStr,
               horaInput: horaStr,
               costo: alimentacion.costo,
-              java: { id: alimentacion.java.id },
-              tipoAlimento: { id: alimentacion.tipoAlimento.id },
-              unidadMedida: { id: alimentacion.unidadMedida.id },
+              javaIds: [],
+              tipoAlimentoId: { id: alimentacion.tipoAlimento.id },
+              unidadMedidaId: { id: alimentacion.unidadMedida.id },
             });
           } else {
             const hoy = new Date();
@@ -99,15 +107,24 @@ export default function AlimentacionDialog({
               fechaInput: hoy.toISOString().split("T")[0],
               horaInput: hoy.toTimeString().slice(0, 5),
               costo: 0,
-              java: { id: 0 },
-              tipoAlimento: { id: 0 },
-              unidadMedida: { id: 0 },
+              javaIds: [],
+              tipoAlimentoId: { id: 0 },
+              unidadMedidaId: { id: 0 },
             });
           }
         })
         .catch((err) => console.error("Error cargando catálogos:", err));
     }
   }, [open, alimentacion, reset]);
+
+  const selectedJavas = watch("javaIds");
+  const toggleJava = (java: JavaRespose) => {
+    const exists = selectedJavas?.some((j) => j.id === java.id);
+    const updated = exists
+      ? selectedJavas.filter((j) => j.id !== java.id)
+      : [...(selectedJavas || []), { id: java.id }];
+    setValue("javaIds", updated, { shouldValidate: true });
+  };
 
   const handleFormSubmit = (data: AlimentacionFormValues) => {
     // unir fecha + hora antes de enviar
@@ -117,9 +134,9 @@ export default function AlimentacionDialog({
       cantidad: +data.cantidad,
       costo: +data.costo,
       fechaAlimentacion,
-      java: { id: data.java.id, nombre: "" },
-      tipoAlimento: { id: data.tipoAlimento.id, nombre: "" },
-      unidadMedida: { id: data.unidadMedida.id, nombre: "", simbolo: "" },
+      javaIds: data.javaIds.map((j) => ({ id: j.id })),
+      tipoAlimentoId: { id: data.tipoAlimentoId.id, nombre: "" },
+      unidadMedidaId: { id: data.unidadMedidaId.id, nombre: "", simbolo: "" },
     };
 
     if (onSubmit) onSubmit(payload);
@@ -135,7 +152,7 @@ export default function AlimentacionDialog({
 
       toast.success("Unidad de medida creada correctamente");
       setUnidades((prev) => [...prev, nueva]);
-      setValue("unidadMedida.id", nueva.id, { shouldValidate: true });
+      setValue("unidadMedidaId.id", nueva.id, { shouldValidate: true });
 
       setUnidadModalOpen(false);
       setNuevaUnidadNombre("");
@@ -151,7 +168,7 @@ export default function AlimentacionDialog({
       toast.success("Tipo de alimento creado correctamente");
 
       setTipoAlimento((prev) => [...prev, nuevo]);
-      setValue("tipoAlimento.id", nuevo.id, { shouldValidate: true });
+      setValue("tipoAlimentoId.id", nuevo.id, { shouldValidate: true });
 
       setTipoModalOpen(false);
       setNuevoTipoNombre("");
@@ -173,7 +190,7 @@ export default function AlimentacionDialog({
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
             <div className="flex gap-4">
               <div>
-                <Label>Fecha</Label>
+                <Label className="block mb-3">Fecha</Label>
                 <Input
                   type="date"
                   {...register("fechaInput", { required: true })}
@@ -181,7 +198,7 @@ export default function AlimentacionDialog({
               </div>
 
               <div>
-                <Label>Hora</Label>
+                <Label className="block mb-3">Hora</Label>
                 <Input
                   type="time"
                   {...register("horaInput", { required: true })}
@@ -190,36 +207,82 @@ export default function AlimentacionDialog({
             </div>
 
             <div>
-              <Label>Java</Label>
-              <Select
-                onValueChange={(value) =>
-                  setValue("java.id", +value, { shouldValidate: true })
-                }
-                value={watch("java.id")?.toString() || ""}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecciona una Java" />
-                </SelectTrigger>
-                <SelectContent className="max-h-48 overflow-y-auto">
-                  {javas.map((java) => (
-                    <SelectItem key={java.id} value={java.id.toString()}>
-                      {java.nombre}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label className="block mb-3">Javas</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start",
+                      !selectedJavas?.length && "text-muted-foreground"
+                    )}
+                  >
+                    {selectedJavas?.length
+                      ? (() => {
+                          const nombres = selectedJavas.map((s) => {
+                            const java = javas.find((j) => j.id === s.id);
+                            return java?.nombre ?? "—";
+                          });
+                          const mostrados = nombres.slice(0, 1);
+                          const restantes = nombres.length - mostrados.length;
+                          return (
+                            mostrados.join(", ") +
+                            (restantes > 0 ? ` y ${restantes} más` : "")
+                          );
+                        })()
+                      : "Selecciona una o más javas"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+                  <div
+                    className="h-48 overflow-y-auto"
+                    style={{ WebkitOverflowScrolling: "touch" }}
+                    onWheel={(e) => e.stopPropagation()}
+                  >
+                    <ul className="grid gap-2 p-2">
+                      {javas.map((java) => {
+                        const checked = selectedJavas?.some(
+                          (j) => j.id === java.id
+                        );
+                        return (
+                          <li
+                            key={java.id}
+                            className="flex items-center gap-2 cursor-pointer"
+                            onClick={() => toggleJava(java)}
+                          >
+                            <Checkbox checked={checked} />
+                            <span className="text-sm">{java.nombre}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              {selectedJavas?.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {selectedJavas.map((sel) => {
+                    const java = javas.find((j) => j.id === sel.id);
+                    return (
+                      <Badge key={sel.id} variant="secondary">
+                        {java?.nombre ?? sel.id}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             <div>
-              <Label>Tipo de alimento</Label>
+              <Label className="block mb-3">Tipo de alimento</Label>
               <div className="flex items-center gap-2">
                 <Select
                   onValueChange={(value) =>
-                    setValue("tipoAlimento.id", +value, {
+                    setValue("tipoAlimentoId.id", +value, {
                       shouldValidate: true,
                     })
                   }
-                  value={watch("tipoAlimento.id")?.toString() || ""}
+                  value={watch("tipoAlimentoId.id")?.toString() || ""}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona un tipo de alimento" />
@@ -240,7 +303,7 @@ export default function AlimentacionDialog({
 
             <div className="flex gap-4 items-end">
               <div className="flex-1">
-                <Label>Cantidad</Label>
+                <Label className="block mb-3">Cantidad</Label>
                 <Input
                   type="number"
                   step="0.1"
@@ -249,14 +312,14 @@ export default function AlimentacionDialog({
               </div>
 
               <div className="flex-1">
-                <Label>Unidad de Medida</Label>
+                <Label className="block mb-3">Unidad de Medida</Label>
                 <Select
                   onValueChange={(value) =>
-                    setValue("unidadMedida.id", +value, {
+                    setValue("unidadMedidaId.id", +value, {
                       shouldValidate: true,
                     })
                   }
-                  value={watch("unidadMedida.id")?.toString() || ""}
+                  value={watch("unidadMedidaId.id")?.toString() || ""}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona una unidad" />
@@ -277,7 +340,7 @@ export default function AlimentacionDialog({
             </div>
 
             <div>
-              <Label>Costo</Label>
+              <Label className="block mb-3">Costo</Label>
               <Input
                 type="number"
                 step="0.01"
@@ -304,7 +367,9 @@ export default function AlimentacionDialog({
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Nombre</Label>
+              <Label className="block mb-3">
+                Nombre <span className=" font-light">Ejemplo: (Kilogramo)</span>
+              </Label>
               <Input
                 value={nuevaUnidadNombre}
                 onChange={(e) => setNuevaUnidadNombre(e.target.value)}
@@ -312,7 +377,9 @@ export default function AlimentacionDialog({
             </div>
 
             <div>
-              <Label>Simbolo</Label>
+              <Label className="block mb-3">
+                Simbolo <span className=" font-light"> Ejemplo: (Kg)</span>
+              </Label>
               <Input
                 value={nuevoSimbolo}
                 onChange={(e) => setNuevoSimbolo(e.target.value)}
@@ -343,7 +410,7 @@ export default function AlimentacionDialog({
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Nombre</Label>
+              <Label className="block mb-3">Nombre</Label>
               <Input
                 value={nuevoTipoNombre}
                 onChange={(e) => setNuevoTipoNombre(e.target.value)}

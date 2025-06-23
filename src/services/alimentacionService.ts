@@ -1,14 +1,17 @@
 import { apiFetch } from "@/lib/api";
-import { Alimentacion, AlimentacionRequest } from "@/types/alimentacion";
+import {
+  AlimentacionRequest,
+  AlimentacionResponse,
+} from "@/types/alimentacion";
 
 const BASE = "/alimentacion";
 
-export const getAllAlimentaciones = (): Promise<Alimentacion[]> =>
+export const getAllAlimentaciones = (): Promise<AlimentacionResponse[]> =>
   apiFetch(`${BASE}/find/all`);
 
 export const createAlimentacion = (
   data: AlimentacionRequest
-): Promise<Alimentacion> =>
+): Promise<AlimentacionResponse> =>
   apiFetch(`${BASE}/create`, {
     method: "POST",
     body: JSON.stringify(data),
@@ -17,7 +20,7 @@ export const createAlimentacion = (
 export const updateAlimentacion = (
   id: number,
   data: AlimentacionRequest
-): Promise<Alimentacion> =>
+): Promise<AlimentacionResponse> =>
   apiFetch(`${BASE}/update/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),

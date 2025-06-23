@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Alimentacion } from "@/types/alimentacion";
+import { AlimentacionResponse } from "@/types/alimentacion";
 import {
   Table,
   TableBody,
@@ -20,7 +20,7 @@ import {
 interface DetalleAlimentacionDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
-  readonly alimentaciones: Alimentacion[];
+  readonly alimentaciones: AlimentacionResponse[];
   readonly javaNombre: string;
 }
 

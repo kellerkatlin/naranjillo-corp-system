@@ -7,7 +7,10 @@ import {
   getAllAlimentaciones,
   updateAlimentacion,
 } from "@/services/alimentacionService";
-import { Alimentacion, AlimentacionRequest } from "@/types/alimentacion";
+import {
+  AlimentacionRequest,
+  AlimentacionResponse,
+} from "@/types/alimentacion";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { useEffect, useMemo, useState } from "react";
@@ -23,19 +26,21 @@ import DetalleAlimentacionDialog from "@/components/DetalleAlimentacionDialog";
  */
 export default function FormAlimentacion() {
   /** Estado para almacenar la lista de alimentaciones. */
-  const [data, setData] = useState<Alimentacion[]>([]);
+  const [data, setData] = useState<AlimentacionResponse[]>([]);
   /** Estado para controlar la visibilidad del diálogo de registro/edición. */
   const [dialogOpen, setDialogOpen] = useState(false);
   /** Estado para almacenar el ítem de alimentación que se está editando. */
-  const [editItem, setEditItem] = useState<Alimentacion | null>(null);
+  const [editItem, setEditItem] = useState<AlimentacionResponse | null>(null);
   /** Estado para controlar la visibilidad del diálogo de confirmación de eliminación. */
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   /** Estado para almacenar el ítem de alimentación que se va a eliminar. */
-  const [itemToDelete, setItemToDelete] = useState<Alimentacion | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<AlimentacionResponse | null>(
+    null
+  );
   /** Estado para almacenar la lista de reproducciones disponibles. */
 
   const [detalleOpen, setDetalleOpen] = useState(false);
-  const [detalleData, setDetalleData] = useState<Alimentacion[]>([]);
+  const [detalleData, setDetalleData] = useState<AlimentacionResponse[]>([]);
   const [detalleJavaNombre, setDetalleJavaNombre] = useState("");
 
   /**
@@ -58,7 +63,7 @@ export default function FormAlimentacion() {
   const agrupados = useMemo(() => {
     const map = new Map<
       string,
-      Alimentacion & { totalCantidad: number; totalCosto: number }
+      AlimentacionResponse & { totalCantidad: number; totalCosto: number }
     >();
 
     data.forEach((item) => {
@@ -85,7 +90,7 @@ export default function FormAlimentacion() {
 
   /** Definición de las columnas para la tabla de alimentaciones. */
   const columns: ColumnDef<
-    Alimentacion & { totalCantidad: number; totalCosto: number }
+    AlimentacionResponse & { totalCantidad: number; totalCosto: number }
   >[] = [
     { accessorKey: "java.nombre", header: "Java" },
 
