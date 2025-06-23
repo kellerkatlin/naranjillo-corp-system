@@ -6,9 +6,8 @@ export type AlimentacionRequest = {
   cantidad: number;
   fechaAlimentacion: string;
   costo: number;
-  javaIds: {
-    id: number;
-  }[];
+  javaIds: number[];
+
   tipoAlimentoId: {
     id: number;
     nombre: string;

@@ -134,7 +134,7 @@ export default function AlimentacionDialog({
       cantidad: +data.cantidad,
       costo: +data.costo,
       fechaAlimentacion,
-      javaIds: data.javaIds.map((j) => ({ id: j.id })),
+      javaIds: data.javaIds.map((j) => j.id),
       tipoAlimentoId: { id: data.tipoAlimentoId.id, nombre: "" },
       unidadMedidaId: { id: data.unidadMedidaId.id, nombre: "", simbolo: "" },
     };
