@@ -129,7 +129,7 @@ export default function MonitorDepositos() {
 
       <Card className="flex w-full flex-col items-center gap-2">
         <CardContent>
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <ThermometerIcon
               size={64}
               strokeWidth={2.5}
@@ -141,7 +141,13 @@ export default function MonitorDepositos() {
           </div>
           <span className="uppercase text-sm text-gray-600 font-medium">
             Temperatura °C
-          </span>
+          </span> */}
+          <div className="flex items-center justify-center ">
+            <span className="text-4xl py-6 text-blue-400 font-semibold">
+              {" "}
+              ph 4.5
+            </span>
+          </div>
         </CardContent>
       </Card>
     </div>
