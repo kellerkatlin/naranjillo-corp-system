@@ -145,7 +145,7 @@ export default function MonitorDepositos() {
           <div className="flex items-center justify-center ">
             <span className="text-4xl py-6 text-blue-400 font-semibold">
               {" "}
-              ph 4.5
+              pH 4.5
             </span>
           </div>
         </CardContent>
