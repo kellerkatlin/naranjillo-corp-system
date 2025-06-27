@@ -61,7 +61,7 @@ export default function DetalleAlimentacionDialog({
             </TableHeader>
 
             <TableBody>
-              {alimentaciones.map((item, index) => {
+              {alimentaciones.map((item) => {
                 const fecha = new Date(item.fechaAlimentacion);
                 const fechaFormateada = `${fecha
                   .getDate()
@@ -77,7 +77,7 @@ export default function DetalleAlimentacionDialog({
                   .padStart(2, "0")}`;
 
                 return (
-                  <TableRow key={index}>
+                  <TableRow key={item.id}>
                     <TableCell className="text-center">
                       {fechaFormateada}
                     </TableCell>
@@ -103,10 +103,15 @@ export default function DetalleAlimentacionDialog({
 
             <TableFooter>
               <TableRow className="font-bold bg-gray-50">
-                <TableCell colSpan={3}>TOTAL</TableCell>
-                <TableCell>{totalCantidad}</TableCell>
+                <TableCell className="pl-16" colSpan={3}>
+                  TOTAL
+                </TableCell>
+
+                <TableCell className="text-center">{totalCantidad}</TableCell>
                 <TableCell></TableCell>
-                <TableCell>S/ {totalCosto.toFixed(2)}</TableCell>
+                <TableCell className="text-center">
+                  S/ {totalCosto.toFixed(2)}
+                </TableCell>
               </TableRow>
             </TableFooter>
           </Table>

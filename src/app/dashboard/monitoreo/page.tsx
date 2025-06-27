@@ -7,9 +7,10 @@ import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
 import Deposito from "@/components/Deposito";
-import { ThermometerIcon } from "lucide-react";
+import { Sun, ThermometerIcon } from "lucide-react";
 import { getAllCuyes } from "@/services/cuyService";
 import { Cuy } from "@/types/cuy";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function MonitorDepositos() {
   const [monitoreo, setMonitoreo] = useState<Monitoreo>({
@@ -80,42 +81,69 @@ export default function MonitorDepositos() {
         Sistema de monitoreo de los depositos de desecho de cuy
       </h2>
 
-      <div className="w-full flex justify-end items-center">
+      <div className="w-full flex justify-start items-center">
         <button
           onClick={exportToExcel}
-          className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-2 rounded"
+          className="bg-blue-500 hover:bg-blue-600  text-white text-sm px-2 py-0.5 rounded"
         >
           Exportar a Excel
         </button>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {monitoreo && (
-          <>
-            <Deposito porcentaje={monitoreo.hum1} nombre="Humedad 1" />
-            <Deposito porcentaje={monitoreo.hum2} nombre="Humedad 2" />
-            <Deposito porcentaje={monitoreo.hum3} nombre="Humedad 3" />
-            <Deposito porcentaje={monitoreo.hum4} nombre="Humedad 4" />
-          </>
-        )}
+      <div className="md:flex justify-between w-full gap-3 ">
+        <div className="grid grid-cols-12  gap-5 w-9/12">
+          {monitoreo && (
+            <>
+              <Deposito porcentaje={monitoreo.hum1} nombre="Humedad 1" />
+              <Deposito porcentaje={monitoreo.hum2} nombre="Humedad 2" />
+              <Deposito porcentaje={monitoreo.hum3} nombre="Humedad 3" />
+              <Deposito porcentaje={monitoreo.hum4} nombre="Humedad 4" />
+            </>
+          )}
+        </div>
+        <Card className="w-3/12 mt-3 md:mt-0">
+          <CardContent className="h-full">
+            <div className="flex flex-col justify-between h-full">
+              <div className="flex justify-between">
+                <div className="text-lg">
+                  <p>Jueves</p>
+                  <p>26 de Junio</p>
+                </div>
+                <Sun className="size-14" />
+              </div>
+
+              <div className="flex justify-center ">
+                <div className="flex flex-col items-start">
+                  <p className="text-start text-blue-400">Temp °C</p>
+                  <span className="text-start text-5xl text-blue-500 font-semibold">
+                    24°c
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-end">Bajo Naranjillo</p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="flex flex-col items-center gap-2">
-        <div className="flex items-center gap-2">
-          <ThermometerIcon
-            size={64}
-            strokeWidth={2.5}
-            className="text-blue-500"
-          />
-          <span className="text-4xl font-semibold">
-            {" "}
-            {monitoreo ? monitoreo.temp5 : "--"}°
+      <Card className="flex w-full flex-col items-center gap-2">
+        <CardContent>
+          <div className="flex items-center gap-2">
+            <ThermometerIcon
+              size={64}
+              strokeWidth={2.5}
+              className="text-blue-500"
+            />
+            <span className="text-4xl font-semibold">
+              {monitoreo ? monitoreo.temp5 : "--"}°
+            </span>
+          </div>
+          <span className="uppercase text-sm text-gray-600 font-medium">
+            Temperatura °C
           </span>
-        </div>
-        <span className="uppercase text-sm text-gray-600 font-medium">
-          Temperatura °C
-        </span>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
