@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
 import Deposito from "@/components/Deposito";
-import { Sun, ThermometerIcon } from "lucide-react";
+import { Sun } from "lucide-react";
 import { getAllCuyes } from "@/services/cuyService";
 import { Cuy } from "@/types/cuy";
 import { Card, CardContent } from "@/components/ui/card";
