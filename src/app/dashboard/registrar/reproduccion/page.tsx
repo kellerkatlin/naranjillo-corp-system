@@ -169,16 +169,16 @@ export default function FormReproduccion() {
   return (
     <div className="p-4 rounded-lg">
       {/* GRUPO REPRODUCCION */}
-      <Card className="p-3 mb-6">
+      <Card className="px-3 mb-3 ">
         <div>
           <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold inline-block text-center">
             Grupo Reproducción
           </span>
         </div>
 
-        <div className="flex gap-4 py-4">
+        <div className="flex gap-4  -mt-4">
           {/* Contenedor scrollable solo para las cards */}
-          <div className="flex-shrink-0 w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+          <div className="flex-shrink-0 w-36 mt-8 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("REPRODUCCION")}
               className="p-2 flex flex-col items-center justify-center"
@@ -190,7 +190,7 @@ export default function FormReproduccion() {
             </CardContent>
           </div>
 
-          <div className="flex gap-4 overflow-x-auto overflow-y-hidden ">
+          <div className="flex gap-4 py-8 overflow-x-auto overflow-y-hidden ">
             {javasReproduccion.map((grupo) => (
               <div
                 key={grupo.id}
@@ -258,8 +258,8 @@ export default function FormReproduccion() {
       </Card>
 
       {/* GRUPO MACHOS */}
-      <Card className="p-3 mb-6">
-        <div className="flex items-center justify-between mb-4">
+      <Card className="px-3 mb-3">
+        <div className="flex items-center justify-between">
           <div className="flex flex-wrap gap-2">
             {["TODOS", "ENGORDE", "CRIA"].map((cat) => (
               <Button
@@ -277,9 +277,9 @@ export default function FormReproduccion() {
           </div>
         </div>
 
-        <div className="flex gap-4 py-4">
+        <div className="flex gap-4 -mt-4 ">
           {/* Contenedor scrollable solo para las cards */}
-          <div className="flex-shrink-0 w-36 h-36 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
+          <div className="flex-shrink-0 w-36 h-36 mt-8 border-green-400 border-2 flex items-center justify-center cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("MACHO")}
               className="p-2 flex flex-col items-center justify-center"
@@ -290,9 +290,12 @@ export default function FormReproduccion() {
               </div>
             </CardContent>
           </div>
-          <div className="flex gap-4 overflow-x-auto flex-1">
+          <div className="flex gap-4 py-8 overflow-x-auto overflow-y-hidden">
             {javasMachos.map((grupo) => (
-              <div key={grupo.id} className="flex-shrink-0 max-w-md">
+              <div
+                key={grupo.id}
+                className="flex-shrink-0 overflow-visible max-w-md hover:scale-105"
+              >
                 <CardJava
                   java={grupo}
                   onClickEdit={() => {
@@ -356,8 +359,8 @@ export default function FormReproduccion() {
 
       {/* GRUPO HEMBRAS */}
 
-      <Card className="p-3 mb-6">
-        <div className="flex items-center justify-between mb-4">
+      <Card className="px-3">
+        <div className="flex items-center justify-between ">
           <div className="flex flex-wrap gap-2">
             {["TODOS", "ENGORDE", "CRIA"].map((cat) => (
               <Button
@@ -376,12 +379,12 @@ export default function FormReproduccion() {
           </div>
         </div>
 
-        <div className="flex gap-4 py-4">
+        <div className="flex gap-4  -mt-4">
           {/* Scroll horizontal para las cards */}
-          <div className="flex-shrink-0 w-36 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+          <div className="flex-shrink-0 w-36 h-36 flex mt-8  items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
             <CardContent
               onClick={() => setDialogGrupoOpen("HEMBRA")}
-              className="p-2 flex flex-col items-center justify-center"
+              className="p-2 flex flex-col  items-center justify-center"
             >
               <Plus className="w-8 h-8 text-green-400" />
               <div className="mt-2 text-xs text-center font-semibold text-green-400">
@@ -389,7 +392,7 @@ export default function FormReproduccion() {
               </div>
             </CardContent>
           </div>
-          <div className="flex gap-4 overflow-x-auto flex-1">
+          <div className="flex gap-4  py-8  overflow-x-auto flex-1">
             {javasHembras.map((grupo) => (
               <div key={grupo.id} className="flex-shrink-0 max-w-md">
                 <CardJava

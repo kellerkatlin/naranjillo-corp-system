@@ -33,10 +33,10 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
   return (
     <Card
       onClick={onClickEdit}
-      className="w-36 h-36 border-black bg-green-300 border-none items-center justify-center relative cursor-pointer hover:scale-105"
+      className="w-36 h-36 border-black bg-red-50 border-none items-center justify-center relative cursor-pointer hover:scale-105"
     >
-      <CardContent className="p-2 flex flex-col justify-center items-center text-center">
-        <div className="font-semibold text-gray-800 text-sm">
+      <CardContent className="p-2  flex flex-col justify-center items-center text-center">
+        <div className="font-semibold pt-3 text-gray-800 text-sm">
           {java?.nombre}
         </div>
         <Image
@@ -48,9 +48,14 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
         />
 
         {java?.categoria && (
-          <Badge variant="secondary" className="bg-blue-500 text-white">
-            {diasReproduccion !== undefined ? `Días: ${diasReproduccion}` : "-"}
-          </Badge>
+          <div className="flex w-full pb-4 justify-between gap-3">
+            <Badge variant="secondary" className="bg-blue-500 text-white">
+              {diasReproduccion !== undefined
+                ? `Días: ${diasReproduccion}`
+                : "-"}
+            </Badge>
+            <div>cant. {java.cuyes.length}</div>
+          </div>
         )}
       </CardContent>
     </Card>

@@ -1,7 +1,5 @@
 "use client";
 
-import { getAllMonitoreo } from "@/services/monitoreoService";
-import { Monitoreo } from "@/types/monitoreo";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
@@ -11,31 +9,35 @@ import { Sun } from "lucide-react";
 import { getAllCuyes } from "@/services/cuyService";
 import { Cuy } from "@/types/cuy";
 import { Card, CardContent } from "@/components/ui/card";
+import { getAllCajitas } from "@/services/cajitaService";
+import { CajitaResponse } from "@/types/cajita";
+import { getAllLecturas } from "@/services/lecturaService";
+import { LecturaGeneralResponse } from "@/types/lectura";
 
 export default function MonitorDepositos() {
-  const [monitoreo, setMonitoreo] = useState<Monitoreo>({
-    id: 0,
-    hum1: 0,
-    hum2: 0,
-    hum3: 0,
-    ph: 0,
-    hum4: 0,
-    temp5: 0,
-    nombre_dispositivo: "Sin datos",
-  });
-
   const [cuyes, setCuyes] = useState<Cuy[]>([]);
+  const [cajitas, setCajitas] = useState<CajitaResponse[]>([]);
+  const [open, setOpen] = useState(false);
+  const [lecturaGeneral, setLecturaGeneral] = useState<
+    LecturaGeneralResponse[]
+  >([]);
 
-  const loadData = async (showToast = false) => {
+  const loadCajitas = async () => {
     try {
-      const res = await getAllMonitoreo();
-      if (res && res.length > 0) {
-        const ultimo = res[res.length - 1];
-        setMonitoreo(ultimo);
-        if (showToast) toast.success("Datos cargados correctamente");
-      }
-    } catch {
-      if (showToast) toast.error("Error al cargar datos");
+      const res = await getAllCajitas();
+      setCajitas(res);
+    } catch (error) {
+      console.error("Error al cargar las cajitas", error);
+    }
+  };
+
+  const loadLecturas = async () => {
+    try {
+      const res = await getAllLecturas();
+      const ultimas5 = res.slice(-5);
+      setLecturaGeneral(ultimas5);
+    } catch (error) {
+      console.error("Error al cargar la lectura", error);
     }
   };
 
@@ -64,15 +66,21 @@ export default function MonitorDepositos() {
 
   useEffect(() => {
     loadCuyes();
-  }, []);
-
-  useEffect(() => {
-    loadData(true);
     const interval = setInterval(() => {
-      loadData();
-    }, 2000);
+      loadLecturas();
+      loadCajitas();
+    }, 5000);
+
     return () => clearInterval(interval);
   }, []);
+
+  // useEffect(() => {
+  //   loadData(true);
+  //   const interval = setInterval(() => {
+  //     loadData();
+  //   }, 2000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-start p-10 gap-10">
@@ -91,17 +99,53 @@ export default function MonitorDepositos() {
       </div>
 
       <div className="md:flex justify-between w-full gap-3 ">
-        <div className="grid grid-cols-12  gap-5 w-9/12">
-          {monitoreo && (
-            <>
-              <Deposito porcentaje={monitoreo.hum1} nombre="Humedad 1" />
-              <Deposito porcentaje={monitoreo.hum2} nombre="Humedad 2" />
-              <Deposito porcentaje={monitoreo.hum3} nombre="Humedad 3" />
-              <Deposito porcentaje={monitoreo.hum4} nombre="Humedad 4" />
-            </>
-          )}
+        <div className="grid grid-cols-12  gap-5 w-full md:w-9/12">
+          <Deposito
+            cajita={cajitas.filter((c) => c.numero === 1)}
+            lecturaGeneral={lecturaGeneral}
+            porcentaje={
+              cajitas.filter((c) => c.numero === 1)[0]?.lecturas[0]?.valor
+            }
+            numero={1}
+            open={open}
+            setOpen={setOpen}
+            nombre="Humedad 1"
+          />
+          <Deposito
+            cajita={cajitas.filter((c) => c.numero === 2)}
+            porcentaje={
+              cajitas.filter((c) => c.numero === 2)[0]?.lecturas[0]?.valor
+            }
+            lecturaGeneral={lecturaGeneral}
+            numero={2}
+            open={open}
+            setOpen={setOpen}
+            nombre="Humedad 2"
+          />
+          <Deposito
+            cajita={cajitas.filter((c) => c.numero === 3)}
+            porcentaje={
+              cajitas.filter((c) => c.numero === 3)[0]?.lecturas[0]?.valor
+            }
+            lecturaGeneral={lecturaGeneral}
+            numero={3}
+            open={open}
+            setOpen={setOpen}
+            nombre="Humedad 3"
+          />
+          <Deposito
+            cajita={cajitas.filter((c) => c.numero === 4)}
+            porcentaje={
+              cajitas.filter((c) => c.numero === 4)[0]?.lecturas[0]?.valor
+            }
+            lecturaGeneral={lecturaGeneral}
+            numero={4}
+            open={open}
+            setOpen={setOpen}
+            nombre="Humedad 4"
+          />
         </div>
-        <Card className="w-3/12 mt-3 md:mt-0">
+        <Card className="md:w-3/12 w-full mt-3 md:mt-0">
           <CardContent className="h-full">
             <div className="flex flex-col justify-between h-full">
               <div className="flex justify-between">
@@ -116,7 +160,7 @@ export default function MonitorDepositos() {
                 <div className="flex flex-col items-start">
                   <p className="text-start text-blue-400">Temp °C</p>
                   <span className="text-start text-5xl text-blue-500 font-semibold">
-                    24°c
+                    {lecturaGeneral[0]?.temperatura ?? 0}°c
                   </span>
                 </div>
               </div>
@@ -144,8 +188,7 @@ export default function MonitorDepositos() {
           </span> */}
           <div className="flex items-center justify-center ">
             <span className="text-4xl py-6 text-blue-400 font-semibold">
-              {" "}
-              pH 4.5
+              pH {lecturaGeneral[0]?.ph ?? 0}
             </span>
           </div>
         </CardContent>
