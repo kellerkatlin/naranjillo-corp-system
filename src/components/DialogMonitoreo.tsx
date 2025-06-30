@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { CajitaResponse } from "@/types/cajita";
 import { LecturaGeneralResponse } from "@/types/lectura";
 import { useEffect } from "react";
+
 interface DialogMonitoreProps {
   readonly setOpen: (open: boolean) => void;
   readonly open: boolean;

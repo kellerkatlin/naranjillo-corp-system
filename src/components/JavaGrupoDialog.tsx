@@ -75,7 +75,7 @@ export type DataJava = {
   cuyes?: Array<{
     id: number;
     nombre: string;
-    sexo: string;
+    sexo: "MACHO" | "HEMBRA";
     categoria: string;
     fechaRegistro: string;
   }>;
@@ -106,10 +106,18 @@ export default function JavaGrupoDialog({
     "padre" | "madre" | "fecha" | "crias" | "lista" | null
   >("lista");
 
+  const [cuySeleccionado, setCuySeleccionado] = useState<{
+    id: number;
+    sexo: "MACHO" | "HEMBRA";
+  } | null>(null);
+
+  const [javasDestino, setJavasDestino] = useState<JavaRespose[]>([]);
+
   const {
     register,
     watch,
     reset,
+    getValues,
     setValue,
     formState: { errors },
   } = useForm<DataJava>({
@@ -151,6 +159,9 @@ export default function JavaGrupoDialog({
         });
       }
     }
+
+    setCuySeleccionado(null);
+    setSelectedJavaId(null);
     setSeleccionActual("lista");
   }, [open, reset, isEditing, javaToEdit, mode]);
 
@@ -199,6 +210,29 @@ export default function JavaGrupoDialog({
     } catch (error) {
       console.error("Error al obtener madres", error);
     }
+  };
+
+  const handleCuyClick = async (cuy: {
+    id: number;
+    sexo: "MACHO" | "HEMBRA";
+    nombre: string;
+    categoria: string;
+    fechaRegistro: string;
+  }) => {
+    // ① guardamos el cuy elegido
+    setCuySeleccionado({ id: cuy.id, sexo: cuy.sexo });
+
+    // ② pedimos las javas según su sexo
+    try {
+      const data = await getAllJava(cuy.sexo, "ENGORDE");
+      setJavasDestino(data); // ← lista para el <Select> de abajo
+    } catch {
+      toast.error("Error al cargar javas destino");
+      setJavasDestino([]);
+    }
+
+    // ③ (opcional) selecciona la pestaña/listado de destino
+    setSeleccionActual("lista");
   };
 
   const doCambioPadre = async () => {
@@ -356,7 +390,7 @@ export default function JavaGrupoDialog({
       </h2>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 h-52 overflow-y-auto">
           {padresDisponibles.length ? (
             <Table>
               <TableHeader>
@@ -438,7 +472,7 @@ export default function JavaGrupoDialog({
       </h2>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 h-52 overflow-y-auto">
           {madresDisponibles.length ? (
             <Table>
               <TableHeader>
@@ -509,6 +543,140 @@ export default function JavaGrupoDialog({
       )}
     </>
   );
+
+  const TablaCuyes = () => {
+    const cuyesDisponibles = watch("cuyes") ?? [];
+
+    return (
+      <>
+        <h2 className="text-base text-center font-bold mb-4">
+          Seleccionar Cuy
+        </h2>
+
+        <Card>
+          <CardContent className="p-0 h-52 overflow-y-auto">
+            {cuyesDisponibles.length ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Sexo</TableHead>
+                    <TableHead>Fecha Registro</TableHead>
+                    <TableHead>Sel.</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {cuyesDisponibles.map((cuy) => {
+                    const isChecked = cuySeleccionado?.id === cuy.id;
+                    return (
+                      <TableRow key={cuy.id}>
+                        <TableCell>{cuy.id}</TableCell>
+                        <TableCell
+                          className={
+                            cuy.sexo === "MACHO"
+                              ? "text-blue-600"
+                              : "text-pink-600"
+                          }
+                        >
+                          {cuy.sexo}
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const fechaStr = cuy.fechaRegistro;
+                            const fecha = new Date(fechaStr);
+
+                            const dia = fecha
+                              .getDate()
+                              .toString()
+                              .padStart(2, "0");
+                            const mes = (fecha.getMonth() + 1)
+                              .toString()
+                              .padStart(2, "0");
+                            const anio = fecha.getFullYear();
+                            const hora = fecha
+                              .getHours()
+                              .toString()
+                              .padStart(2, "0");
+                            const minutos = fecha
+                              .getMinutes()
+                              .toString()
+                              .padStart(2, "0");
+
+                            return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
+                          })()}
+                        </TableCell>
+                        <TableCell>
+                          <Checkbox
+                            checked={isChecked}
+                            onCheckedChange={(checked) =>
+                              checked
+                                ? handleCuyClick(cuy)
+                                : setCuySeleccionado(null)
+                            }
+                          />
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="text-gray-400 text-center p-4">
+                No hay cuyes disponibles.
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {isEditing && cuySeleccionado && (
+          <div className="mt-4 flex gap-2 items-center">
+            <Label>Java destino:</Label>
+
+            <Select
+              value={selectedJavaId?.toString() ?? ""}
+              onValueChange={(v) => setSelectedJavaId(Number(v))}
+              disabled={javasDestino.length === 0}
+            >
+              <SelectTrigger className="w-48">
+                <SelectValue placeholder="Seleccionar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {javasDestino.map((j) => (
+                    <SelectItem key={j.id} value={j.id.toString()}>
+                      {j.nombre}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+
+            <Button
+              onClick={async () => {
+                if (!selectedJavaId || !cuySeleccionado) return;
+
+                await cambioPadreDeJava(selectedJavaId, cuySeleccionado.id);
+                toast.success("Cuy movido correctamente");
+
+                const listaActual = getValues("cuyes") ?? [];
+                setValue(
+                  "cuyes",
+                  listaActual.filter((c) => c.id !== cuySeleccionado.id)
+                );
+
+                setCuySeleccionado(null);
+                setSelectedJavaId(null);
+                setJavasDestino([]);
+              }}
+              disabled={!selectedJavaId}
+            >
+              Mover Cuy
+            </Button>
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -1033,75 +1201,7 @@ export default function JavaGrupoDialog({
               </>
             )}
 
-            {isEditing && seleccionActual === "lista" && (
-              <>
-                <h2 className="text-base font-bold text-center mb-4">
-                  Cuyes de la java
-                </h2>
-                <Card>
-                  <CardContent className="p-0">
-                    <div className="overflow-y-auto">
-                      {(watch("cuyes") ?? []).length > 0 ? (
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>ID</TableHead>
-                              <TableHead>Sexo</TableHead>
-                              <TableHead>Fecha y Hora</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {(watch("cuyes") ?? []).map((cuy) => (
-                              <TableRow key={cuy.id}>
-                                <TableCell>{cuy.id}</TableCell>
-                                <TableCell
-                                  className={`${
-                                    cuy.sexo === "MACHO"
-                                      ? "text-blue-600"
-                                      : "text-pink-600"
-                                  }`}
-                                >
-                                  {cuy.sexo}
-                                </TableCell>
-                                <TableCell>
-                                  {(() => {
-                                    const fechaStr = cuy.fechaRegistro;
-                                    const fecha = new Date(fechaStr);
-
-                                    const dia = fecha
-                                      .getDate()
-                                      .toString()
-                                      .padStart(2, "0");
-                                    const mes = (fecha.getMonth() + 1)
-                                      .toString()
-                                      .padStart(2, "0");
-                                    const anio = fecha.getFullYear();
-                                    const hora = fecha
-                                      .getHours()
-                                      .toString()
-                                      .padStart(2, "0");
-                                    const minutos = fecha
-                                      .getMinutes()
-                                      .toString()
-                                      .padStart(2, "0");
-
-                                    return `${dia}/${mes}/${anio} ${hora}:${minutos}`;
-                                  })()}
-                                </TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      ) : (
-                        <div className="text-gray-400 text-center p-4">
-                          No hay cuyes en esta java.
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </>
-            )}
+            {isEditing && seleccionActual === "lista" && <TablaCuyes />}
           </div>
         </div>
 

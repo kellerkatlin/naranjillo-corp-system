@@ -31,7 +31,7 @@ export interface JavaRespose {
   cuyes: Array<{
     id: number;
     nombre: string;
-    sexo: string;
+    sexo: "MACHO" | "HEMBRA";
     categoria: string;
     nombreJavaOrigen: string;
     fechaRegistro: string;
