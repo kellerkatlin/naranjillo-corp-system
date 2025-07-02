@@ -9,10 +9,10 @@ import { Input } from "@/components/ui/input";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createCajita, updateCajita } from "@/services/cajitaService";
+import { finalizarCaja, saveCaja } from "@/services/movimientoCajaService";
 import { Label } from "./ui/label";
 import { toast } from "sonner";
-import { CajitaResponse } from "@/types/cajita";
+import { CajitaResponse, EstadoMovimiento } from "@/types/cajita";
 import { LecturaGeneralResponse } from "@/types/lectura";
 import { useEffect } from "react";
 
@@ -56,18 +56,26 @@ export default function DialogMonitoreo({
   });
 
   const onSubmit = async (data: FormValues) => {
-    const payload = { ...data, numero };
+    const payload = {
+      ...data,
+      numCaja: numero,
+      estadoMovimiento: EstadoMovimiento.INICIADO,
+    };
 
     try {
-      if (cajitas[0]) {
-        const udpated = { ...data, numero };
-        await updateCajita(cajitas[0].id, udpated);
+      const cajitaIniciada = cajitas.find(
+        (c) => c.estadoMovimiento === EstadoMovimiento.INICIADO
+      );
+
+      if (cajitaIniciada) {
+        await finalizarCaja(cajitaIniciada.id, { pesoFinal: data.pesoFinal });
         toast.success("Cajita actualizada correctamente");
+        window.location.reload(); // ✅ si quieres recargar la página
       } else {
-        // Si no existe -> crear
-        await createCajita(payload);
+        await saveCaja(payload);
         toast.success("Cajita creada correctamente");
       }
+
       reset();
       setOpen(false);
     } catch (err) {
@@ -75,12 +83,16 @@ export default function DialogMonitoreo({
       toast.error("Ocurrió un error al guardar la cajita");
     }
   };
+
   useEffect(() => {
-    if (cajitas[0]) {
+    const cajitaIniciada = cajitas.find(
+      (c) => c.estadoMovimiento === EstadoMovimiento.INICIADO
+    );
+    if (cajitaIniciada) {
       reset({
-        pesoInicial: cajitas[0].pesoInicial ?? 0,
-        pesoFinal: cajitas[0].pesoFinal ?? 0,
-        costo: cajitas[0].costo ?? 0,
+        pesoInicial: cajitaIniciada.pesoInicial ?? 0,
+        pesoFinal: cajitaIniciada.pesoFinal ?? 0,
+        costo: cajitaIniciada.costo ?? 0,
       });
     }
   }, [cajitas, reset]);
@@ -91,58 +103,56 @@ export default function DialogMonitoreo({
         <DialogHeader>
           <DialogTitle>
             <span className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm font-semibold">
-              {nombre} (#{numero})
+              {nombre}
             </span>
           </DialogTitle>
         </DialogHeader>
 
         {/* Sección de inputs y botones */}
         <form onSubmit={handleSubmit(onSubmit)}>
-          {cajitas[0] && (
-            <div className="grid grid-cols-3 gap-4 my-4">
-              <div>
-                <Label className="block mb-2">Costo (S/)</Label>
-                <Input
-                  type="number"
-                  step="any"
-                  {...register("costo", { valueAsNumber: true })}
-                  placeholder="Ingrese el costo"
-                />
-                {errors.costo && (
-                  <p className="text-red-500 text-sm">{errors.costo.message}</p>
-                )}
-              </div>
-              <div>
-                <Label className="block mb-2">Peso Inicial (Kg)</Label>
-                <Input
-                  type="number"
-                  step="any"
-                  {...register("pesoInicial", { valueAsNumber: true })}
-                  placeholder="Peso Inicial"
-                />
-                {errors.pesoInicial && (
-                  <p className="text-red-500 text-sm">
-                    {errors.pesoInicial.message}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label className="block mb-2">Peso Final (Kg)</Label>
-                <Input
-                  type="number"
-                  step="any"
-                  disabled={!cajitas[0]}
-                  {...register("pesoFinal", { valueAsNumber: true })}
-                  placeholder="Peso Final"
-                />
-                {errors.pesoFinal && (
-                  <p className="text-red-500 text-sm">
-                    {errors.pesoFinal.message}
-                  </p>
-                )}
-              </div>
+          <div className="grid grid-cols-3 gap-4 my-4">
+            <div>
+              <Label className="block mb-2">Costo (S/)</Label>
+              <Input
+                type="number"
+                step="any"
+                {...register("costo", { valueAsNumber: true })}
+                placeholder="Ingrese el costo"
+              />
+              {errors.costo && (
+                <p className="text-red-500 text-sm">{errors.costo.message}</p>
+              )}
             </div>
-          )}
+            <div>
+              <Label className="block mb-2">Peso Inicial (Kg)</Label>
+              <Input
+                type="number"
+                step="any"
+                {...register("pesoInicial", { valueAsNumber: true })}
+                placeholder="Peso Inicial"
+              />
+              {errors.pesoInicial && (
+                <p className="text-red-500 text-sm">
+                  {errors.pesoInicial.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <Label className="block mb-2">Peso Final (Kg)</Label>
+              <Input
+                type="number"
+                step="any"
+                disabled={!cajitas[0]}
+                {...register("pesoFinal", { valueAsNumber: true })}
+                placeholder="Peso Final"
+              />
+              {errors.pesoFinal && (
+                <p className="text-red-500 text-sm">
+                  {errors.pesoFinal.message}
+                </p>
+              )}
+            </div>
+          </div>
 
           {/* Tabla */}
           <table className="w-full border-t border-black text-sm mt-6">
@@ -158,41 +168,53 @@ export default function DialogMonitoreo({
               </tr>
             </thead>
             <tbody>
-              {lecturaGeneral.length > 0 ? (
-                lecturaGeneral.map((lectura, index) => {
-                  const cajita = cajitas[0]; // usamos siempre la misma cajita del depósito
+              {(() => {
+                const cajita = cajitas.find(
+                  (c) => c.estadoMovimiento === EstadoMovimiento.INICIADO
+                );
+
+                const humedades = cajita?.humedades?.slice(-5) ?? [];
+                const temperaturas = lecturaGeneral.slice(-5);
+
+                if (!cajita || humedades.length === 0) {
+                  return (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="text-center py-4 text-gray-500"
+                      >
+                        No hay datos disponibles.
+                      </td>
+                    </tr>
+                  );
+                }
+
+                return humedades.map((humedad, index) => {
+                  const lectura = temperaturas[index]; // puede ser undefined si hay menos lecturas
 
                   return (
                     <tr key={index} className="border-b border-gray-300">
                       <td className="py-2 px-2">
-                        {lectura.fechaHora ?? "N/A"}
+                        {cajita.fechaHoraInicio ?? "N/A"}
                       </td>
                       <td className="py-2 px-2">
-                        {lectura.fechaHora ?? "N/A"}
+                        {cajita.fechaHoraFin ?? "N/A"}
+                      </td>
+                      <td className="py-2 px-2">{humedad.valor ?? "N/A"}%</td>
+                      <td className="py-2 px-2">
+                        {cajita.pesoInicial ?? "--"}kg
                       </td>
                       <td className="py-2 px-2">
-                        {cajita?.lecturas?.slice(-5)[index]?.valor ?? "N/A"}%
+                        {cajita.pesoFinal ?? "--"}kg
                       </td>
+                      <td className="py-2 px-2">S/ {cajita.costo ?? "--"}</td>
                       <td className="py-2 px-2">
-                        {cajita?.pesoInicial ?? "--"}kg
-                      </td>
-                      <td className="py-2 px-2">
-                        {cajita?.pesoFinal ?? "--"}kg
-                      </td>
-                      <td className="py-2 px-2">S/ {cajita?.costo ?? "--"}</td>
-                      <td className="py-2 px-2">
-                        {lectura.temperatura ?? "N/A"}°C
+                        {lectura?.temperatura ?? "N/A"}°C
                       </td>
                     </tr>
                   );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={7} className="text-center py-4 text-gray-500">
-                    No hay lecturas disponibles.
-                  </td>
-                </tr>
-              )}
+                });
+              })()}
             </tbody>
           </table>
 
@@ -201,7 +223,6 @@ export default function DialogMonitoreo({
             {cajitas[0] ? (
               <Button
                 type="submit"
-                onClick={() => setOpen(false)}
                 className="bg-orange-400 hover:bg-orange-500"
               >
                 Finalizar

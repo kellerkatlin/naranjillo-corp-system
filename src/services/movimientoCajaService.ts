@@ -2,22 +2,22 @@ import { apiFetch } from "@/lib/api";
 
 import { CajitaRequest, CajitaResponse } from "@/types/cajita";
 
-const BASE = "/cajita";
+const BASE = "/movimientocaja";
 
 export const getAllCajitas = (): Promise<CajitaResponse[]> =>
   apiFetch(`${BASE}/find/all`);
 
-export const createCajita = (data: CajitaRequest): Promise<CajitaResponse> =>
-  apiFetch(`${BASE}/create`, {
+export const saveCaja = (data: CajitaRequest): Promise<CajitaResponse> =>
+  apiFetch(`${BASE}/save`, {
     method: "POST",
     body: JSON.stringify(data),
   });
 
-export const updateCajita = (
+export const finalizarCaja = (
   id: number,
-  data: CajitaRequest
+  data: { pesoFinal: number }
 ): Promise<CajitaResponse> =>
-  apiFetch(`${BASE}/update/${id}`, {
-    method: "PUT",
+  apiFetch(`${BASE}/delete/${id}`, {
+    method: "DELETE",
     body: JSON.stringify(data),
   });

@@ -9,15 +9,17 @@ import { Sun } from "lucide-react";
 import { getAllCuyes } from "@/services/cuyService";
 import { Cuy } from "@/types/cuy";
 import { Card, CardContent } from "@/components/ui/card";
-import { getAllCajitas } from "@/services/cajitaService";
+import { getAllCajitas } from "@/services/movimientoCajaService";
 import { CajitaResponse } from "@/types/cajita";
 import { getAllLecturas } from "@/services/lecturaService";
 import { LecturaGeneralResponse } from "@/types/lectura";
+import DialogMonitoreo from "@/components/DialogMonitoreo";
 
 export default function MonitorDepositos() {
   const [cuyes, setCuyes] = useState<Cuy[]>([]);
   const [cajitas, setCajitas] = useState<CajitaResponse[]>([]);
-  const [open, setOpen] = useState(false);
+  const [selectedDeposito, setSelectedDeposito] = useState<number | null>(null);
+
   const [lecturaGeneral, setLecturaGeneral] = useState<
     LecturaGeneralResponse[]
   >([]);
@@ -101,49 +103,55 @@ export default function MonitorDepositos() {
       <div className="md:flex justify-between w-full gap-3 ">
         <div className="grid grid-cols-12  gap-5 w-full md:w-9/12">
           <Deposito
-            cajita={cajitas.filter((c) => c.numero === 1)}
-            lecturaGeneral={lecturaGeneral}
             porcentaje={
-              cajitas.filter((c) => c.numero === 1)[0]?.lecturas[0]?.valor
+              cajitas.filter(
+                (c) => c.numCaja === 1 && c.estadoMovimiento === "INICIADO"
+              )[0]?.humedades[0]?.valor
             }
             numero={1}
-            open={open}
-            setOpen={setOpen}
-            nombre="Humedad 1"
+            onClick={() => setSelectedDeposito(1)}
           />
           <Deposito
-            cajita={cajitas.filter((c) => c.numero === 2)}
             porcentaje={
-              cajitas.filter((c) => c.numero === 2)[0]?.lecturas[0]?.valor
+              cajitas.filter(
+                (c) => c.numCaja === 2 && c.estadoMovimiento === "INICIADO"
+              )[0]?.humedades[0]?.valor
             }
-            lecturaGeneral={lecturaGeneral}
             numero={2}
-            open={open}
-            setOpen={setOpen}
-            nombre="Humedad 2"
+            onClick={() => setSelectedDeposito(2)}
           />
           <Deposito
-            cajita={cajitas.filter((c) => c.numero === 3)}
             porcentaje={
-              cajitas.filter((c) => c.numero === 3)[0]?.lecturas[0]?.valor
+              cajitas.filter(
+                (c) => c.numCaja === 3 && c.estadoMovimiento === "INICIADO"
+              )[0]?.humedades[0]?.valor
             }
-            lecturaGeneral={lecturaGeneral}
             numero={3}
-            open={open}
-            setOpen={setOpen}
-            nombre="Humedad 3"
+            onClick={() => setSelectedDeposito(3)}
           />
           <Deposito
-            cajita={cajitas.filter((c) => c.numero === 4)}
             porcentaje={
-              cajitas.filter((c) => c.numero === 4)[0]?.lecturas[0]?.valor
+              cajitas.filter(
+                (c) => c.numCaja === 4 && c.estadoMovimiento === "INICIADO"
+              )[0]?.lecturas[0]?.valor
             }
-            lecturaGeneral={lecturaGeneral}
             numero={4}
-            open={open}
-            setOpen={setOpen}
-            nombre="Humedad 4"
+            onClick={() => setSelectedDeposito(4)}
           />
+          {selectedDeposito !== null && (
+            <DialogMonitoreo
+              nombre={`Deposito ${selectedDeposito}`}
+              open={selectedDeposito !== null}
+              setOpen={() => setSelectedDeposito(null)}
+              cajitas={cajitas.filter(
+                (c) =>
+                  c.numCaja === selectedDeposito &&
+                  c.estadoMovimiento === "INICIADO"
+              )}
+              lecturaGeneral={lecturaGeneral}
+              numero={selectedDeposito}
+            />
+          )}
         </div>
         <Card className="md:w-3/12 w-full mt-3 md:mt-0">
           <CardContent className="h-full">
