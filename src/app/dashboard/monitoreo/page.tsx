@@ -133,7 +133,7 @@ export default function MonitorDepositos() {
             porcentaje={
               cajitas.filter(
                 (c) => c.numCaja === 4 && c.estadoMovimiento === "INICIADO"
-              )[0]?.lecturas[0]?.valor
+              )[0]?.humedades[0]?.valor
             }
             numero={4}
             onClick={() => setSelectedDeposito(4)}
