@@ -46,12 +46,26 @@ export function CrudToolbar({
           Añadir {title ?? "Registro"}
           <Plus className="ml-1" />
         </Button>
+        <Button
+          className={`cursor-pointer whitespace-nowrap ${
+            !isFilteringSinJava
+              ? "bg-blue-500 hover:bg-blue-600 text-white"
+              : "bg-white hover:bg-gray-100 border text-blue-500"
+          }`}
+          onClick={() => onToggleJavaFilter?.()}
+        >
+          Mostrar todos
+        </Button>
 
         <Button
-          className="bg-blue-500 hover:bg-blue-600 cursor-pointer whitespace-nowrap"
-          onClick={onToggleJavaFilter}
+          className={`cursor-pointer whitespace-nowrap ${
+            isFilteringSinJava
+              ? "bg-blue-500 hover:bg-blue-600 text-white"
+              : "bg-white hover:bg-gray-100 border text-blue-500"
+          }`}
+          onClick={() => onToggleJavaFilter?.()}
         >
-          {isFilteringSinJava ? "Mostrar todos" : "Cuyes sin Java"}
+          Cuyes sin Java
         </Button>
       </div>
     </div>

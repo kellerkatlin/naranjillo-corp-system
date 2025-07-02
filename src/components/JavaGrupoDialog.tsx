@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -335,18 +335,31 @@ export default function JavaGrupoDialog({
     return true;
   };
 
+  // ①  refs auxiliares
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const prevScrollY = useRef<number>(0); // <— nueva ref
+
+  // ②  cuando se selecciona/deselecciona una madre…
   const handleSeleccionMadre = (item: CuyPadre) => {
+    // guarda la posición actual
+    if (scrollRef.current) prevScrollY.current = scrollRef.current.scrollTop;
+
     const current = watch("madre") || [];
-    const exists = current.find((m) => m.id === item.id);
-    if (exists) {
-      setValue(
-        "madre",
-        current.filter((m) => m.id !== item.id)
-      );
-    } else {
-      setValue("madre", [...current, item]);
-    }
+    const exists = current.some((m) => m.id === item.id);
+
+    setValue(
+      "madre",
+      exists ? current.filter((m) => m.id !== item.id) : [...current, item]
+    );
   };
+
+  // ③  restaura la posición inmediatamente después de que React
+  //     termine de aplicar los cambios en el DOM
+  useLayoutEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = prevScrollY.current;
+    }
+  }, [madresSeleccionadas]); // ← se dispara cada vez que cambie la selección
 
   const handleRegistrarCrias = () => {
     nextCriaId.current = 1;
@@ -472,7 +485,10 @@ export default function JavaGrupoDialog({
       </h2>
 
       <Card>
-        <CardContent className="p-0 h-52 overflow-y-auto">
+        <CardContent
+          ref={scrollRef}
+          className="p-0 h-52 overflow-y-auto scroll-auto"
+        >
           {madresDisponibles.length ? (
             <Table>
               <TableHeader>
@@ -496,6 +512,7 @@ export default function JavaGrupoDialog({
                       <TableCell>
                         <Checkbox
                           checked={isChecked}
+                          onClick={(e) => e.stopPropagation()}
                           disabled={!isEnabled}
                           onCheckedChange={() => handleSeleccionMadre(item)}
                         />
@@ -686,13 +703,13 @@ export default function JavaGrupoDialog({
             {mode === "REPRODUCCION"
               ? isEditing
                 ? "Editar Reproducción"
-                : "Crear Java Reproducción"
+                : "Java Reproducción"
               : mode === "MACHO"
               ? isEditing
-                ? "Editar Machos"
+                ? "Java Machos"
                 : "Crear Java Machos"
               : isEditing
-              ? "Editar Hembras"
+              ? "Java Hembras"
               : "Crear Java Hembras"}
           </DialogTitle>
         </AlertDialogHeader>

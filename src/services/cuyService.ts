@@ -1,6 +1,7 @@
 import { apiFetch } from "@/lib/api";
 import { Message } from "@/store/messageStore";
 import { Cuy, CuyRequest } from "@/types/cuy";
+import { SanidadCuy } from "@/types/sanidad";
 
 const CUY_BASE = "/cuy";
 
@@ -36,4 +37,9 @@ export const getMessages = (): Promise<Message[]> =>
     headers: {
       "Content-Type": "application/json",
     },
+  });
+
+export const getSanidadesByCuy = (idCuy: number): Promise<SanidadCuy> =>
+  apiFetch(`${CUY_BASE}/sanidades/${idCuy}`, {
+    method: "GET",
   });

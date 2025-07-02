@@ -55,7 +55,7 @@ export default function SidebarMobile() {
                     >
                       Profile
                     </MenubarItem>
-                    <MenubarItem onClick={logout}>Logout</MenubarItem>
+                    <MenubarItem onClick={logout}>Cerrar Sesión</MenubarItem>
                   </MenubarContent>
                 </MenubarMenu>
               </Menubar>

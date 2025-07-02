@@ -90,14 +90,14 @@ export default function DashboardHeader() {
                 <UserCircle className="w-6 h-6 text-primary" />
               </MenubarTrigger>
               <MenubarContent align="end">
-                <MenubarItem
+                {/* <MenubarItem
                   className="cursor-pointer"
                   onClick={() => (window.location.href = "/dashboard/profile")}
                 >
                   Profile
-                </MenubarItem>
+                </MenubarItem> */}
                 <MenubarItem className="cursor-pointer" onClick={logout}>
-                  Logout
+                  Cerrar Sesión
                 </MenubarItem>
               </MenubarContent>
             </MenubarMenu>

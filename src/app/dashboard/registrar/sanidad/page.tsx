@@ -9,7 +9,6 @@ import { Pencil, Trash2 } from "lucide-react";
 import {
   getAllSanidades,
   createSanidad,
-  updateSanidad,
   deleteSanidad,
 } from "@/services/sanidadService";
 import { Sanidad, SanidadRequest } from "@/types/sanidad";
@@ -22,7 +21,7 @@ import { CrudTable } from "@/components/shared/CrudTable";
 export default function FormSanidad() {
   const [data, setData] = useState<Sanidad[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editItem, setEditItem] = useState<Sanidad | null>(null);
+  const [cuyId, setCuyId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<Sanidad | null>(null);
 
@@ -40,20 +39,39 @@ export default function FormSanidad() {
   }, []);
 
   const columns: ColumnDef<Sanidad>[] = [
-    { accessorKey: "tipoMedicina", header: "Tipo de medicina" },
-    { accessorKey: "incidencia", header: "Incidencia" },
-    { accessorKey: "comentario", header: "Comentario" },
-    { accessorKey: "unidadMedida", header: "Unidad de medida" },
     {
-      accessorKey: "fecha",
+      accessorKey: "fechaYHora",
       header: "Fecha",
       cell: ({ row }) => {
-        const fechaStr = row.getValue("fecha") as string;
+        const fechaStr = row.getValue("fechaYHora") as string;
         if (!fechaStr) return "Sin fecha";
-        const [y, m, d] = fechaStr.split("-");
-        return new Date(+y, +m - 1, +d).toLocaleDateString();
+
+        const fecha = new Date(fechaStr);
+        return fecha.toLocaleDateString("es-PE", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
       },
     },
+    {
+      accessorKey: "fechaYHora",
+      header: "Hora",
+      cell: ({ row }) => {
+        const fechaStr = row.getValue("fechaYHora") as string;
+        if (!fechaStr) return "Sin hora";
+
+        const fecha = new Date(fechaStr);
+        return fecha.toLocaleTimeString("es-PE", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true, // si deseas formato 24 horas
+        });
+      },
+    },
+    { accessorKey: "java", header: "Java" },
+    { accessorKey: "cuy.id", header: "Id Cuy" },
+    { accessorKey: "costo", header: "Costo" },
     {
       id: "acciones",
       header: "Acciones",
@@ -64,7 +82,7 @@ export default function FormSanidad() {
             <Button
               size="sm"
               onClick={() => {
-                setEditItem(item);
+                setCuyId(item.cuy.id);
                 setDialogOpen(true);
               }}
             >
@@ -86,21 +104,28 @@ export default function FormSanidad() {
     },
   ];
 
+  const dataUnicaPorCuy: Sanidad[] = Object.values(
+    data.reduce((acc, item) => {
+      const cuyId = item.cuy?.id;
+      if (!cuyId) return acc;
+
+      if (!acc[cuyId]) {
+        acc[cuyId] = { ...item };
+      } else {
+        acc[cuyId].costo += item.costo;
+      }
+
+      return acc;
+    }, {} as Record<number, Sanidad>)
+  );
+
   const onSubmit = async (form: SanidadRequest) => {
     try {
-      if (editItem) {
-        const updated = await updateSanidad(editItem.id, form);
-        setData((prev) =>
-          prev.map((item) => (item.id === editItem.id ? updated : item))
-        );
-        toast.success("Actualizado");
-      } else {
-        const created = await createSanidad(form);
-        setData((prev) => [...prev, created]);
-        toast.success("Registrado");
-      }
+      await createSanidad(form);
+      await loadData();
+      toast.success("Registrado");
       setDialogOpen(false);
-      setEditItem(null);
+      setCuyId(null);
     } catch {
       toast.error("Error al guardar");
     }
@@ -109,7 +134,7 @@ export default function FormSanidad() {
   const handleDelete = async (id: number) => {
     try {
       await deleteSanidad(id);
-      setData((prev) => prev.filter((item) => item.id !== id));
+      await loadData();
       toast.success("Eliminado");
     } catch {
       toast.error("Error al eliminar");
@@ -122,18 +147,23 @@ export default function FormSanidad() {
         open={dialogOpen}
         onOpenChange={(open) => {
           setDialogOpen(open);
-          if (!open) setEditItem(null);
         }}
         onSubmit={onSubmit}
-        sanidad={editItem}
+        cuyId={cuyId}
       />
 
-      <CrudToolbar onCreate={() => setDialogOpen(true)} title="Sanidad" />
-      <CrudTable columns={columns} data={data} />
+      <CrudToolbar
+        onCreate={() => {
+          setDialogOpen(true);
+          setCuyId(null);
+        }}
+        title="Sanidad"
+      />
+      <CrudTable columns={columns} data={dataUnicaPorCuy} />
       <ConfirmAlert
         open={deleteDialogOpen}
         title="Eliminar sanidad"
-        message={`¿Deseas eliminar el registro de "${itemToDelete?.tipoMedicina}"?`}
+        message={`¿Deseas eliminar el registro de "${itemToDelete?.nombreMedicamento}"?`}
         onCancel={() => {
           setDeleteDialogOpen(false);
           setItemToDelete(null);

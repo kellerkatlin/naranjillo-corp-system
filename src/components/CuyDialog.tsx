@@ -326,6 +326,7 @@ export default function CuyDialog({
                 )}
               </div> */}
             </div>
+
             <div className="md:flex hidden justify-center items-stretch">
               <Separator orientation="vertical" className="h-full" />
             </div>

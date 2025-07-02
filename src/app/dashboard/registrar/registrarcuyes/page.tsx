@@ -50,10 +50,32 @@ export default function FormCuy() {
   const columns: ColumnDef<Cuy>[] = [
     { accessorKey: "id", header: "ID" },
 
-    { accessorKey: "edad", header: "Edad (días)" },
+    {
+      accessorKey: "edad",
+      header: "Edad (días)",
+      cell: ({ row }) => {
+        const edad = row.getValue("edad");
+        return edad === null || edad === undefined ? (
+          <span className="text-red-500">Sin asignar</span>
+        ) : (
+          edad
+        );
+      },
+    },
     { accessorKey: "categoria", header: "Categoría" },
     { accessorKey: "sexo", header: "Sexo" },
-    { accessorKey: "java.nombre", header: "Java" },
+    {
+      accessorKey: "java.nombre",
+      header: "Java",
+      cell: ({ row }) => {
+        const item = row.original;
+        return item.java && item.java.nombre ? (
+          item.java.nombre
+        ) : (
+          <span className="text-red-500">Sin asignar</span>
+        );
+      },
+    },
     {
       accessorKey: "fechaRegistro",
       header: "Fecha de Registro",

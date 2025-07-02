@@ -4,7 +4,7 @@ import { Sanidad, SanidadRequest } from "@/types/sanidad";
 const BASE = "/sanidad";
 
 export const getAllSanidades = (): Promise<Sanidad[]> =>
-  apiFetch(`${BASE}/find/all`);
+  apiFetch(`${BASE}/listar`);
 
 export const createSanidad = (data: SanidadRequest): Promise<Sanidad> =>
   apiFetch(`${BASE}/create`, {
@@ -24,4 +24,9 @@ export const updateSanidad = (
 export const deleteSanidad = (id: number) =>
   apiFetch(`${BASE}/delete/${id}`, {
     method: "DELETE",
+  });
+
+export const findSanidadById = (id: number) =>
+  apiFetch(`${BASE}/find/${id}`, {
+    method: "POST",
   });
