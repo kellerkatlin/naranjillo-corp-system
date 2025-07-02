@@ -7,6 +7,8 @@ export interface CajitaResponse {
   humedades: Humedades[];
   lecturas: LecturaResponse[];
   estadoMovimiento: EstadoMovimiento;
+  fechaInicio: string;
+  fechaFin: string;
 }
 
 interface Humedades {

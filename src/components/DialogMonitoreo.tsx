@@ -195,17 +195,27 @@ export default function DialogMonitoreo({
                   return (
                     <tr key={index} className="border-b border-gray-300">
                       <td className="py-2 px-2">
-                        {cajita.fechaHoraInicio ?? "N/A"}
+                        {cajita.fechaInicio
+                          ? new Date(cajita.fechaInicio).toLocaleString(
+                              "es-PE",
+                              {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              }
+                            )
+                          : "N/A"}
                       </td>
-                      <td className="py-2 px-2">
-                        {cajita.fechaHoraFin ?? "N/A"}
-                      </td>
+                      <td className="py-2 px-2">{cajita.fechaFin ?? "N/A"}</td>
                       <td className="py-2 px-2">{humedad.valor ?? "N/A"}%</td>
                       <td className="py-2 px-2">
-                        {cajita.pesoInicial ?? "--"}kg
+                        {cajita?.pesoInicial ?? "--"}kg
                       </td>
                       <td className="py-2 px-2">
-                        {cajita.pesoFinal ?? "--"}kg
+                        {cajita?.pesoFinal ?? "--"}kg
                       </td>
                       <td className="py-2 px-2">S/ {cajita.costo ?? "--"}</td>
                       <td className="py-2 px-2">
