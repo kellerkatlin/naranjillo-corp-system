@@ -3,7 +3,16 @@ export type Ventas = VentasRequest & {
 };
 
 export type VentasRequest = {
-  cantidad: number;
-  total: number;
-  cuyes: { id: number[] };
+  cuyes: Cuy[];
+  precioTotal: number;
+  cantidadCuy: number;
+  documento: string;
+  nombreRazonSocial: string;
+  direccion: string;
+  descripcion: string;
+};
+
+export type Cuy = {
+  id: number;
+  precio: number;
 };

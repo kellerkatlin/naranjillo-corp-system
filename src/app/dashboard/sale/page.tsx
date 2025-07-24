@@ -1,9 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { CrudTable } from "@/components/shared/CrudTable";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
@@ -11,37 +8,74 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Cuy } from "@/types/cuy";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Ventas, VentasRequest } from "@/types/ventas";
-import { getCuyAvailable } from "@/services/cuyService";
+import { getAllCuyes } from "@/services/cuyService";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { getAllVentas } from "@/services/ventaService";
-interface VentaFormData {
-  cantidad: number;
-  total: number;
-}
+import { createVenta, getAllVentas } from "@/services/ventaService";
+import CuyesTable from "@/components/CuyesTable";
+import DialogVenta from "@/components/DialogVenta";
+import DialogFinalizarVenta from "@/components/DialogFinalizarVenta";
+import { Card, CardContent } from "@/components/ui/card";
+
+type CarritoItem = {
+  cuy: Cuy;
+  precioVenta: number;
+};
 
 export default function FormVenta() {
   const [data, setData] = useState<Ventas[]>([]);
   const [cuyes, setCuyes] = useState<Cuy[]>([]);
-  const [selectedCuyes, setSelectedCuyes] = useState<Cuy[]>([]);
-  const [precioPorCuy, setPrecioPorCuy] = useState<string>("");
-  const precio = parseFloat(precioPorCuy);
-  const cantidad = selectedCuyes.length;
-  const total = !isNaN(precio) ? precio * cantidad : 0;
+  const [selectedCuy, setSelectedCuy] = useState<Cuy | null>(null);
+  const [openFinalDialog, setOpenFinalDialog] = useState(false);
 
-  const {
-    handleSubmit,
-    // formState: { errors },
-  } = useForm<VentaFormData>();
+  const [selectedCuyes, setSelectedCuyes] = useState<Cuy[]>([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [carrito, setCarrito] = useState<CarritoItem[]>([]);
 
   const loadData = async () => {
     try {
-      const res = await getCuyAvailable();
+      const res = await getAllCuyes();
       setCuyes(res);
     } catch {
       toast.error("Error al cargar datos");
     }
   };
+
+  const handleOpenModal = (cuy: Cuy) => {
+    setSelectedCuy(cuy);
+    setOpenDialog(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenDialog(false);
+    setSelectedCuy(null);
+  };
+
+  const handleAddToCart = (item: { cuy: Cuy; precioVenta: number }) => {
+    setCarrito((prev) => [...prev, item]);
+    console.log(carrito);
+    // Elimina el cuy agregado de la lista principal
+    setCuyes((prev) => prev.filter((c) => c.id !== item.cuy.id));
+  };
+
+  const handleRemoveItem = (index: number) => {
+    // 1. Recuperar el cuy que se está quitando del carrito
+    const itemQuitado = carrito[index];
+
+    // 2. Eliminarlo del carrito
+    const nuevoCarrito = carrito.filter((_, i) => i !== index);
+    setCarrito(nuevoCarrito);
+
+    // 3. Restaurarlo a la lista de cuyes disponibles
+    setCuyes((prev) => [...prev, itemQuitado.cuy]);
+
+    // 4. Quitarlo también de los seleccionados, si aplica
+    setSelectedCuyes((prev) =>
+      prev.filter((cuy) => cuy.id !== itemQuitado.cuy.id)
+    );
+  };
+
+  const total = carrito.reduce((sum, item) => sum + item.precioVenta, 0);
 
   const loadAllSales = async () => {
     try {
@@ -122,42 +156,27 @@ export default function FormVenta() {
     },
   ];
 
-  const columnsCuyesSelected: ColumnDef<Cuy>[] = [
-    { accessorKey: "id", header: "ID" },
-    { accessorKey: "edad", header: "Edad (semanas)" },
-    { accessorKey: "categoria", header: "Categoría" },
-    { accessorKey: "sexo", header: "Sexo" },
-    { accessorKey: "estado", header: "Estado" },
-    {
-      accessorKey: "fechaRegistro",
-      header: "Fecha de Registro",
-      cell: ({ row }) => {
-        const fechaStr = row.getValue("fechaRegistro") as string;
-        const [year, month, day] = fechaStr.split("-");
-        return new Date(
-          Number(year),
-          Number(month) - 1,
-          Number(day)
-        ).toLocaleDateString();
-      },
-    },
-  ];
+  const handleFinalizarVenta = async (venta: VentasRequest) => {
+    try {
+      await createVenta(venta);
+      console.log("VENTA A ENVIAR:", venta);
 
-  const onSubmit = () => {
-    if (cantidad === 0 || isNaN(precio) || precio <= 0) {
-      toast.error("Selecciona cuyes y asigna un precio válido.");
-      return;
+      // Aquí deberías llamar a tu servicio de backend, por ejemplo:
+      // await createVenta(venta);
+
+      toast.success("Venta registrada correctamente");
+
+      // Limpiar carrito y otros datos
+      setCarrito([]);
+      setOpenFinalDialog(false);
+
+      // Puedes volver a cargar datos si lo necesitas
+      // await loadData();
+      // await loadAllSales();
+    } catch (error) {
+      toast.error("Error al registrar la venta");
+      console.error(error);
     }
-
-    const venta: VentasRequest = {
-      cantidad,
-      total,
-      cuyes: { id: selectedCuyes.map((cuy) => cuy.id) },
-    };
-    console.log(venta);
-    toast.success("Venta registrada correctamente");
-    setSelectedCuyes([]);
-    setPrecioPorCuy("");
   };
 
   return (
@@ -171,67 +190,96 @@ export default function FormVenta() {
         </button>
       </div>
       <div className="bg-white rounded-lg shadow p-6 flex flex-col lg:flex-row gap-6 mx-auto max-w-7xl">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="w-full lg:w-1/2 space-y-6"
-        >
-          <div>
-            <h2 className="text-xl font-bold text-gray-800 mb-2">
-              Registrar Venta
-            </h2>
-            <p className="text-sm text-gray-500">
-              Completa el precio por cuy y selecciona los cuyes disponibles.
-            </p>
-          </div>
+        <CuyesTable data={cuyes} onAdd={handleOpenModal} />
 
-          <div className="space-y-4">
-            <div>
-              <Label className="mb-1 block">Cantidad</Label>
-              <Input value={cantidad} disabled />
-            </div>
-
-            <div>
-              <Label className="mb-1 block">Precio por cuy (S/)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min={0}
-                value={precioPorCuy}
-                onChange={(e) => setPrecioPorCuy(e.target.value)}
-                placeholder="Ej: 10.50"
-              />
-            </div>
-
-            <div>
-              <Label className="mb-1 block">Total (S/)</Label>
-              <Input value={total.toFixed(2)} disabled />
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <Button
-              type="submit"
-              disabled={cantidad === 0 || +precioPorCuy <= 0}
-              className="bg-primary cursor-pointer hover:bg-orange-400"
-            >
-              Registrar
-            </Button>
-          </div>
-        </form>
-
-        <div className="w-full lg:w-1/2 overflow-auto max-h-[400px] border border-gray-200 rounded">
+        <Card className="w-full lg:w-1/2 p-2 overflow-x-auto">
           <h3 className="text-base font-semibold text-gray-700 px-4 pt-4">
             Cuyes seleccionados
           </h3>
-          <div className="p-4">
-            <CrudTable data={selectedCuyes} columns={columnsCuyesSelected} />
-          </div>
-        </div>
+
+          {carrito.length > 0 && (
+            <CardContent className="p-0 mt-2">
+              <div className="flex justify-between mb-2 px-4">
+                <h3 className="font-bold">CARRITO DE CUYES</h3>
+                <span className="text-sm text-muted-foreground">
+                  N° de comprobante 0001
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="px-4 py-2">Id</th>
+                      <th className="px-4 py-2">Edad (DÍAS)</th>
+                      <th className="px-4 py-2">Sexo</th>
+                      <th className="px-4 py-2">Cantidad</th>
+                      <th className="px-4 py-2">P. Venta</th>
+                      <th className="px-4 py-2 text-center">Quitar</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {carrito.map((item, i) => (
+                      <tr key={i} className="border-b">
+                        <td className="px-4 py-2">{item.cuy.id}</td>
+                        <td className="px-4 py-2">{item.cuy.edad}</td>
+                        <td className="px-4 py-2">{item.cuy.sexo}</td>
+                        <td className="px-4 py-2">1</td>
+                        <td className="px-4 py-2">
+                          S/ {item.precioVenta.toFixed(2)}
+                        </td>
+                        <td className="px-4 py-2 text-center">
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => handleRemoveItem(i)}
+                          >
+                            -
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="font-semibold">
+                      <td colSpan={3}></td>
+                      <td className="px-4 py-2">{carrito.length}</td>
+                      <td className="px-4 py-2">S/ {total.toFixed(2)}</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              <div className="flex justify-end mt-4 px-4">
+                <Button
+                  className="bg-green-500 hover:bg-green-600 text-white"
+                  onClick={() => setOpenFinalDialog(true)}
+                >
+                  Realizar venta
+                </Button>
+              </div>
+            </CardContent>
+          )}
+        </Card>
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mt-6 overflow-auto max-h-[400px] border border-gray-200">
         <CrudTable data={cuyes} columns={columsCuyes} />
       </div>
+
+      <DialogVenta
+        open={openDialog}
+        onClose={handleCloseModal}
+        cuy={selectedCuy}
+        onSubmit={handleAddToCart}
+      />
+      <DialogFinalizarVenta
+        open={openFinalDialog}
+        onClose={() => setOpenFinalDialog(false)}
+        carrito={carrito}
+        onSubmit={handleFinalizarVenta}
+      />
     </>
   );
 }

@@ -6,7 +6,7 @@ const BASE = "/venta";
 export const getAllVentas = (): Promise<Ventas[]> =>
   apiFetch(`${BASE}/find/all`);
 
-export const createVenta = (data: VentasRequest) =>
+export const createVenta = (data: VentasRequest): Promise<Ventas[]> =>
   apiFetch(`${BASE}/create`, {
     method: "POST",
     body: JSON.stringify(data),
