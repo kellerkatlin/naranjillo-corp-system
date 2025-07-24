@@ -30,20 +30,6 @@ export default function FormReproduccion() {
     false | "REPRODUCCION" | "MACHO" | "HEMBRA"
   >(false);
 
-  useEffect(() => {
-    fetchMachos();
-  }, [filtroMacho]);
-
-  useEffect(() => {
-    fetchHembras();
-  }, [filtroHembra]);
-
-  useEffect(() => {
-    fetchMachos();
-    fetchHembras();
-    fetchReproduccion();
-  }, [dialogGrupoOpen]);
-
   const fetchMachos = async () => {
     try {
       const res = await getAllJava("MACHO", filtroMacho);
@@ -70,6 +56,20 @@ export default function FormReproduccion() {
       toast.error("Error al cargar hembras");
     }
   };
+
+  useEffect(() => {
+    fetchMachos();
+  }, [filtroMacho]);
+
+  useEffect(() => {
+    fetchHembras();
+  }, [filtroHembra]);
+
+  useEffect(() => {
+    fetchMachos();
+    fetchHembras();
+    fetchReproduccion();
+  }, [dialogGrupoOpen]);
 
   const handleSubmitCreate = async (form: DataJava) => {
     try {

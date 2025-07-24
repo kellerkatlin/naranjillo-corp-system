@@ -5,43 +5,47 @@ import { CrudTable } from "@/components/shared/CrudTable";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { Cuy } from "@/types/cuy";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Ventas, VentasRequest } from "@/types/ventas";
-import { getAllCuyes } from "@/services/cuyService";
+import { CuyPadre } from "@/types/cuy";
+import { VentasRequest, VentasResponse } from "@/types/ventas";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { createVenta, getAllVentas } from "@/services/ventaService";
+import {
+  createVenta,
+  getAllVentas,
+  listarCuyesDisponibles,
+} from "@/services/ventaService";
 import CuyesTable from "@/components/CuyesTable";
 import DialogVenta from "@/components/DialogVenta";
 import DialogFinalizarVenta from "@/components/DialogFinalizarVenta";
 import { Card, CardContent } from "@/components/ui/card";
+import DialogDetalleVenta from "@/components/DialogDetalleVenta";
 
 type CarritoItem = {
-  cuy: Cuy;
+  cuy: CuyPadre;
   precioVenta: number;
 };
 
 export default function FormVenta() {
-  const [data, setData] = useState<Ventas[]>([]);
-  const [cuyes, setCuyes] = useState<Cuy[]>([]);
-  const [selectedCuy, setSelectedCuy] = useState<Cuy | null>(null);
+  const [data, setData] = useState<VentasResponse[]>([]);
+  const [cuyes, setCuyes] = useState<CuyPadre[]>([]);
+  const [selectedCuy, setSelectedCuy] = useState<CuyPadre | null>(null);
   const [openFinalDialog, setOpenFinalDialog] = useState(false);
+  const [ventaDetalle, setVentaDetalle] = useState<VentasResponse | null>(null);
 
-  const [selectedCuyes, setSelectedCuyes] = useState<Cuy[]>([]);
+  const [, setSelectedCuyes] = useState<CuyPadre[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [carrito, setCarrito] = useState<CarritoItem[]>([]);
 
   const loadData = async () => {
     try {
-      const res = await getAllCuyes();
+      const res = await listarCuyesDisponibles();
       setCuyes(res);
     } catch {
       toast.error("Error al cargar datos");
     }
   };
 
-  const handleOpenModal = (cuy: Cuy) => {
+  const handleOpenModal = (cuy: CuyPadre) => {
     setSelectedCuy(cuy);
     setOpenDialog(true);
   };
@@ -51,7 +55,7 @@ export default function FormVenta() {
     setSelectedCuy(null);
   };
 
-  const handleAddToCart = (item: { cuy: Cuy; precioVenta: number }) => {
+  const handleAddToCart = (item: { cuy: CuyPadre; precioVenta: number }) => {
     setCarrito((prev) => [...prev, item]);
     console.log(carrito);
     // Elimina el cuy agregado de la lista principal
@@ -108,51 +112,25 @@ export default function FormVenta() {
     saveAs(blob, "ventas.xlsx");
   };
 
-  const toggleCuySeleccion = (cuy: Cuy) => {
-    setSelectedCuyes((prev) => {
-      const exists = prev.some((item) => item.id === cuy.id);
-      return exists
-        ? prev.filter((item) => item.id !== cuy.id)
-        : [...prev, cuy];
-    });
-  };
+  const columsCuyes: ColumnDef<VentasResponse>[] = [
+    { accessorKey: "id", header: "N° de comprobante " },
 
-  const columsCuyes: ColumnDef<Cuy>[] = [
-    { accessorKey: "id", header: "ID" },
-
-    { accessorKey: "edad", header: "Edad (semanas)" },
-    { accessorKey: "categoria", header: "Categoría" },
-    { accessorKey: "sexo", header: "Sexo" },
-    { accessorKey: "estado", header: "Estado" },
+    { accessorKey: "cantidad", header: "Cántidad" },
+    { accessorKey: "total", header: "P. Venta " },
+    { accessorKey: "documento", header: "Dni/Ruc" },
+    { accessorKey: "nombreRazonSocial", header: "Nombre/R. Social" },
     {
-      accessorKey: "fechaRegistro",
-      header: "Fecha de Registro",
-      cell: ({ row }) => {
-        const fechaStr = row.getValue("fechaRegistro") as string;
-        const [year, month, day] = fechaStr.split("-");
-        return new Date(
-          Number(year),
-          Number(month) - 1,
-          Number(day)
-        ).toLocaleDateString();
-      },
-    },
-    {
-      id: "acciones",
-      header: "Acciones",
-      cell: ({ row }) => {
-        const item = row.original;
-        const isSelected = selectedCuyes.some((cuy) => cuy.id === item.id);
-
-        return (
-          <div className="flex items-center gap-2">
-            <Checkbox
-              checked={isSelected}
-              onCheckedChange={() => toggleCuySeleccion(item)}
-            />
-          </div>
-        );
-      },
+      id: "detalleVentas",
+      header: "",
+      cell: ({ row }) => (
+        <Button
+          size="sm"
+          className="bg-orange-500 hover:bg-orange-600 text-white"
+          onClick={() => setVentaDetalle(row.original)}
+        >
+          Detalle
+        </Button>
+      ),
     },
   ];
 
@@ -168,6 +146,7 @@ export default function FormVenta() {
 
       // Limpiar carrito y otros datos
       setCarrito([]);
+
       setOpenFinalDialog(false);
 
       // Puedes volver a cargar datos si lo necesitas
@@ -265,7 +244,7 @@ export default function FormVenta() {
       </div>
 
       <div className="bg-white rounded-lg shadow p-6 mt-6 overflow-auto max-h-[400px] border border-gray-200">
-        <CrudTable data={cuyes} columns={columsCuyes} />
+        <CrudTable data={data} columns={columsCuyes} />
       </div>
 
       <DialogVenta
@@ -279,6 +258,11 @@ export default function FormVenta() {
         onClose={() => setOpenFinalDialog(false)}
         carrito={carrito}
         onSubmit={handleFinalizarVenta}
+      />
+      <DialogDetalleVenta
+        open={!!ventaDetalle}
+        onClose={() => setVentaDetalle(null)}
+        venta={ventaDetalle}
       />
     </>
   );

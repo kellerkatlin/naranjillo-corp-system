@@ -1,12 +1,12 @@
-import { Cuy } from "@/types/cuy";
+import { CuyPadre } from "@/types/cuy";
 import { useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 
 type Props = {
-  readonly data: Cuy[];
-  readonly onAdd: (cuy: Cuy) => void;
+  readonly data: CuyPadre[];
+  readonly onAdd: (cuy: CuyPadre) => void;
 };
 
 export default function CuyesTable({ data, onAdd }: Props) {
@@ -37,7 +37,7 @@ export default function CuyesTable({ data, onAdd }: Props) {
               <tr key={cuy.id} className="border-b">
                 <td className="px-4 py-2">{cuy.id}</td>
                 <td className="px-4 py-2">{cuy.categoria}</td>
-                <td className="px-4 py-2">{cuy.java?.nombre ?? "-"}</td>
+                <td className="px-4 py-2">{cuy.nombreJavaOrigen ?? "-"}</td>
                 <td className="px-4 py-2">Sin precio</td>
                 <td className="px-4 py-2 text-center">
                   <Button

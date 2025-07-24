@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
-import { Cuy, CuyRequest } from "@/types/cuy";
+import { CuyPadre, CuyRequest } from "@/types/cuy";
 import {
   Select,
   SelectContent,
@@ -17,25 +17,15 @@ import {
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { FaExclamationCircle } from "react-icons/fa";
-import { getCuySinJava, getJavasDisponibles } from "@/services/javaService";
+import { getJavasDisponibles } from "@/services/javaService";
 import { toast } from "sonner";
 import { Separator } from "./ui/separator";
-import { Card, CardContent } from "./ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./ui/table";
-import { Checkbox } from "./ui/checkbox";
 
 interface CuyDialogProps {
   readonly open: boolean;
   readonly onOpenChange: (open: boolean) => void;
   readonly onSubmit: (data: CuyRequest) => void;
-  readonly cuy?: Cuy | null;
+  readonly cuy?: CuyPadre | null;
 }
 
 export default function CuyDialog({
@@ -55,29 +45,20 @@ export default function CuyDialog({
   const [javasDisponibles, setJavasDisponibles] = useState<
     { id: number; nombre: string }[]
   >([]);
-  const [cuyesSinJava, setCuyesSinJava] = useState<Cuy[]>([]);
-  const [cuySeleccionado, setCuySeleccionado] = useState<Cuy | null>(null);
+  // const [cuyesSinJava, setCuyesSinJava] = useState<CuyPadre[]>([]);
+  // const [cuySeleccionado, setCuySeleccionado] = useState<CuyPadre | null>(null);
   const categoria = watch("categoria");
 
   useEffect(() => {
     if (open) {
       if (cuy) {
-        const fecha = cuy.fechaRegistro.split("T")[0];
-        const hora =
-          cuy.fechaRegistro.split("T")[1]?.substring(0, 5) ?? "00:00";
-
-        reset({
-          ...cuy,
-          fechaRegistro: fecha,
-          horaRegistro: hora,
-        });
       } else {
         const hoy = new Date();
         const fechaLocal = hoy.toLocaleDateString("sv-SE");
         reset({
           edad: 0,
           fechaRegistro: fechaLocal,
-          horaRegistro: hoy.toTimeString().slice(0, 5), // hora local exacta HH:mm
+          horaRegistro: hoy.toTimeString().slice(0, 5),
           categoria: "",
           java: { id: 0 },
           estado: "VIVO",
@@ -99,13 +80,13 @@ export default function CuyDialog({
     }
   }, [sexo, categoria, setValue]);
 
-  useEffect(() => {
-    if (categoria !== "") {
-      getCuySinJava(categoria ?? "ENGORDE")
-        .then(setCuyesSinJava)
-        .catch(() => console.error("Error al cargar cuyes sin java"));
-    }
-  }, [categoria]);
+  // useEffect(() => {
+  //   if (categoria !== "") {
+  //     getCuySinJava(categoria ?? "ENGORDE")
+  //       .then(setCuyesSinJava)
+  //       .catch(() => console.error("Error al cargar cuyes sin java"));
+  //   }
+  // }, [categoria]);
 
   const handleFormSubmit = (data: CuyRequest) => {
     const fecha = data.fechaRegistro;
@@ -331,7 +312,7 @@ export default function CuyDialog({
               <Separator orientation="vertical" className="h-full" />
             </div>
 
-            <div className="flex-1">
+            {/* <div className="flex-1">
               <div className="flex flex-col">
                 <Label className="mb-3 block text-center">
                   {categoria === "CRIA" ? "Crias sin Java" : "Cuyes sin Java"}
@@ -391,7 +372,7 @@ export default function CuyDialog({
                                               ...cuy,
                                               id: cuy.id,
                                               sexo: cuy.sexo,
-                                              java: { id: cuy.java?.id || 0 },
+                                              java: cuy.nombreJavaOrigen,
                                               estado: cuy.estado,
                                               categoria: cuy.categoria,
                                               edad:
@@ -438,7 +419,7 @@ export default function CuyDialog({
                   </Card>
                 )}
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex justify-end pt-4">

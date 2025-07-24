@@ -11,10 +11,10 @@ import { toast } from "sonner";
 import { CrudTable } from "@/components/shared/CrudTable";
 // import ConfirmAlert from "@/components/shared/ComfirmAlert";
 import { getAllVentas } from "@/services/ventaService";
-import { Ventas } from "@/types/ventas";
+import { VentasResponse } from "@/types/ventas";
 
 export default function VentasAll() {
-  const [data, setData] = useState<Ventas[]>([]);
+  const [data, setData] = useState<VentasResponse[]>([]);
   // const [dialogOpen, setDialogOpen] = useState(false);
   // const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   // const [itemToDelete, setItemToDelete] = useState<Alimentacion | null>(null);
@@ -33,7 +33,7 @@ export default function VentasAll() {
     loadData();
   }, []);
 
-  const columns: ColumnDef<Ventas>[] = [
+  const columns: ColumnDef<VentasResponse>[] = [
     { accessorKey: "id", header: "ID" },
     { accessorKey: "cantidad", header: "Cantidad" },
     { accessorKey: "total", header: "Total" },

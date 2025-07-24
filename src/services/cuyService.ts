@@ -1,6 +1,6 @@
 import { apiFetch } from "@/lib/api";
 import { Message } from "@/store/messageStore";
-import { Cuy, CuyRequest } from "@/types/cuy";
+import { Cuy, CuyPadre, CuyRequest } from "@/types/cuy";
 import { SanidadCuy } from "@/types/sanidad";
 
 const CUY_BASE = "/cuy";
@@ -8,8 +8,8 @@ const CUY_BASE = "/cuy";
 export const getAllCuyes = (): Promise<Cuy[]> =>
   apiFetch(`${CUY_BASE}/find/all`);
 
-export const getCuyAvailable = (): Promise<Cuy[]> =>
-  apiFetch(`${CUY_BASE}/find/available`);
+export const getCuyAvailable = (): Promise<CuyPadre[]> =>
+  apiFetch(`/javacuy/cuyes/estado/VIVO`);
 
 export const getCuyById = (id: number): Promise<Cuy> =>
   apiFetch(`${CUY_BASE}/find/${id}`);

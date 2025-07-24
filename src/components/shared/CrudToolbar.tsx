@@ -57,7 +57,7 @@ export function CrudToolbar({
           Mostrar todos
         </Button>
 
-        <Button
+        {/* <Button
           className={`cursor-pointer whitespace-nowrap ${
             isFilteringSinJava
               ? "bg-blue-500 hover:bg-blue-600 text-white"
@@ -66,7 +66,7 @@ export function CrudToolbar({
           onClick={() => onToggleJavaFilter?.()}
         >
           Cuyes sin Java
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

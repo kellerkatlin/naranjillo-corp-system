@@ -1,4 +1,4 @@
-import { Cuy } from "@/types/cuy";
+import { CuyPadre } from "@/types/cuy";
 import { VentasRequest } from "@/types/ventas";
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
@@ -9,7 +9,7 @@ import { Button } from "./ui/button";
 type Props = {
   readonly open: boolean;
   readonly onClose: () => void;
-  readonly carrito: { cuy: Cuy; precioVenta: number }[];
+  readonly carrito: { cuy: CuyPadre; precioVenta: number }[];
   readonly onSubmit: (venta: VentasRequest) => void;
 };
 

@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Cuy } from "@/types/cuy";
+import { CuyPadre } from "@/types/cuy";
 
 type Props = {
   readonly open: boolean;
   readonly onClose: () => void;
-  readonly cuy: Cuy | null;
-  readonly onSubmit: (item: { cuy: Cuy; precioVenta: number }) => void;
+  readonly cuy: CuyPadre | null;
+  readonly onSubmit: (item: { cuy: CuyPadre; precioVenta: number }) => void;
 };
 
 export default function DialogVenta({ open, onClose, cuy, onSubmit }: Props) {

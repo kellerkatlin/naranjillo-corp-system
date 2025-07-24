@@ -7,6 +7,8 @@ export type CuyRequest = {
   edad: number;
   peso: number;
   sexo: string;
+  precio?: number;
+
   fechaRegistro: string;
   horaRegistro: string;
   categoria: string;

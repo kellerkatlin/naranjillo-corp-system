@@ -9,28 +9,27 @@ import { toast } from "sonner";
 import {
   createCuy,
   deleteCuy,
-  getAllCuyes,
+  getCuyAvailable,
   updateCuy,
 } from "@/services/cuyService";
-import { Cuy, CuyRequest } from "@/types/cuy";
+import { CuyPadre, CuyRequest } from "@/types/cuy";
 import { CrudToolbar } from "@/components/shared/CrudToolbar";
 import { CrudTable } from "@/components/shared/CrudTable";
 import ConfirmAlert from "@/components/shared/ComfirmAlert";
 import CuyDialog from "@/components/CuyDialog";
-import { getCuyesSinJava } from "@/services/javaService";
 
 export default function FormCuy() {
-  const [data, setData] = useState<Cuy[]>([]);
+  const [data, setData] = useState<CuyPadre[]>([]);
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editItem, setEditItem] = useState<Cuy | null>(null);
+  const [editItem, setEditItem] = useState<CuyPadre | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<Cuy | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<CuyPadre | null>(null);
   const [isFilteringSinJava, setIsFilteringSinJava] = useState(false);
 
   const loadData = async () => {
     try {
-      const res = await getAllCuyes();
+      const res = await getCuyAvailable();
       setData(res);
     } catch {
       toast.error("Error al cargar datos");
@@ -47,7 +46,7 @@ export default function FormCuy() {
       item.estado.toLowerCase().includes(search.toLowerCase())
   );
 
-  const columns: ColumnDef<Cuy>[] = [
+  const columns: ColumnDef<CuyPadre>[] = [
     { accessorKey: "id", header: "ID" },
 
     {
@@ -65,12 +64,12 @@ export default function FormCuy() {
     { accessorKey: "categoria", header: "Categoría" },
     { accessorKey: "sexo", header: "Sexo" },
     {
-      accessorKey: "java.nombre",
+      accessorKey: "nombreJavaOrigen",
       header: "Java",
       cell: ({ row }) => {
         const item = row.original;
-        return item.java && item.java.nombre ? (
-          item.java.nombre
+        return item.nombreJavaOrigen && item.nombreJavaOrigen ? (
+          item.nombreJavaOrigen
         ) : (
           <span className="text-red-500">Sin asignar</span>
         );
@@ -137,12 +136,12 @@ export default function FormCuy() {
         toast.success("Cuy registrado");
       }
 
-      if (isFilteringSinJava) {
-        const cuyesSinJava = await getCuyesSinJava();
-        setData(cuyesSinJava);
-      } else {
-        await loadData();
-      }
+      // if (isFilteringSinJava) {
+      //   const cuyesSinJava = await getCuyesSinJava();
+      //   setData(cuyesSinJava);
+      // } else {
+      //   await loadData();
+      // }
 
       setDialogOpen(false);
       setEditItem(null);
@@ -186,8 +185,8 @@ export default function FormCuy() {
               await loadData();
               setIsFilteringSinJava(false);
             } else {
-              const cuyesSinJava = await getCuyesSinJava();
-              setData(cuyesSinJava);
+              // const cuyesSinJava = await getCuyesSinJava();
+              // setData(cuyesSinJava);
               setIsFilteringSinJava(true);
             }
           } catch {
