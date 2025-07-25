@@ -89,6 +89,7 @@ export default function FormVenta() {
       toast.error("Error al cargar datos");
     }
   };
+
   useEffect(() => {
     loadAllSales();
     loadData();
@@ -147,6 +148,7 @@ export default function FormVenta() {
       // Limpiar carrito y otros datos
       setCarrito([]);
 
+      loadAllSales();
       setOpenFinalDialog(false);
 
       // Puedes volver a cargar datos si lo necesitas
