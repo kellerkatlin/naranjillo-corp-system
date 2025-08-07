@@ -44,17 +44,18 @@ export default function Reporte() {
     null
   );
 
-  const [filtroJava, setFiltroJava] = useState("");
-  const [filtroCuy, setFiltroCuy] = useState("");
   const [fechasJava, setFechasJava] = useState<FiltroFechas>({
     fromDate: undefined,
     toDate: undefined,
   });
+
   const [fechasCuy, setFechasCuy] = useState<FiltroFechas>({
     fromDate: undefined,
     toDate: undefined,
   });
+
   const [javas, setJavas] = useState<ReporteJavaResponse[]>([]);
+
   const [cuyes, setCuyes] = useState<ReporteCuyResponse[]>([]);
 
   const [otrosEgresos, setOtrosEgresos] = useState({
@@ -62,6 +63,7 @@ export default function Reporte() {
     agua: 0,
     internet: 0,
   });
+
   const [ingresosEgresos, setIngresosEgresos] =
     useState<ReporteIgresosEgresosResponse>({
       totalVentas: 0,
