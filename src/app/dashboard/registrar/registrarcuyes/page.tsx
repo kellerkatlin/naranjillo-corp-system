@@ -134,6 +134,7 @@ export default function FormCuy() {
       } else {
         await createCuy(form);
         toast.success("Cuy registrado");
+        await loadData()
       }
 
       // if (isFilteringSinJava) {

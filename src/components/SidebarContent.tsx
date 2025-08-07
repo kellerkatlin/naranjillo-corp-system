@@ -1,4 +1,5 @@
 "use client";
+import { Book } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -37,6 +38,12 @@ const links = [
   //   icon: "S/. ",
   //   roles: ["admin", "employee"],
   // },
+  {
+    label: "Reportes",
+    href: "/dashboard/reporte",
+    icon: <Book />,
+    roles: ["admin", "employee"],
+  },
   {
     label: "Monitoreo",
     href: "/dashboard/monitoreo",

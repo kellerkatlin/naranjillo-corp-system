@@ -34,6 +34,7 @@ import {
 } from "./ui/select";
 import {
   cambioPadreDeJava,
+  changeJavaMadre,
   getAllJava,
   getCuyesPadres,
   updateJavaCuyReproduccion,
@@ -52,6 +53,7 @@ interface JavaGrupoDialogProps {
   readonly onSubmitUpdate: (data: DataJava) => void;
   readonly onSubmitUpdateCuy: (data: DataJava) => void;
   readonly javaToEdit?: DataJava;
+  readonly source: boolean;
 }
 
 type Cria = {
@@ -87,6 +89,7 @@ export default function JavaGrupoDialog({
   onSubmitCreate,
   onSubmitUpdate,
   onSubmitUpdateCuy,
+  source,
   mode,
   javaToEdit,
 }: JavaGrupoDialogProps) {
@@ -104,7 +107,7 @@ export default function JavaGrupoDialog({
   const [showCrias, setShowCrias] = useState(false);
   const [seleccionActual, setSeleccionActual] = useState<
     "padre" | "madre" | "fecha" | "crias" | "lista" | null
-  >("lista");
+  >("crias");
 
   const [cuySeleccionado, setCuySeleccionado] = useState<{
     id: number;
@@ -138,6 +141,7 @@ export default function JavaGrupoDialog({
 
   useEffect(() => {
     if (open) {
+      setCrias([]);
       if (isEditing && javaToEdit) {
         reset({
           ...javaToEdit,
@@ -162,7 +166,7 @@ export default function JavaGrupoDialog({
 
     setCuySeleccionado(null);
     setSelectedJavaId(null);
-    setSeleccionActual("lista");
+    setSeleccionActual("crias");
   }, [open, reset, isEditing, javaToEdit, mode]);
 
   const categoria = watch("categoria");
@@ -196,11 +200,29 @@ export default function JavaGrupoDialog({
     }
   };
 
+  const handleCrearJavaMadreCuy = async () => {
+    const madres = watch("madre") ?? [];
+
+    if (madres.length !== 1) {
+      toast.error("Solo puedes seleccionar una madre para crear la Java.");
+      return;
+    }
+
+    // Lógica cuando hay una sola madre seleccionada
+    const madreSeleccionada = madres[0];
+    console.log(madreSeleccionada);
+
+    await changeJavaMadre(madreSeleccionada.id);
+    toast.success(`Java madre creada con ID ${madreSeleccionada.id}`);
+
+    onOpenChange(false);
+    // Aquí puedes llamar a una función real como createJavaMadre(madreSeleccionada)
+  };
+
   const handleOpenMadre = async () => {
     try {
       const data = await getCuyesPadres("HEMBRA", "ENGORDE");
       const seleccionadas: CuyPadre[] = watch("madre") || [];
-
       const idsSel = new Set(seleccionadas.map((m) => m.id));
 
       const nuevas = data.filter((item) => !idsSel.has(item.id));
@@ -702,7 +724,9 @@ export default function JavaGrupoDialog({
           <DialogTitle>
             {mode === "REPRODUCCION"
               ? isEditing
-                ? "Editar Reproducción"
+                ? !source
+                  ? "Editar Reproducción"
+                  : "Editar Java Madre/Cría"
                 : "Java Reproducción"
               : mode === "MACHO"
               ? isEditing
@@ -891,33 +915,38 @@ export default function JavaGrupoDialog({
               {categoria === "REPRODUCCION" && (
                 <div className="flex gap-2">
                   <div className="flex-1 w-full flex-col gap-4">
-                    <div className="flex-1 w-full">
-                      <Label className="mb-2">Padre</Label>
+                    {!source && (
+                      <div className="flex-1 w-full">
+                        <Label className="mb-2">Padre</Label>
 
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full cursor-pointer"
-                        onClick={handleOpenPadre}
-                      >
-                        {watch("padre")
-                          ? `${watch("padre")?.id} - ${
-                              watch("padre")?.nombreJavaOrigen
-                            }`
-                          : "Seleccionar Padre"}
-                      </Button>
-                    </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full cursor-pointer"
+                          onClick={handleOpenPadre}
+                        >
+                          {watch("padre")
+                            ? `${watch("padre")?.id} - ${
+                                watch("padre")?.nombreJavaOrigen
+                              }`
+                            : "Seleccionar Padre"}
+                        </Button>
+                      </div>
+                    )}
+
                     <div className="flex-1 w-full mt-3">
                       <Label className="mb-2">Madres</Label>
 
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="w-full  text-center flex-col items-center"
-                        onClick={handleOpenMadre}
-                      >
-                        Seleccionar Madres
-                      </Button>
+                      {!source && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="w-full  text-center flex-col items-center"
+                          onClick={handleOpenMadre}
+                        >
+                          Seleccionar Madres
+                        </Button>
+                      )}
 
                       {/* Aquí mostramos las madres seleccionadas */}
                       <Card className="w-full mt-2">
@@ -1222,7 +1251,7 @@ export default function JavaGrupoDialog({
           </div>
         </div>
 
-        <div className="flex  justify-between pt-4">
+        <div className="flex justify-between pt-4">
           {categoria !== "REPRODUCCION" && (
             <TimeLine fechaInicio={watch("fechaReproduccion")!} />
           )}
@@ -1230,51 +1259,63 @@ export default function JavaGrupoDialog({
             {categoria === "REPRODUCCION" ? (
               <>
                 {isEditing && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="mr-2 bg-blue-500 hover:bg-blue-600 text-white hover:text-white"
-                    disabled={isSubmitting}
-                    onClick={async () => {
-                      if (!javaToEdit?.id) return;
+                  <div className="flex gap-2">
+                    {seleccionActual === "madre" &&
+                      (watch("hembrasNacidas")! > 0 ||
+                        watch("machosNacidos")! > 0) && (
+                        <Button onClick={handleCrearJavaMadreCuy}>
+                          Crear Java Madre/Cuy
+                        </Button>
+                      )}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="mr-2 bg-blue-500 hover:bg-blue-600 text-white hover:text-white"
+                      disabled={isSubmitting}
+                      onClick={async () => {
+                        if (!javaToEdit?.id) return;
 
-                      const form = watch();
+                        const form = watch();
 
-                      const payload = {
-                        nombre: form.nombre,
-                        categoria: form.categoria ?? "",
-                        sexo: "NA",
-                        fechaReproduccion: form.fechaReproduccion
-                          ? form.fechaReproduccion.toISOString().split("T")[0]
-                          : "",
-                        cantidadHijasHembras: form.hembrasNacidas ?? 0,
-                        cantidadHijosMachos: form.machosNacidos ?? 0,
-                        cantidadHijosMuertos: form.muertos ?? 0,
-                        cuyes: [
-                          ...(form.padre ? [{ id: form.padre.id }] : []),
-                          ...form.madre.map((m) => ({ id: m.id })),
-                        ],
-                      };
+                        const payload = {
+                          nombre: form.nombre,
+                          categoria: form.categoria ?? "",
+                          sexo: "NA",
+                          fechaReproduccion: form.fechaReproduccion
+                            ? form.fechaReproduccion.toISOString().split("T")[0]
+                            : "",
+                          cantidadHijasHembras: form.hembrasNacidas ?? 0,
+                          cantidadHijosMachos: form.machosNacidos ?? 0,
+                          cantidadHijosMuertos: form.muertos ?? 0,
+                          cuyes: [
+                            ...(form.padre ? [{ id: form.padre.id }] : []),
+                            ...form.madre.map((m) => ({ id: m.id })),
+                          ],
+                        };
 
-                      try {
-                        setIsSubmitting(true);
+                        try {
+                          setIsSubmitting(true);
 
-                        await updateJavaCuyReproduccion(javaToEdit.id, payload);
+                          await updateJavaCuyReproduccion(
+                            javaToEdit.id,
+                            payload
+                          );
 
-                        toast.success("Cambios guardados correctamente");
+                          toast.success("Cambios guardados correctamente");
 
-                        onOpenChange(false);
-                        reset();
-                      } catch (error) {
-                        console.error("Error al guardar cambios:", error);
-                        toast.error("No se pudieron guardar los cambios");
-                      } finally {
-                        setIsSubmitting(false);
-                      }
-                    }}
-                  >
-                    Guardar Cambios
-                  </Button>
+                          onOpenChange(false);
+                          reset();
+                        } catch (error) {
+                          console.error("Error al guardar cambios:", error);
+                          toast.error("No se pudieron guardar los cambios");
+                        } finally {
+                          setIsSubmitting(false);
+                        }
+                      }}
+                    >
+                      Guardar Cambios
+                    </Button>
+                  </div>
                 )}
                 <Button
                   type="button"

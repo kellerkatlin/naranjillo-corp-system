@@ -30,6 +30,8 @@ export default function FormReproduccion() {
     false | "REPRODUCCION" | "MACHO" | "HEMBRA"
   >(false);
 
+  const [changeMadreDialog, setChangeMadreDialog] = useState(false);
+
   const fetchMachos = async () => {
     try {
       const res = await getAllJava("MACHO", filtroMacho);
@@ -164,98 +166,196 @@ export default function FormReproduccion() {
   const cerrarDialog = () => {
     setDialogGrupoOpen(false);
     setJavaToEdit(undefined);
+    setChangeMadreDialog(false);
   };
 
   return (
     <div className="p-4 rounded-lg">
-      {/* GRUPO REPRODUCCION */}
-      <Card className="px-3 mb-3 ">
-        <div>
-          <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold inline-block text-center">
-            Grupo Reproducción
-          </span>
-        </div>
-
-        <div className="flex gap-4  -mt-4">
-          {/* Contenedor scrollable solo para las cards */}
-          <div className="flex-shrink-0 w-36 mt-8 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
-            <CardContent
-              onClick={() => setDialogGrupoOpen("REPRODUCCION")}
-              className="p-2 flex flex-col items-center justify-center"
-            >
-              <Plus className="w-8 h-8 text-green-400" />
-              <div className="mt-2 text-xs text-center font-semibold text-green-400">
-                CREAR REPRODUCCIÓN
-              </div>
-            </CardContent>
+      <div className="flex justify-between gap-5">
+        {/* GRUPO REPRODUCCION */}
+        <Card className="px-3 mb-3 flex-1 ">
+          <div>
+            <span className="bg-orange-400 text-white px-4 py-1 rounded-md font-semibold inline-block text-center">
+              Grupo Reproducción
+            </span>
           </div>
 
-          <div className="flex gap-4 py-8 overflow-x-auto overflow-y-hidden ">
-            {javasReproduccion.map((grupo) => (
-              <div
-                key={grupo.id}
-                className="flex-shrink-0 overflow-visible max-w-md hover:scale-105"
+          <div className="flex gap-4  -mt-4">
+            {/* Contenedor scrollable solo para las cards */}
+            <div className="flex-shrink-0 w-36 mt-8 h-36 flex items-center justify-center border-green-400 border-2 cursor-pointer hover:scale-105 transition">
+              <CardContent
+                onClick={() => setDialogGrupoOpen("REPRODUCCION")}
+                className="p-2 flex flex-col items-center justify-center"
               >
-                <CardJava
-                  java={grupo}
-                  imagen={true}
-                  onClickEdit={() => {
-                    const padre =
-                      grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
-                    const madres =
-                      grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
-                    const [y, m, d] = grupo.fechaReproduccion
-                      .split("-")
-                      .map(Number);
-                    const fechaLocal = new Date(y, m - 1, d); // año, mesIndexado(0–11), día
+                <Plus className="w-8 h-8 text-green-400" />
+                <div className="mt-2 text-xs text-center font-semibold text-green-400">
+                  CREAR REPRODUCCIÓN
+                </div>
+              </CardContent>
+            </div>
 
-                    setJavaToEdit({
-                      id: grupo.id,
-                      nombre: grupo.nombre,
-                      categoria: grupo.categoria,
-                      fechaReproduccion: fechaLocal,
-                      hembrasNacidas: grupo.cantidadHijasHembras,
-                      sexo: grupo.sexo,
-                      cuyes: grupo.cuyes,
-                      machosNacidos: grupo.cantidadHijosMachos,
-                      muertos: grupo.cantidadHijosMuertos,
-                      padre: padre
-                        ? {
-                            id: padre.id,
-                            sexo: padre.sexo,
-                            categoria: padre.categoria,
+            <div className="flex gap-4 py-8 overflow-x-auto overflow-y-hidden ">
+              {javasReproduccion
+                .filter((grupo) => {
+                  const cantidadHembras =
+                    grupo.cuyes?.filter((cuy) => cuy.sexo === "HEMBRA")
+                      .length ?? 0;
+                  const cantidadMachos =
+                    grupo.cuyes?.filter((cuy) => cuy.sexo === "MACHO").length ??
+                    0;
+                  return cantidadHembras > 1 || cantidadMachos >= 1;
+                })
+                .map((grupo) => (
+                  <div
+                    key={grupo.id}
+                    className="flex-shrink-0 overflow-visible max-w-md hover:scale-105"
+                  >
+                    <CardJava
+                      java={grupo}
+                      imagen="REPRODUCCION"
+                      onClickEdit={() => {
+                        const padre =
+                          grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
+                        const madres =
+                          grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+                        const [y, m, d] = grupo.fechaReproduccion
+                          .split("-")
+                          .map(Number);
+                        const fechaLocal = new Date(y, m - 1, d);
+
+                        setJavaToEdit({
+                          id: grupo.id,
+                          nombre: grupo.nombre,
+                          categoria: grupo.categoria,
+                          fechaReproduccion: fechaLocal,
+                          hembrasNacidas: grupo.cantidadHijasHembras,
+                          sexo: grupo.sexo,
+                          cuyes: grupo.cuyes,
+                          machosNacidos: grupo.cantidadHijosMachos,
+                          muertos: grupo.cantidadHijosMuertos,
+                          padre: padre
+                            ? {
+                                id: padre.id,
+                                sexo: padre.sexo,
+                                categoria: padre.categoria,
+                                edad: 0,
+                                nombreJavaOrigen: padre.nombreJavaOrigen,
+                                estado: "ACTIVO",
+                                fechaRegistro: padre.fechaRegistro,
+                                horaRegistro: padre.fechaRegistro,
+                                nombre: padre.nombre,
+                                java: "",
+                              }
+                            : null,
+                          madre: madres.map((m) => ({
+                            id: m.id,
+                            sexo: m.sexo,
+                            nombre: m.nombre,
                             edad: 0,
-                            nombreJavaOrigen: padre.nombreJavaOrigen,
+                            nombreJavaOrigen: m.nombreJavaOrigen,
+                            fechaRegistro: m.fechaRegistro,
+                            horaRegistro: m.fechaRegistro,
+                            categoria: m.categoria ?? "",
                             estado: "ACTIVO",
-                            fechaRegistro: padre.fechaRegistro,
-                            horaRegistro: padre.fechaRegistro,
-                            nombre: padre.nombre,
                             java: "",
-                          }
-                        : null,
-                      madre: madres.map((m) => ({
-                        id: m.id,
-                        sexo: m.sexo,
-                        nombre: m.nombre,
-                        edad: 0,
-                        nombreJavaOrigen: m.nombreJavaOrigen,
-                        fechaRegistro: m.fechaRegistro,
-                        horaRegistro: m.fechaRegistro,
-                        categoria: m.categoria ?? "",
-                        estado: "ACTIVO",
-                        java: "",
-                      })),
-
-                      regiones: {},
-                    });
-                    setDialogGrupoOpen("REPRODUCCION");
-                  }}
-                />
-              </div>
-            ))}
+                          })),
+                          regiones: {},
+                        });
+                        setDialogGrupoOpen("REPRODUCCION");
+                      }}
+                    />
+                  </div>
+                ))}
+            </div>
           </div>
-        </div>
-      </Card>
+        </Card>
+
+        {/* GRUPO REPRODUCCION */}
+        <Card className="px-3 mb-3  flex-1">
+          <div>
+            <span className="bg-blue-400 text-white px-4 py-1 rounded-md font-semibold inline-block text-center">
+              Madres/Hijos
+            </span>
+          </div>
+
+          <div className="flex gap-4  -mt-4">
+            <div className="flex gap-4 py-8 overflow-x-auto overflow-y-hidden ">
+              {javasReproduccion
+                .filter((grupo) => {
+                  const cantidadHembras =
+                    grupo.cuyes?.filter((cuy) => cuy.sexo === "HEMBRA")
+                      .length ?? 0;
+                  const cantidadMachos =
+                    grupo.cuyes?.filter((cuy) => cuy.sexo === "MACHO").length ??
+                    0;
+                  return cantidadHembras === 1 && cantidadMachos === 0;
+                })
+                .map((grupo) => (
+                  <div
+                    key={grupo.id}
+                    className="flex-shrink-0 overflow-visible max-w-md hover:scale-105"
+                  >
+                    <CardJava
+                      java={grupo}
+                      imagen="MADRECUY"
+                      onClickEdit={() => {
+                        const padre =
+                          grupo.cuyes?.find((c) => c.sexo === "MACHO") ?? null;
+                        const madres =
+                          grupo.cuyes?.filter((c) => c.sexo === "HEMBRA") ?? [];
+                        const [y, m, d] = grupo.fechaReproduccion
+                          .split("-")
+                          .map(Number);
+                        const fechaLocal = new Date(y, m - 1, d);
+
+                        setJavaToEdit({
+                          id: grupo.id,
+                          nombre: grupo.nombre,
+                          categoria: grupo.categoria,
+                          fechaReproduccion: fechaLocal,
+                          hembrasNacidas: grupo.cantidadHijasHembras,
+                          sexo: grupo.sexo,
+                          cuyes: grupo.cuyes,
+                          machosNacidos: grupo.cantidadHijosMachos,
+                          muertos: grupo.cantidadHijosMuertos,
+                          padre: padre
+                            ? {
+                                id: padre.id,
+                                sexo: padre.sexo,
+                                categoria: padre.categoria,
+                                edad: 0,
+                                nombreJavaOrigen: padre.nombreJavaOrigen,
+                                estado: "ACTIVO",
+                                fechaRegistro: padre.fechaRegistro,
+                                horaRegistro: padre.fechaRegistro,
+                                nombre: padre.nombre,
+                                java: "",
+                              }
+                            : null,
+                          madre: madres.map((m) => ({
+                            id: m.id,
+                            sexo: m.sexo,
+                            nombre: m.nombre,
+                            edad: 0,
+                            nombreJavaOrigen: m.nombreJavaOrigen,
+                            fechaRegistro: m.fechaRegistro,
+                            horaRegistro: m.fechaRegistro,
+                            categoria: m.categoria ?? "",
+                            estado: "ACTIVO",
+                            java: "",
+                          })),
+                          regiones: {},
+                        });
+                        setDialogGrupoOpen("REPRODUCCION");
+                        setChangeMadreDialog(true);
+                      }}
+                    />
+                  </div>
+                ))}
+            </div>
+          </div>
+        </Card>
+      </div>
 
       {/* GRUPO MACHOS */}
       <Card className="px-3 mb-3">
@@ -348,6 +448,7 @@ export default function FormReproduccion() {
                     });
                     setDialogGrupoOpen("MACHO");
                   }}
+                  imagen="CUY"
                 />
               </div>
             ))}
@@ -448,6 +549,7 @@ export default function FormReproduccion() {
 
                     setDialogGrupoOpen("HEMBRA");
                   }}
+                  imagen="CUY"
                 />
               </div>
             ))}
@@ -463,6 +565,7 @@ export default function FormReproduccion() {
           if (!open) cerrarDialog();
         }}
         mode={dialogGrupoOpen === false ? "REPRODUCCION" : dialogGrupoOpen}
+        source={changeMadreDialog || false}
         onSubmitCreate={handleSubmitCreate}
         onSubmitUpdate={handleSubmitUpdate}
         onSubmitUpdateCuy={handleSubmitUpdateCuy}

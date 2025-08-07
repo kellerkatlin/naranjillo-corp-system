@@ -144,3 +144,11 @@ export const getCuySinJava = (categoria: string): Promise<Cuy[]> =>
       "Content-Type": "application/json",
     },
   });
+
+export const changeJavaMadre = (idCuy: number): Promise<Cuy[]> =>
+  apiFetch(`${BASE}/create/javamadre/${idCuy}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });

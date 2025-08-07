@@ -7,7 +7,7 @@ import { Badge } from "./ui/badge";
 interface CardJavaProps {
   readonly java?: JavaRespose;
   readonly onClickEdit?: () => void; // <-- agregamos el callback opcional
-  readonly imagen?: boolean;
+  readonly imagen?: "REPRODUCCION" | "CUY" | "MADRECUY";
 }
 
 export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
@@ -16,6 +16,19 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
   function normalizar(fecha: Date) {
     return new Date(fecha.getFullYear(), fecha.getMonth(), fecha.getDate());
   }
+
+  const getImagen = () => {
+    switch (imagen) {
+      case "REPRODUCCION":
+        return "/reproduccion.png";
+      case "CUY":
+        return "/machos.png";
+      case "MADRECUY":
+        return "/madrecuyes.png";
+      default:
+        return "/img/default.jpg";
+    }
+  };
 
   const diasReproduccion = java?.fechaReproduccion
     ? (() => {
@@ -40,7 +53,7 @@ export default function CardJava({ java, onClickEdit, imagen }: CardJavaProps) {
           {java?.nombre}
         </div>
         <Image
-          src={imagen ? "/reproduccion.png" : "/machos.png"}
+          src={getImagen()}
           alt={imagen ? "Reproducción" : "Machos"}
           className="size-20  object-contain "
           width={64}
