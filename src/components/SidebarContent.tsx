@@ -99,7 +99,7 @@ export default function SidebarContent({ onLinkClick }: SidebarContentProps) {
             );
           })}
       </nav>
-      <section className=" text-gray-700 p-0 mt-8">
+      <section className=" text-black p-0 mt-8">
         <div className="flex flex-col gap-0 mb-2 text-sm">
           <h3 className="font-bold uppercase text-sm">Naranjillo Corp. SAC</h3>
           <span>Maquinaria</span>

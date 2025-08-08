@@ -44,6 +44,7 @@ export interface ReporteJavaResponse {
 export interface ReporteCuyResponse {
   id: number;
   edad: number;
+  sanidades: [];
   sexo: string;
   fechaRegistro: string;
   categoria: string;

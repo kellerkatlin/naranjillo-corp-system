@@ -13,6 +13,31 @@ type Props = {
   readonly onSubmit: (venta: VentasRequest) => void;
 };
 
+const METODOS: Array<{
+  id: VentasRequest["medioPago"];
+  label: string;
+  color: string;
+  colorActivo: string;
+}> = [
+  {
+    id: "YAPE",
+    label: "YAPE",
+    color: "border-purple-500 text-purple-500",
+    colorActivo: "bg-purple-500 text-white",
+  },
+  {
+    id: "PLIN",
+    label: "PLIN",
+    color: "border-emerald-500 text-emerald-500",
+    colorActivo: "bg-emerald-500 text-white",
+  },
+  {
+    id: "EFECTIVO",
+    label: "EFECTIVO",
+    color: "border-[#cfce3c] text-[#cfce3c]",
+    colorActivo: "bg-[#cfce3c] text-white",
+  },
+];
 export default function DialogFinalizarVenta({
   open,
   onClose,
@@ -23,6 +48,9 @@ export default function DialogFinalizarVenta({
   const [nombre, setNombre] = useState("");
   const [direccion, setDireccion] = useState("");
   const [descripcion, setDescripcion] = useState("");
+  const [medioDePago, setMedioDePago] = useState<
+    VentasRequest["medioPago"] | ""
+  >(""); // 👈 nuevo
 
   const cantidad = carrito.length;
   const total = carrito.reduce((sum, item) => sum + item.precioVenta, 0);
@@ -38,13 +66,14 @@ export default function DialogFinalizarVenta({
   }, [open]);
 
   const handleFinalizar = () => {
-    if (!dni || !nombre || !direccion) return;
+    if (!dni || !nombre || !direccion || !medioDePago) return;
 
     const venta: VentasRequest = {
       cuyes: carrito.map((item) => ({
         id: item.cuy.id,
         precio: item.precioVenta,
       })),
+      medioPago: medioDePago,
       precioTotal: total,
       cantidadCuy: cantidad,
       documento: dni,
@@ -56,6 +85,7 @@ export default function DialogFinalizarVenta({
     onSubmit(venta);
     onClose();
   };
+  const isFormInvalido = !dni || !nombre || !direccion || !medioDePago;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -87,6 +117,26 @@ export default function DialogFinalizarVenta({
               <strong>P. Venta:</strong> S/ {total.toFixed(2)}
             </span>
           </div>
+          {/* Métodos de pago */}
+          <div className="mt-2">
+            <label className="font-medium">Método de pago:</label>
+            <div className="mt-2 flex gap-2">
+              {METODOS.map(({ id, label, color, colorActivo }) => {
+                const activo = medioDePago === id;
+                return (
+                  <Button
+                    key={id}
+                    type="button"
+                    variant="outline"
+                    className={`border-2 ${activo ? colorActivo : color}`}
+                    onClick={() => setMedioDePago(id)}
+                  >
+                    {label}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
 
           <div className="grid gap-2 mt-2">
             <Input
@@ -115,6 +165,7 @@ export default function DialogFinalizarVenta({
             <Button
               className="bg-orange-600 text-white"
               onClick={handleFinalizar}
+              disabled={isFormInvalido}
             >
               Finalizar venta
             </Button>

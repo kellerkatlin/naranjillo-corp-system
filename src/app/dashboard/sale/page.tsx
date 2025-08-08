@@ -115,7 +115,7 @@ export default function FormVenta() {
 
   const columsCuyes: ColumnDef<VentasResponse>[] = [
     { accessorKey: "id", header: "N° de comprobante " },
-
+    { accessorKey: "medioPago", header: "Medio de Pago" },
     { accessorKey: "cantidad", header: "Cántidad" },
     { accessorKey: "total", header: "P. Venta " },
     { accessorKey: "documento", header: "Dni/Ruc" },

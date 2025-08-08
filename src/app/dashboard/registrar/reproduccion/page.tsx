@@ -203,7 +203,11 @@ export default function FormReproduccion() {
                   const cantidadMachos =
                     grupo.cuyes?.filter((cuy) => cuy.sexo === "MACHO").length ??
                     0;
-                  return cantidadHembras > 1 || cantidadMachos >= 1;
+                  return (
+                    cantidadHembras > 1 ||
+                    cantidadMachos === 1 ||
+                    grupo.cuyes?.length === 0
+                  );
                 })
                 .map((grupo) => (
                   <div
@@ -285,10 +289,8 @@ export default function FormReproduccion() {
                   const cantidadHembras =
                     grupo.cuyes?.filter((cuy) => cuy.sexo === "HEMBRA")
                       .length ?? 0;
-                  const cantidadMachos =
-                    grupo.cuyes?.filter((cuy) => cuy.sexo === "MACHO").length ??
-                    0;
-                  return cantidadHembras === 1 && cantidadMachos === 0;
+
+                  return cantidadHembras === 1;
                 })
                 .map((grupo) => (
                   <div

@@ -9,10 +9,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 import { format } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CalendarIcon, DownloadIcon, Search, Trash2 } from "lucide-react";
+import { CalendarIcon, DownloadIcon, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   ReporteCuyResponse,
@@ -43,6 +45,8 @@ export default function Reporte() {
   const [javaIdSeleccionado, setJavaIdSeleccionado] = useState<number | null>(
     null
   );
+
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
 
   const [fechasJava, setFechasJava] = useState<FiltroFechas>({
     fromDate: undefined,
@@ -75,6 +79,59 @@ export default function Reporte() {
   function formatDateToYYYYMMDD(date: Date): string {
     return format(date, "yyyy-MM-dd");
   }
+
+  const toggleSelect = (id: number) => {
+    setSelectedIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  // Seleccionar o deseleccionar todos
+  const toggleSelectAll = () => {
+    setSelectedIds((prev) => {
+      if (prev.size === cuyes.length) {
+        return new Set(); // desmarcar todos
+      }
+      return new Set(cuyes.map((c) => c.id)); // marcar todos
+    });
+  };
+
+  const exportSelectedToExcel = () => {
+    const cuyesSeleccionados = cuyes
+      .filter((c) => selectedIds.has(c.id))
+      .map((c) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { sanidades, ...rest } = c;
+        return rest;
+      });
+
+    if (cuyesSeleccionados.length === 0) {
+      toast.error("No hay cuyes seleccionados para exportar");
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(cuyesSeleccionados);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Cuyes");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(blob, "cuyes_seleccionados.xlsx");
+  };
 
   useEffect(() => {
     if (!fechasJava.fromDate || !fechasJava.toDate) return;
@@ -135,6 +192,74 @@ export default function Reporte() {
     } catch (error) {
       console.error("Error al registrar egresos:", error);
     }
+  };
+
+  const exportJavasToExcel = () => {
+    if (javas.length === 0) {
+      toast.error("No hay javas para exportar");
+      return;
+    }
+
+    // Preparamos los datos que queremos exportar
+    const datos = javas.map((java) => ({
+      "Nombre de Java": java.nombre,
+      Cantidad: java.cuyes?.length ?? 0,
+      Categoría: java.categoria,
+      Estado: java.categoria === "FINALIZADO" ? "INACTIVO" : "ACTIVO",
+    }));
+
+    // Crear hoja y libro
+    const worksheet = XLSX.utils.json_to_sheet(datos);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Javas");
+
+    // Convertir a buffer y descargar
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(blob, "javas.xlsx");
+  };
+
+  const exportVentasToExcel = () => {
+    if (ventas.length === 0) {
+      toast.error("No hay ventas para exportar");
+      return;
+    }
+
+    // Transformar las ventas para que el Excel tenga encabezados amigables
+    const datos = ventas.map((venta) => ({
+      Fecha: format(new Date(venta.fechaVenta), "dd/MM/yyyy"),
+      Descripción: venta.descripcion,
+      Cantidad: venta.cantidad,
+      Total: venta.total.toFixed(2),
+      "Medio de Pago": venta.medioPago,
+      "DNI / RUC": venta.documento,
+      "Nombre / Razón Social": venta.nombreRazonSocial,
+      Dirección: venta.direccion,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(datos);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Ventas");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    saveAs(blob, "ventas.xlsx");
   };
 
   useEffect(() => {
@@ -271,7 +396,12 @@ export default function Reporte() {
                     Buscar
                   </Button>
 
-                  <Button variant="default" className="flex-1">
+                  <Button
+                    variant="default"
+                    className="flex-1"
+                    onClick={exportVentasToExcel}
+                    disabled={ventas.length === 0} // opcional: deshabilitar si no hay ventas
+                  >
                     <DownloadIcon className="w-4 h-4 mr-2" />
                     Exportar
                   </Button>
@@ -549,7 +679,9 @@ export default function Reporte() {
                     Recuperar
                   </Button>
 
-                  <Button variant="outline">Seleccionar Todo</Button>
+                  <Button variant="outline" onClick={exportJavasToExcel}>
+                    Exportar
+                  </Button>
                 </div>
 
                 <div className="overflow-x-auto">
@@ -650,10 +782,18 @@ export default function Reporte() {
                       />
                     </PopoverContent>
                   </Popover>
-                  <Button variant="outline">Seleccionar Todo</Button>
-                  <Button variant="destructive">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    Eliminar
+                  <Button variant="outline" onClick={toggleSelectAll}>
+                    {selectedIds.size === cuyes.length
+                      ? "Deseleccionar Todo"
+                      : "Seleccionar Todo"}
+                  </Button>
+                  <Button
+                    variant="default"
+                    disabled={selectedIds.size === 0}
+                    className="text-white"
+                    onClick={exportSelectedToExcel}
+                  >
+                    Exportar
                   </Button>
                 </div>
 
@@ -661,13 +801,13 @@ export default function Reporte() {
                   <table className="min-w-full text-sm border">
                     <thead className="bg-muted">
                       <tr>
-                        <th className="p-2 border">ID</th>
+                        <th className="p-2 border text-center">ID</th>
                         <th className="p-2 border">Fecha Registro</th>
                         <th className="p-2 border">Edad (días)</th>
                         <th className="p-2 border">Categoría</th>
                         <th className="p-2 border">Sexo</th>
                         <th className="p-2 border">Java</th>
-                        <th className="p-2 border">Acción</th>
+                        <th className="p-2 border">Sel</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -685,9 +825,12 @@ export default function Reporte() {
                           <td className="p-2 border text-center">
                             {cuy.nombreJavaOrigen}
                           </td>
-
                           <td className="p-2 border text-center">
-                            <input type="checkbox" />
+                            <input
+                              type="checkbox"
+                              checked={selectedIds.has(cuy.id)}
+                              onChange={() => toggleSelect(cuy.id)}
+                            />
                           </td>
                         </tr>
                       ))}

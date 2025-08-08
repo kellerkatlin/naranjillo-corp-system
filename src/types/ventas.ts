@@ -8,6 +8,7 @@ export type VentasRequest = {
   cuyes: Cuy[];
   precioTotal: number;
   cantidadCuy: number;
+  medioPago: string;
   documento: string;
   nombreRazonSocial: string;
   direccion: string;
@@ -21,6 +22,7 @@ export type Cuy = {
 
 export interface VentasResponse {
   id: number;
+  medioPago: string;
   cantidad: number;
   total: number;
   documento: string;
