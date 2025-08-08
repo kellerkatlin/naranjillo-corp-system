@@ -41,10 +41,10 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-[url(/banner.jpg)] bg-cover bg-center">
       <div className="flex flex-col items-center w-[900px] gap-4">
         <Image
-          src="/Logo.png"
+          src="/logo1.png"
           alt="Naranjilo Corp"
-          height={40}
-          width={40}
+          height={100}
+          width={100}
           className="w-40"
         />
 
